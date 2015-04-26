@@ -11,6 +11,7 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
@@ -160,13 +161,16 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 				user.setRegistrationId(regId);
 				controller.register(user);
 			}
-		} else
+		} else{
 			this.user = user;
+			moveToMainActivity();
+		}
 	}
 	
 	@Override
 	public void registerCallback(User user) {
-		 Toast.makeText(getApplicationContext(), "User111!", Toast.LENGTH_SHORT).show();		
+		 Toast.makeText(getApplicationContext(), "User111!", Toast.LENGTH_SHORT).show();
+		 moveToMainActivity();
 	}
 
 	protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
@@ -206,5 +210,13 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 		return super.onOptionsItemSelected(item);
 	}
 
+	public void moveToMainActivity(){
+		// Move to MainActivity
+		Intent intent = new Intent(this, MainActivity.class);
+		//intent.putExtra("regid",regid);
+		startActivity(intent);
+		/* Since this is just a wrapper to start the main activity, finish it after launching SignInActivity */
+		finish();
+	}
 
 }
