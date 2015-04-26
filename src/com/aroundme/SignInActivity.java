@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.Aroundmeapi;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.User;
+import com.aroundme.common.MyCallback;
+import com.aroundme.controller.Controller;
 import com.aroundme.deviceinfoendpoint.Deviceinfoendpoint;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -26,7 +28,8 @@ import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 public class SignInActivity extends Activity implements ConnectionCallbacks,
-		OnConnectionFailedListener, OnClickListener {
+		OnConnectionFailedListener, OnClickListener, MyCallback {
+
 
 	/* Request code used to invoke sign in user interactions. */
 	private static final int RC_SIGN_IN = 0;
@@ -50,13 +53,17 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 
 	private User user;
 	private Bundle extars=null;
-	String regId=null;
-	Aroundmeapi endpoint;
+	private String regId=null;
+	private Aroundmeapi endpoint;
+	private Controller controller;
+	private String email;
+//	Person currentPerson;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sign_in);
+		controller = new Controller();
 		mGoogleApiClient = new GoogleApiClient.Builder(this)
 				.addConnectionCallbacks(this)
 				.addOnConnectionFailedListener(this).addApi(Plus.API)
@@ -71,6 +78,13 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	protected void onStart() {
 		super.onStart();
 		mGoogleApiClient.connect();
+	}
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		mGoogleApiClient.connect(); 		// ??
 	}
 
 	protected void onStop() {
@@ -134,41 +148,43 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	public void onConnected(Bundle connectionHint) {
 		mSignInClicked = false;
 		Toast.makeText(this, "User is connected!", Toast.LENGTH_LONG).show();
-		new  AsyncTask<Void, Void, Void>() {
-			@Override
-			protected Void doInBackground(Void... params) {
-				try {
-					endpoint = EndpointApiCreator.getApi(Aroundmeapi.class);
-					
-					String email = Plus.AccountApi.getAccountName(mGoogleApiClient);
-					Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-					if (endpoint.login(email,currentPerson.getId(),regId).execute() == null) {
-						if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-							String personName = currentPerson.getDisplayName();
-							String personPhoto = currentPerson.getImage().getUrl();
-							String password =currentPerson.getId();
-							// String personGooglePlusProfile = currentPerson.getUrl();
-							user = new User();
-							user.setFullName(personName);
-							user.setMail(email);
-							user.setPassword(password);
-							user.setImageUrl(personPhoto);
-							user.setRegistrationId(regId);
-						}
-						endpoint.register(user).execute();
-					};
-				}
-		
-				catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				return null;
+		email = Plus.AccountApi.getAccountName(mGoogleApiClient);
+		Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+		controller.login(email,currentPerson.getId(),regId);
+		}
+			
+	/*
+	 * @see com.aroundme.common.MyCallback#loginCallback(com.appspot.enhanced_cable_88320.aroundmeapi.model.User)
+	 * callback after finish async task login to server
+	 */
+	@Override
+	public void loginCallback(User user) {
+
+		if(user == null) {
+			if (mGoogleApiClient.isConnected()) {
+				System.out.println("connected");
 			}
-		}.execute();
+			Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+			if (currentPerson != null) {
+				String personName = currentPerson.getDisplayName();
+				String personPhoto = currentPerson.getImage().getUrl();
+				String password =currentPerson.getId();
+				// String personGooglePlusProfile = currentPerson.getUrl();
+				user = new User();
+				user.setFullName(personName);
+				user.setMail(email);
+				user.setPassword(password);
+				user.setImageUrl(personPhoto);
+				user.setRegistrationId(regId);
+				controller.register(user);
+			}
+		} else
+			this.user = user;
+	}
+	
+	@Override
+	public void registerCallback(User user) {
+		 Toast.makeText(getApplicationContext(), "User111!", Toast.LENGTH_SHORT).show();		
 	}
 
 	protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
@@ -207,4 +223,6 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 		}
 		return super.onOptionsItemSelected(item);
 	}
+
+
 }
