@@ -13,8 +13,8 @@ public class Controller {
 	private Aroundmeapi endpoint;
 	private User user;
 	
-	public Controller() {
-		//callback = new SignInActivity();
+	public Controller(MyCallback listener) {
+		callback = listener;
 		try {
 			endpoint = EndpointApiCreator.getApi(Aroundmeapi.class);
 		} catch (Exception e) {

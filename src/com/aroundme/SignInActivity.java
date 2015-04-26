@@ -1,12 +1,8 @@
 package com.aroundme;
 
-import java.io.IOException;
-
-import com.appspot.enhanced_cable_88320.aroundmeapi.Aroundmeapi;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.User;
 import com.aroundme.common.MyCallback;
 import com.aroundme.controller.Controller;
-import com.aroundme.deviceinfoendpoint.Deviceinfoendpoint;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -15,11 +11,9 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -54,16 +48,15 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	private User user;
 	private Bundle extars=null;
 	private String regId=null;
-	private Aroundmeapi endpoint;
 	private Controller controller;
 	private String email;
-//	Person currentPerson;
+	Person currentPerson;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sign_in);
-		controller = new Controller();
+		controller = new Controller(this);
 		mGoogleApiClient = new GoogleApiClient.Builder(this)
 				.addConnectionCallbacks(this)
 				.addOnConnectionFailedListener(this).addApi(Plus.API)
@@ -80,16 +73,8 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 		mGoogleApiClient.connect();
 	}
 	
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-		mGoogleApiClient.connect(); 		// ??
-	}
-
 	protected void onStop() {
 		super.onStop();
-
 		if (mGoogleApiClient.isConnected()) {
 			mGoogleApiClient.disconnect();
 		}
@@ -149,7 +134,7 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 		mSignInClicked = false;
 		Toast.makeText(this, "User is connected!", Toast.LENGTH_LONG).show();
 		email = Plus.AccountApi.getAccountName(mGoogleApiClient);
-		Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+		currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
 		controller.login(email,currentPerson.getId(),regId);
 		}
 			
@@ -161,10 +146,7 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	public void loginCallback(User user) {
 
 		if(user == null) {
-			if (mGoogleApiClient.isConnected()) {
-				System.out.println("connected");
-			}
-			Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+			//Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
 			if (currentPerson != null) {
 				String personName = currentPerson.getDisplayName();
 				String personPhoto = currentPerson.getImage().getUrl();
