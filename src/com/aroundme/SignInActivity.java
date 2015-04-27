@@ -1,7 +1,7 @@
 package com.aroundme;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.User;
-import com.aroundme.common.MyCallback;
+import com.aroundme.common.IAppCallBack;
 import com.aroundme.controller.Controller;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -23,7 +23,7 @@ import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 public class SignInActivity extends Activity implements ConnectionCallbacks,
-		OnConnectionFailedListener, OnClickListener, MyCallback {
+		OnConnectionFailedListener, OnClickListener, IAppCallBack<User> {
 
 
 	/* Request code used to invoke sign in user interactions. */
@@ -57,7 +57,7 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sign_in);
-		controller = new Controller(this);
+		controller = Controller.getInstance();
 		mGoogleApiClient = new GoogleApiClient.Builder(this)
 				.addConnectionCallbacks(this)
 				.addOnConnectionFailedListener(this).addApi(Plus.API)
@@ -136,41 +136,7 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 		Toast.makeText(this, "User is connected!", Toast.LENGTH_LONG).show();
 		email = Plus.AccountApi.getAccountName(mGoogleApiClient);
 		currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-		controller.login(email,currentPerson.getId(),regId);
-		}
-			
-	/*
-	 * @see com.aroundme.common.MyCallback#loginCallback(com.appspot.enhanced_cable_88320.aroundmeapi.model.User)
-	 * callback after finish async task login to server
-	 */
-	@Override
-	public void loginCallback(User user) {
-
-		if(user == null) {
-			//Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-			if (currentPerson != null) {
-				String personName = currentPerson.getDisplayName();
-				String personPhoto = currentPerson.getImage().getUrl();
-				String password =currentPerson.getId();
-				// String personGooglePlusProfile = currentPerson.getUrl();
-				user = new User();
-				user.setFullName(personName);
-				user.setMail(email);
-				user.setPassword(password);
-				user.setImageUrl(personPhoto);
-				user.setRegistrationId(regId);
-				controller.register(user);
-			}
-		} else{
-			this.user = user;
-			moveToMainActivity();
-		}
-	}
-	
-	@Override
-	public void registerCallback(User user) {
-		 Toast.makeText(getApplicationContext(), "User111!", Toast.LENGTH_SHORT).show();
-		 moveToMainActivity();
+		controller.login(email,currentPerson.getId(),regId,this);
 	}
 
 	protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
@@ -219,4 +185,46 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 		finish();
 	}
 
+	@Override
+	public void done(User user, Exception e) {
+		if (e == null) {
+			if(user == null) {
+				//Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+				if (currentPerson != null) {
+					String personName = currentPerson.getDisplayName();
+					String personPhoto = currentPerson.getImage().getUrl();
+					String password =currentPerson.getId();
+					// String personGooglePlusProfile = currentPerson.getUrl();
+					this.user = new User();
+					this.user.setFullName(personName);
+					this.user.setMail(email);
+					this.user.setPassword(password);
+					this.user.setImageUrl(personPhoto);
+					this.user.setRegistrationId(regId);
+					controller.register(this.user,this);
+				}
+			} else{
+				this.user = user;
+				moveToMainActivity();
+			}
+		} else 
+			System.out.println("error");
+			// handle ??
+	}
+
 }
+
+
+
+/*	controller.getAllUsersAroundMe(10, new IAppCallBack<List<UserAroundMe>>() {
+
+@Override
+public void done(List<UserAroundMe> ret, Exception e) {
+	if(e==null)
+	{
+		
+	}
+	
+}
+});*/
+

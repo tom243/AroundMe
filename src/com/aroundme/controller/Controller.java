@@ -5,16 +5,15 @@ import android.os.AsyncTask;
 import com.appspot.enhanced_cable_88320.aroundmeapi.Aroundmeapi;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.User;
 import com.aroundme.EndpointApiCreator;
-import com.aroundme.common.MyCallback;
+import com.aroundme.common.IAppCallBack;
 
 public class Controller {
 	
-	private MyCallback callback;
+	private static Controller instance;
 	private Aroundmeapi endpoint;
 	private User user;
 	
-	public Controller(MyCallback listener) {
-		callback = listener;
+	public Controller() {
 		try {
 			endpoint = EndpointApiCreator.getApi(Aroundmeapi.class);
 		} catch (Exception e) {
@@ -22,7 +21,13 @@ public class Controller {
 		}
 	}
 
-	public void login(final String email, final String pass, final String regId) {
+	public static Controller getInstance() {
+		if(instance ==  null)
+			instance = new Controller();
+		return instance;
+	}
+	
+	public void login(final String email, final String pass, final String regId,final IAppCallBack<User> callback) {
 		
 		new  AsyncTask<Void, Void, Void>() {
 			@Override
@@ -42,13 +47,14 @@ public class Controller {
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
 				// call callback
-				callback.loginCallback(user);
+				if(callback!=null)
+					callback.done(user, null);
 			}
 
 		}.execute();
 	}
 
-	public void register(final User user) {
+	public void register(final User user,final IAppCallBack<User> callback) {
 		
 		new  AsyncTask<Void, Void, Void>() {
 			@Override
@@ -68,10 +74,26 @@ public class Controller {
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
 				// call callback
-				callback.registerCallback(user);
+				if(callback!=null)
+					callback.done(user, null);
 			}
 
 		}.execute();
 	}
+	/*
+	public void getAllUsersAroundMe(int rad,IAppCallBack<List<UserAroundMe>> callback)
+	{
+		Aroundmeapi api;
+		try {
+			api = EndpointApiCreator.getApi(Aroundmeapi.class);
+			UserAroundMeCollection ret = api.getUsersAroundMe(0f, 0f, rad, "cadan").execute();
+			if(callback!=null)
+				callback.done(ret.getItems(), null);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}*/
 	
 }
