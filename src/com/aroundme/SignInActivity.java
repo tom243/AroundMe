@@ -213,18 +213,3 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	}
 
 }
-
-
-
-/*	controller.getAllUsersAroundMe(10, new IAppCallBack<List<UserAroundMe>>() {
-
-@Override
-public void done(List<UserAroundMe> ret, Exception e) {
-	if(e==null)
-	{
-		
-	}
-	
-}
-});*/
-

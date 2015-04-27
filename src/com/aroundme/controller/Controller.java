@@ -1,9 +1,15 @@
 package com.aroundme.controller;
 
 import java.io.IOException;
+import java.util.List;
+
 import android.os.AsyncTask;
+
 import com.appspot.enhanced_cable_88320.aroundmeapi.Aroundmeapi;
+import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.User;
+import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
+import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMeCollection;
 import com.aroundme.EndpointApiCreator;
 import com.aroundme.common.IAppCallBack;
 
@@ -11,7 +17,7 @@ public class Controller {
 	
 	private static Controller instance;
 	private Aroundmeapi endpoint;
-	private User user;
+	private User currentUser;
 	
 	public Controller() {
 		try {
@@ -26,6 +32,10 @@ public class Controller {
 			instance = new Controller();
 		return instance;
 	}
+
+	public User getCurrentUser() {
+		return currentUser;
+	}
 	
 	public void login(final String email, final String pass, final String regId,final IAppCallBack<User> callback) {
 		
@@ -33,7 +43,7 @@ public class Controller {
 			@Override
 			protected Void doInBackground(Void... params) {
 				try {
-					user = endpoint.login(email,pass,regId).execute();
+					currentUser = endpoint.login(email,pass,regId).execute();
 				}
 				catch (IOException e) {
 					e.printStackTrace();
@@ -48,7 +58,7 @@ public class Controller {
 				super.onPostExecute(result);
 				// call callback
 				if(callback!=null)
-					callback.done(user, null);
+					callback.done(currentUser, null);
 			}
 
 		}.execute();
@@ -80,20 +90,36 @@ public class Controller {
 
 		}.execute();
 	}
-	/*
-	public void getAllUsersAroundMe(int rad,IAppCallBack<List<UserAroundMe>> callback)
-	{
-		Aroundmeapi api;
-		try {
-			api = EndpointApiCreator.getApi(Aroundmeapi.class);
-			UserAroundMeCollection ret = api.getUsersAroundMe(0f, 0f, rad, "cadan").execute();
-			if(callback!=null)
-				callback.done(ret.getItems(), null);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	
+	public void getUsersAroundMe(final int rad,final GeoPt geo,final IAppCallBack<List<UserAroundMe>> callback) {
+		
+		new  AsyncTask<Void, Void, UserAroundMeCollection>() {
+			@Override
+			protected UserAroundMeCollection doInBackground(Void... params) {
+				UserAroundMeCollection users = null;
+				try {
+					// report the current user location
+					endpoint.reportUserLocation(currentUser.getMail(), geo).execute();
+					// get all users around me
+					users = endpoint.getUsersAroundMe(geo.getLatitude(), geo.getLongitude(), rad, currentUser.getMail()).execute();
+				}
+				catch (IOException e) {
+					e.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return users;
+			}
+		
+			@Override
+			protected void onPostExecute(UserAroundMeCollection users) {
+				super.onPostExecute(users);
+				// call callback
+				if(callback!=null)
+					callback.done(users.getItems(), null);
+			}
 
-	}*/
+		}.execute();
+	}
 	
 }
