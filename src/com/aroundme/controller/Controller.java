@@ -2,9 +2,7 @@ package com.aroundme.controller;
 
 import java.io.IOException;
 import java.util.List;
-
 import android.os.AsyncTask;
-
 import com.appspot.enhanced_cable_88320.aroundmeapi.Aroundmeapi;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.User;
@@ -117,9 +115,48 @@ public class Controller {
 				// call callback
 				if(callback!=null)
 					callback.done(users.getItems(), null);
+				//getImagesUsersAroundMe(users.getItems(),callback);
 			}
 
 		}.execute();
 	}
+
+/*	
+	public void getImagesUsersAroundMe(final List<UserAroundMe> users,final IAppCallBack<ArrayList<BitmapDescriptor>> callback) {
+		
+		new  AsyncTask<Void, Void,ArrayList<BitmapDescriptor>>() {
+			@Override
+			protected ArrayList<BitmapDescriptor> doInBackground(Void... params) {
+		 	   ArrayList<BitmapDescriptor> imagesArr = null;
+		       try {
+		    	   for(int i=0; i<users.size(); i++) {
+			            URL url = new URL(users.get(i).getImageUrl());
+			            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			            connection.setDoInput(true);
+			            connection.connect();
+			            InputStream input = connection.getInputStream();
+			            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+			            imagesArr.add(BitmapDescriptorFactory.fromBitmap(myBitmap));
+		    	   }
+		        } catch (IOException e) {
+		            // Log exception
+		            return null;
+		        }
+		       return imagesArr;
+			}
+			
+			@Override
+			protected void onPostExecute(ArrayList<BitmapDescriptor> imagesArr) {
+				super.onPostExecute(imagesArr);
+				// call callback
+				if(callback!=null)
+					callback.done(imagesArr, null);
+			}
+
+		}.execute();
+	}
+*/	
+	
+	
 	
 }
