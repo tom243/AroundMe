@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
 import com.aroundme.common.AppConsts;
 import com.aroundme.common.IAppCallBack;
+import com.aroundme.common.IAppCallBack2;
 import com.aroundme.controller.Controller;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -37,12 +39,13 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements OnMapReadyCallback,IAppCallBack<List<UserAroundMe>>,
-								ConnectionCallbacks, OnConnectionFailedListener{
+				IAppCallBack2<ArrayList<BitmapDescriptor>>,ConnectionCallbacks, OnConnectionFailedListener{
 
 	GoogleApiClient mGoogleApiClient;
 	Controller controller;
 	GoogleMap myMap = null;
 	ArrayList<Marker> markers = null;
+	List<UserAroundMe> usersAroundMe= null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -109,10 +112,6 @@ public class MainActivity extends Activity implements OnMapReadyCallback,IAppCal
 	        	.tilt(40)                   // Sets the tilt of the camera to 30 degrees
 	        	.build();                   // Creates a CameraPosition from the builder
 	        myMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-	     /*   myMap.addMarker(new MarkerOptions()
-				.position(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))
-				.title(controller.getCurrentUser().getFullName()));
-	        System.out.println("NAME: "+controller.getCurrentUser().getFullName());*/
 	        controller.getUsersAroundMe(AppConsts.radius_around_me, geo, this);
         }
 	}
@@ -120,71 +119,9 @@ public class MainActivity extends Activity implements OnMapReadyCallback,IAppCal
 	@Override
 	public void done(final List<UserAroundMe> users, Exception e) {
 		if(e == null) {
-			new  AsyncTask<Void, Void,ArrayList<BitmapDescriptor>>() {
-				@Override
-				protected ArrayList<BitmapDescriptor> doInBackground(Void... params) {
-			 	   ArrayList<BitmapDescriptor> imagesArr = new ArrayList<BitmapDescriptor>(users.size());
-			       try {
-			    	   for(int i=0; i<users.size(); i++) {
-				            URL url = new URL(users.get(i).getImageUrl());
-				            Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-				            imagesArr.add(i,BitmapDescriptorFactory.fromBitmap(bmp));
-			    	   }
-			        } catch (IOException e) {
-			            // Log exception
-			            return null;
-			        }
-			       return imagesArr;
-				}
-			@Override
-			protected void onPostExecute(ArrayList<BitmapDescriptor> imagesArr) {
-			super.onPostExecute(imagesArr);
-				Marker marker = null; 
-				for (int i=0; i<users.size(); i++) {
-					marker = myMap.addMarker(new MarkerOptions()
-		    			.position(new LatLng(users.get(i).getLocation().getLatitude(), users.get(i).getLocation().getLongitude()))
-		    			.title(users.get(i).getDisplayName())
-		    			.icon(imagesArr.get(i)));
-					marker.setDraggable(true);
-					if (markers != null && !markers.contains(marker))
-						markers.add(marker);
-				}
-			   myMap.setOnMapLongClickListener(new OnMapLongClickListener() {
-		            @Override
-		            public void onMapLongClick(LatLng latLng) {
-		              //  for(Marker marker : markers) {
-		              //      if(Math.abs(marker.getPosition().latitude - latLng.latitude) < 0.05 && Math.abs(marker.getPosition().longitude - latLng.longitude) < 0.05) {
-		                        Toast.makeText(getApplicationContext(), "got long clicked", Toast.LENGTH_SHORT).show(); //do some stuff
-		              //          break;
-		              //      }
-		              //  }
-		            }
-		        });
-			   /*
-				myMap.setOnMarkerDragListener(new OnMarkerDragListener() {
-
-			        @Override
-			        public void onMarkerDragStart(Marker marker) {
-			            // TODO Auto-generated method stub
-			            //Here your code
-			        }
-
-			        @Override
-			        public void onMarkerDragEnd(Marker marker) {
-			            // TODO Auto-generated method stub
-
-			        }
-
-			        @Override
-			        public void onMarkerDrag(Marker marker) {
-			            // TODO Auto-generated method stub
-
-			        }
-			    });
-			    */
-			}
-		  }.execute();
-	   }
+			controller.getImagesUsersAroundMe(users, this);
+			usersAroundMe = users;
+		}
 		else
 			; // error
 	}
@@ -207,4 +144,18 @@ public class MainActivity extends Activity implements OnMapReadyCallback,IAppCal
         mGoogleApiClient.disconnect();
         super.onStop();
     }
+
+	@Override
+	public void done2(ArrayList<BitmapDescriptor> imagesArr, Exception e) {
+		Marker marker = null; 
+		for (int i=0; i<usersAroundMe.size(); i++) {
+			marker = myMap.addMarker(new MarkerOptions()
+    			.position(new LatLng(usersAroundMe.get(i).getLocation().getLatitude(), usersAroundMe.get(i).getLocation().getLongitude()))
+    			.title(usersAroundMe.get(i).getDisplayName())
+    			.icon(imagesArr.get(i)));
+			marker.setDraggable(true);
+			if (markers != null && !markers.contains(marker))
+				markers.add(marker);
+		}
+	}
 }
