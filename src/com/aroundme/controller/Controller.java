@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.graphics.Bitmap;
@@ -22,6 +23,7 @@ import com.aroundme.common.IAppCallBack;
 import com.aroundme.common.IAppCallBack2;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.api.client.util.DateTime;
 
 public class Controller {
 	
@@ -132,7 +134,35 @@ public class Controller {
 
 		}.execute();
 	}
+	
+	public void getAllUsers(final IAppCallBack<List<UserAroundMe>> callback) {
+		
+		new  AsyncTask<Void, Void, UserAroundMeCollection>() {
+			@Override
+			protected UserAroundMeCollection doInBackground(Void... params) {
+				UserAroundMeCollection allUsers = null;
+				try {
+					// get all users
+					allUsers = endpoint.getAllUsers(currentUser.getMail()).execute();
+				}
+				catch (IOException e) {
+					e.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return allUsers;
+			}
+		
+			@Override
+			protected void onPostExecute(UserAroundMeCollection users) {
+				super.onPostExecute(users);
+				// call callback
+				if(callback!=null)
+					;//callback.done(users.getItems(), null);
+			}
 
+		}.execute();
+	}
 
 	public void getImagesUsersAroundMe(final List<UserAroundMe> users,final IAppCallBack2<ArrayList<BitmapDescriptor>> callback) {
 		
@@ -167,7 +197,7 @@ public class Controller {
 		}.execute();
 	}
 
-	public void sendMessageAllUsers() {
+	public void sendMessageToUser() {
 		
 		new  AsyncTask<Void, Void, Void>(){
 			@Override
@@ -177,6 +207,7 @@ public class Controller {
 					message.setContnet("Hi Im Chen! :)");
 					message.setFrom("tomer.luster@gmail.com");
 					message.setTo("cadan85@gmail.com");
+					message.setTimestamp(new DateTime(new Date()));
 					endpoint.sendMessage(message).execute();
 				} catch (IOException e) {
 					e.printStackTrace();

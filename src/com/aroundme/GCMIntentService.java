@@ -1,6 +1,8 @@
 package com.aroundme;
 
+import java.io.IOException;
 import java.util.Stack;
+
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -11,6 +13,9 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+
+import com.appspot.enhanced_cable_88320.aroundmeapi.Aroundmeapi;
+import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 public class GCMIntentService extends IntentService
@@ -77,6 +82,20 @@ public class GCMIntentService extends IntentService
                 // Post notification of received message.
                 sendNotification("Received: " + extras.toString());
                 Log.i("GCMIntentService", "Received: " + extras.toString());
+                String mId = intent.getStringExtra("newMessage");
+                if(mId!=null)
+                {
+                	try {
+                    	Aroundmeapi api = EndpointApiCreator.getApi(Aroundmeapi.class);
+						Message m = api.getMessage(Long.parseLong(mId)).execute();
+						sendNotification(m.getContnet());
+					} catch (NumberFormatException e) {
+						e.printStackTrace();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+                }
+                
             }
         }
         // Release the wake lock provided by the WakefulBroadcastReceiver.

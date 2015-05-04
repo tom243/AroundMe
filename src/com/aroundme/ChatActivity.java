@@ -19,7 +19,7 @@ public class ChatActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat);
 		controller = Controller.getInstance();
-		controller.sendMessageAllUsers();
+		controller.sendMessageToUser();
 		//TextView tv = (TextView)findViewById(R.id.chatMessage);
 		/*try {
 			api = EndpointApiCreator.getApi(Aroundmeapi.class);
