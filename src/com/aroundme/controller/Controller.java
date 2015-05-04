@@ -13,6 +13,7 @@ import android.os.AsyncTask;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.Aroundmeapi;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
+import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.User;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMeCollection;
@@ -164,5 +165,34 @@ public class Controller {
 			}
 
 		}.execute();
-	}	
+	}
+
+	public void sendMessageAllUsers() {
+		
+		new  AsyncTask<Void, Void, Void>(){
+			@Override
+			protected Void doInBackground(Void... params) {
+				try {
+					Message message = new Message();
+					message.setContnet("Hi Im Chen! :)");
+					message.setFrom("tomer.luster@gmail.com");
+					message.setTo("cadan85@gmail.com");
+					endpoint.sendMessage(message).execute();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				return null;
+			}			
+			@Override
+			protected void onPostExecute(Void result) {
+				super.onPostExecute(result);
+				// call callback
+				//if(callback!=null)
+				//	callback.done2(imagesArr, null);
+				System.out.println("End async task of send messages!");
+			}
+
+		}.execute();
+	}
+	
 }
