@@ -16,5 +16,17 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>
     <string name="title_activity_conversation">ConversationActivity</string>
-
+     
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="pink">#FF66CC</color>
+    <color name="lightBlue">#00CCFF</color>
+    <color name="banana">#FFFFCC</color>
+    <color name="darkGrey">#505050</color>
+    <color name="ddarkGrey">#303030</color>
+    <color name="green">#51FFBD</color>
+    <color name="darkBlue">#000067</color>
+    <color name="BrightBlue">#4099FF</color>
+    <color name="White">#4099FF</color>
+    
 </resources>

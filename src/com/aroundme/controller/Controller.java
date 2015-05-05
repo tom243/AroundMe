@@ -158,7 +158,7 @@ public class Controller {
 				super.onPostExecute(users);
 				// call callback
 				if(callback!=null)
-					;//callback.done(users.getItems(), null);
+					callback.done(users.getItems(), null);
 			}
 
 		}.execute();

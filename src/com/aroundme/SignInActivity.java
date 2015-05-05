@@ -180,7 +180,7 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 		// Move to MainActivity
 		
 		//Intent intent = new Intent(this, MainActivity.class);
-		Intent intent = new Intent(this, ConversationActivity.class);
+		Intent intent = new Intent(this, ChatActivity.class);
 		//intent.putExtra("regid",regid);
 		startActivity(intent);
 		/* Since this is just a wrapper to start the main activity, finish it after launching SignInActivity */
