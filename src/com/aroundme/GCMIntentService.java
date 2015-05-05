@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.Aroundmeapi;
@@ -89,6 +90,11 @@ public class GCMIntentService extends IntentService
                     	Aroundmeapi api = EndpointApiCreator.getApi(Aroundmeapi.class);
 						Message m = api.getMessage(Long.parseLong(mId)).execute();
 						sendNotification(m.getContnet());
+						Intent chatIntent = new Intent("chatMessage");
+						chatIntent.putExtra("message", m.getContnet());
+						chatIntent.putExtra("from", m.getFrom());
+						chatIntent.putExtra("time", m.getTimestamp());
+					    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(chatIntent);
 					} catch (NumberFormatException e) {
 						e.printStackTrace();
 					} catch (Exception e) {
@@ -103,6 +109,7 @@ public class GCMIntentService extends IntentService
         GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
 	
+		
 	// Put the message into a notification and post it.
     // This is just one simple example of what you might choose to do with
     // a GCM message.

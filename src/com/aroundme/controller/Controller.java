@@ -206,7 +206,7 @@ public class Controller {
 					Message message = new Message();
 					message.setContnet("Hi Im Chen! :)");
 					message.setFrom("tomer.luster@gmail.com");
-					message.setTo("cadan85@gmail.com");
+					message.setTo("tomer.luster@gmail.com");
 					message.setTimestamp(new DateTime(new Date()));
 					endpoint.sendMessage(message).execute();
 				} catch (IOException e) {
