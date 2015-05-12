@@ -28,5 +28,8 @@
     <color name="darkBlue">#000067</color>
     <color name="BrightBlue">#4099FF</color>
     <color name="White">#4099FF</color>
+    <color name="ColorPrimary">#000000</color>
+    <color name="ColorPrimaryDark">#00004c</color>
+    <color name="tabsScrollColor">#8a140e</color>
     
 </resources>

@@ -64,7 +64,7 @@ public class ChatActivity extends ListActivity implements IAppCallBack<List<User
         //registerReceiver(broadcastReceiver, new IntentFilter("com.javapapers.android.gcm.chat.userlist"));
         //gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("chatMessage"));
-        controller.getAllUsers(this);
+        //controller.getAllUsersFromServer(this);
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
@@ -120,7 +120,6 @@ public class ChatActivity extends ListActivity implements IAppCallBack<List<User
         Intent i = new Intent(getApplicationContext(), ConversationActivity.class);
         i.putExtra("TOUSER",itemValue);
         startActivity(i);
-        finish();
     }
 
     @Override

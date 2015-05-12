@@ -6,6 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import android.graphics.Bitmap;
@@ -30,8 +31,11 @@ public class Controller {
 	private static Controller instance;
 	private Aroundmeapi endpoint;
 	private User currentUser;
+	private HashMap<String, UserAroundMe> allUsers = null;
+
 	
 	public Controller() {
+		allUsers = new HashMap<String, UserAroundMe>();
 		try {
 			endpoint = EndpointApiCreator.getApi(Aroundmeapi.class);
 		} catch (Exception e) {
@@ -48,7 +52,11 @@ public class Controller {
 	public User getCurrentUser() {
 		return currentUser;
 	}
-	
+
+	public HashMap<String, UserAroundMe> getAllUsers() {
+		return allUsers;
+	}
+
 	public void login(final String email, final String pass, final String regId,final IAppCallBack<User> callback) {
 		
 		new  AsyncTask<Void, Void, Void>() {
@@ -135,7 +143,7 @@ public class Controller {
 		}.execute();
 	}
 	
-	public void getAllUsers(final IAppCallBack<List<UserAroundMe>> callback) {
+	public void getAllUsersFromServer(final IAppCallBack<List<UserAroundMe>> callback) {
 		
 		new  AsyncTask<Void, Void, UserAroundMeCollection>() {
 			@Override
@@ -156,6 +164,9 @@ public class Controller {
 			@Override
 			protected void onPostExecute(UserAroundMeCollection users) {
 				super.onPostExecute(users);
+				// update all-users hash map
+				for (UserAroundMe user : users.getItems()) 
+					allUsers.put(user.getMail(),user);
 				// call callback
 				if(callback!=null)
 					callback.done(users.getItems(), null);
