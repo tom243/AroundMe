@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.Aroundmeapi;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
+import com.aroundme.common.AppConsts;
 import com.aroundme.common.IAppCallBack;
 import com.aroundme.common.IAppCallBack2;
 import com.aroundme.controller.Controller;
@@ -52,9 +53,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class Tab1 extends ListFragment implements OnItemClickListener, IAppCallBack<List<UserAroundMe>>{
+public class UsersTab extends ListFragment implements OnItemClickListener, IAppCallBack<List<UserAroundMe>>{
 
-	private static final String TAG = "ChatActivity";
 	private TextView content;
 	private Button refreshButton;
 	private Intent intent;
@@ -66,29 +66,41 @@ public class Tab1 extends ListFragment implements OnItemClickListener, IAppCallB
 
 	private String[] menutitles;
 	private TypedArray menuIcons;
-
 	private CustomUsersAdapter adapter;
 	private List<UserItem> rowItems;
-	private HashMap<String, UserAroundMe> allUsers;
+//	private HashMap<String, UserAroundMe> allUsers;
+	private List<UserAroundMe> allUsers;
 
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.ListFragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
+	 */
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.tab_1, container, false);
-		System.out.println("BOOOOOOOOOOOOOOOOOOOOOOOOO Tab1");
-		controller = Controller.getInstance();
-	    context = inflater.getContext();
-	    allUsers = controller.getAllUsers(); // not going to server
-	    if (allUsers.isEmpty()) {
-	    	controller.getAllUsersFromServer(this);
-	    }
-        return view;//super.onCreateView(inflater, container, savedInstanceState);
+		context = inflater.getContext();
+		return inflater.inflate(R.layout.users_tab, container, false);
     }
-	 
+
 	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position,
-			long id) {
-		 Toast.makeText(getActivity(), menutitles[position], Toast.LENGTH_SHORT)
-         .show();
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		controller = Controller.getInstance();
+	    allUsers = controller.getAllUsersList(); // not going to server
+	    if (allUsers.isEmpty())
+	    	controller.getAllUsersFromServer(this);
+	    else
+			updateUsersList();
+		super.onViewCreated(view, savedInstanceState);
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		 //Toast.makeText(getActivity(), menutitles[position], Toast.LENGTH_SHORT).show();
+	     // ListView Clicked item value
+	     String friendMail = allUsers.get(position).getMail();
+	     Toast.makeText(getActivity(), friendMail , Toast.LENGTH_SHORT).show();
+	     
+		 Intent i = new Intent(getActivity(), ConversationActivity.class);
+	     i.putExtra(AppConsts.email_friend,friendMail);
+	     startActivity(i);
 	}
 
     @Override
@@ -100,16 +112,20 @@ public class Tab1 extends ListFragment implements OnItemClickListener, IAppCallB
 	@Override
 	public void done(List<UserAroundMe> ret, Exception e) {
 	   	for (UserAroundMe user : ret) 
-			allUsers.put(user.getMail(),user);
+			allUsers.add(user);
 	   	
-        menutitles = new String[ret.size()];
-        for (int i=0; i< ret.size(); i++) {
-        	menutitles[i] = ret.get(i).getDisplayName();
-        }
-        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(inflater.getContext(), android.R.layout.simple_list_item_1,countries);
-//		ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_list_item_1, menutitles);
-//	    setListAdapter(adapter);
+	   	updateUsersList();
+	}
+	
+	public void updateUsersList() {
 
+		menutitles = new String[allUsers.size()];
+        for (int i=0; i< allUsers.size(); i++) {
+        	menutitles[i] = allUsers.get(i).getDisplayName();
+        }
+/*		ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_list_item_1, menutitles);
+	    setListAdapter(adapter);
+*/
         rowItems = new ArrayList<UserItem>();
 
         for (int i = 0; i < menutitles.length; i++) {
@@ -119,9 +135,10 @@ public class Tab1 extends ListFragment implements OnItemClickListener, IAppCallB
 
         adapter = new CustomUsersAdapter(getActivity(), rowItems);
         setListAdapter(adapter);
-        getListView().setOnItemClickListener(this);
-      
-        adapter.notifyDataSetChanged();
+	    
+	    getListView().setOnItemClickListener(this);
+//        adapter.notifyDataSetChanged();
+		
 	}
-
+	
 }

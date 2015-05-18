@@ -4,5 +4,7 @@ public class AppConsts {
 
 	public static final int radius_around_me = 5000;
 	
+	public static final String email_friend = "email_friend";
+	
 }
 

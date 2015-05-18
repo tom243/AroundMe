@@ -33,9 +33,11 @@ public class Controller {
 	private User currentUser;
 	private HashMap<String, UserAroundMe> allUsers = null;
 
+	private List<UserAroundMe> allUsersList = null;
 	
 	public Controller() {
 		allUsers = new HashMap<String, UserAroundMe>();
+		allUsersList = new ArrayList<UserAroundMe>();
 		try {
 			endpoint = EndpointApiCreator.getApi(Aroundmeapi.class);
 		} catch (Exception e) {
@@ -55,6 +57,10 @@ public class Controller {
 
 	public HashMap<String, UserAroundMe> getAllUsers() {
 		return allUsers;
+	}
+	
+	public List<UserAroundMe> getAllUsersList() {
+		return allUsersList;
 	}
 
 	public void login(final String email, final String pass, final String regId,final IAppCallBack<User> callback) {
@@ -167,6 +173,9 @@ public class Controller {
 				// update all-users hash map
 				for (UserAroundMe user : users.getItems()) 
 					allUsers.put(user.getMail(),user);
+				
+				allUsersList = users.getItems();		// delete this or the 2 lines above 
+				
 				// call callback
 				if(callback!=null)
 					callback.done(users.getItems(), null);
@@ -208,16 +217,16 @@ public class Controller {
 		}.execute();
 	}
 
-	public void sendMessageToUser() {
+	public void sendMessageToUser(final String content,final String to,final IAppCallBack<Void> callback) {
 		
 		new  AsyncTask<Void, Void, Void>(){
 			@Override
 			protected Void doInBackground(Void... params) {
 				try {
 					Message message = new Message();
-					message.setContnet("Hi Im Chen! :)");
-					message.setFrom("tomer.luster@gmail.com");
-					message.setTo("tomer.luster@gmail.com");
+					message.setContnet(content);
+					message.setFrom(currentUser.getMail());
+					message.setTo(to);
 					message.setTimestamp(new DateTime(new Date()));
 					endpoint.sendMessage(message).execute();
 				} catch (IOException e) {
@@ -229,9 +238,10 @@ public class Controller {
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
 				// call callback
-				//if(callback!=null)
-				//	callback.done2(imagesArr, null);
+				if(callback!=null)
+					callback.done(null,null);
 				System.out.println("End async task of send messages!");
+				
 			}
 
 		}.execute();

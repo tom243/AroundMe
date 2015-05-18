@@ -44,7 +44,7 @@ public class CustomUsersAdapter extends BaseAdapter {
         if (convertView == null) {
             LayoutInflater mInflater = (LayoutInflater) context
                     .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-            convertView = mInflater.inflate(R.layout.tab_1, null);
+            convertView = mInflater.inflate(R.layout.users_list_item, null);
         }
 
 //        ImageView imgIcon = (ImageView) convertView.findViewById(R.id.icon);

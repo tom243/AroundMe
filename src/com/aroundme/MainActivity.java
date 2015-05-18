@@ -1,12 +1,6 @@
 package com.aroundme;
 
-import java.util.List;
-
-import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
-import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMeCollection;
-import com.aroundme.common.IAppCallBack;
 import com.aroundme.controller.Controller;
-
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
