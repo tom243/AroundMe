@@ -1,6 +1,9 @@
 package com.aroundme;
 
 import java.util.List;
+
+import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
+
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -13,29 +16,29 @@ import android.widget.TextView;
 public class CustomUsersAdapter extends BaseAdapter {
 
     Context context;
-    List<UserItem> rowItem;
+    List<UserAroundMe> users;
 
-    CustomUsersAdapter(Context context, List<UserItem> rowItem) {
+    CustomUsersAdapter(Context context, List<UserAroundMe> users) {
         this.context = context;
-        this.rowItem = rowItem;
+        this.users = users;
     }
 
     @Override
     public int getCount() {
 
-        return rowItem.size();
+        return users.size();
     }
 
     @Override
     public Object getItem(int position) {
 
-        return rowItem.get(position);
+        return users.get(position);
     }
 
     @Override
     public long getItemId(int position) {
 
-        return rowItem.indexOf(getItem(position));
+        return users.indexOf(getItem(position));
     }
 
     @Override
@@ -47,13 +50,9 @@ public class CustomUsersAdapter extends BaseAdapter {
             convertView = mInflater.inflate(R.layout.users_list_item, null);
         }
 
-//        ImageView imgIcon = (ImageView) convertView.findViewById(R.id.icon);
-        TextView txtTitle = (TextView) convertView.findViewById(R.id.title);
-
-        UserItem row_pos = rowItem.get(position);
-        // setting the image resource and title
-//        imgIcon.setImageResource(row_pos.getIcon());
-        txtTitle.setText(row_pos.getTitle());
+        TextView txtTitle = (TextView) convertView.findViewById(R.id.userName);
+        UserAroundMe row_pos = users.get(position);
+        txtTitle.setText(row_pos.getDisplayName());
 
         return convertView;
 

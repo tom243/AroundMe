@@ -2,6 +2,7 @@ package com.aroundme.data;
 
 import java.util.ArrayList;
 
+import com.aroundme.ConversationItem;
 import com.aroundme.UserItem;
 
 import android.database.SQLException;
@@ -27,8 +28,16 @@ public interface IDataAccess {
 	 * the function retruns the list from the data base 
 	 * @return the list form the data base 
 	 */
-	ArrayList<UserItem> getAllOpenConversationsList(String currentUserMail);
+	ArrayList<ConversationItem> getAllOpenConversationsList(String currentUserMail);
 
+	public boolean isConversationExist(String userMail,String friendMail);
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * add task to the data base 
 	 * @param task the task we want to add to the data base 

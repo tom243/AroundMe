@@ -1,6 +1,7 @@
 package com.aroundme;
 
 import java.io.IOException;
+import java.util.ResourceBundle.Control;
 import java.util.Stack;
 
 import android.app.IntentService;
@@ -17,6 +18,8 @@ import android.util.Log;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.Aroundmeapi;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
+import com.aroundme.controller.Controller;
+import com.aroundme.data.DAO;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 public class GCMIntentService extends IntentService
@@ -29,6 +32,9 @@ public class GCMIntentService extends IntentService
 	private static Stack<String> msgStack;
 
 	private Boolean alreadySignedIn;
+	
+	private DAO dao;
+	private Controller controller;
 
 	/*
 	 * TODO: Set this to a valid project number. See
@@ -42,14 +48,9 @@ public class GCMIntentService extends IntentService
 	public GCMIntentService()
 	{
 		super("GCMIntentService");
-/*		endpoint = EndpointApiCreator
-				.<Deviceinfoendpoint> getApi(Deviceinfoendpoint.class);
-		wuep = EndpointApiCreator
-				.<Wannameetuserendpoint> getApi(Wannameetuserendpoint.class);
-		mmep = EndpointApiCreator
-				.<MeetingMatchingEndpoint> getApi(MeetingMatchingEndpoint.class);
-*/		msgStack = new Stack<String>();
-
+		msgStack = new Stack<String>();
+		dao = DAO.getInstance(getApplicationContext());
+		controller = Controller.getInstance();
 	}
 	
 	@Override
@@ -90,6 +91,26 @@ public class GCMIntentService extends IntentService
                     	Aroundmeapi api = EndpointApiCreator.getApi(Aroundmeapi.class);
 						Message m = api.getMessage(Long.parseLong(mId)).execute();
 						sendNotification(m.getContnet());
+						// insert to conversation table
+						dao.open();
+						if (dao.isConversationExist(controller.getCurrentUser().getMail(), m.getFrom())) {
+							// insert message to messages table
+							
+							// update last message and counter unread messages to conversations table
+							
+						}
+						else {
+							// insert message to messages table
+							
+							// insert new conversation to conversations table
+							
+						}
+						dao.close();
+						
+						
+						// insert message to the db with DAO object
+						
+						//send intent with the id from the insert query
 						Intent chatIntent = new Intent("chatMessage");
 						chatIntent.putExtra("message", m.getContnet());
 						chatIntent.putExtra("from", m.getFrom());

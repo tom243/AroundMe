@@ -31,8 +31,8 @@ public class Controller {
 	private static Controller instance;
 	private Aroundmeapi endpoint;
 	private User currentUser;
+	
 	private HashMap<String, UserAroundMe> allUsers = null;
-
 	private List<UserAroundMe> allUsersList = null;
 	
 	public Controller() {
@@ -245,6 +245,10 @@ public class Controller {
 			}
 
 		}.execute();
+	}
+	
+	public String getUserNameByMail(String mail) {
+		return allUsers.get(mail).getDisplayName();
 	}
 	
 }

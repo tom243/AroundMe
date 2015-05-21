@@ -1,6 +1,5 @@
 package com.aroundme;
 
-import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.aroundme.common.AppConsts;
 import com.aroundme.common.IAppCallBack;
 import com.aroundme.controller.Controller;
@@ -17,7 +16,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
 import android.widget.AbsListView;
-import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -87,8 +85,8 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
 	        String from = intent.getStringExtra("from");
 	        String time = intent.getStringExtra("time");
 	        if (from.equals(myFriendMail)) {
+	        	 side = true;
 	        	 chatArrayAdapter.add(new ChatMessage(side, message));
-	        	 side = !side;
 	        }
 	        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
 	        //  ... react to local broadcast message
@@ -96,17 +94,20 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
 	};
 
     private boolean sendChatMessage(){
-    	controller.sendMessageToUser(chatText.getText().toString(),myFriendMail,this);
-    	return true;
+    	if (!chatText.getText().toString().isEmpty()) {
+    		controller.sendMessageToUser(chatText.getText().toString(),myFriendMail,this);
+    		return true;
+    	}
+    	return false;
     }
 
 	@Override
 	public void done(Void ret, Exception e) {
 		if (e==null) {
 			String text = chatText.getText().toString();
+			side = false;
 			chatArrayAdapter.add(new ChatMessage(side, chatText.getText().toString()));
 			chatText.setText("");
-			side = !side;
 		}
 	}
 

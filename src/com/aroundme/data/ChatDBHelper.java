@@ -32,6 +32,7 @@ public class ChatDBHelper extends SQLiteOpenHelper{
 				+ "UNIQUE(" + ConversationsEntry.COLUMN_USER_MAIL+","+ConversationsEntry.COLUMN_FRIEND_MAIL+"))";
 		
 		db.execSQL(SQL_CREATE_CONVERSATIONS_TABLE);
+		System.out.println("table chat was created.");
 		
 		final String SQL_CREATE_MESSAGES_TABLE = "CREATE TABLE "
 				+ MessagesEntry.TABLE_NAME + " (" 
@@ -40,9 +41,9 @@ public class ChatDBHelper extends SQLiteOpenHelper{
 				+ MessagesEntry.COLUMN_FROM + " TEXT NOT NULL,"
 				+ MessagesEntry.COLUMN_TO + " TEXT NOT NULL,"
 				+ MessagesEntry.COLUMN_TIME_STAMP+ " LONG,"
-				+ MessagesEntry.COLUMN_LAT+ " LONG,"
-				+ MessagesEntry.COLUMN_LONG+ " LONG,"
-				+ MessagesEntry.COLUMN_RADIUS+ " LONG)" ;
+				+ MessagesEntry.COLUMN_LAT + " LONG,"
+				+ MessagesEntry.COLUMN_LONG + " LONG,"
+				+ MessagesEntry.COLUMN_RADIUS + " LONG)" ;
 		
 		db.execSQL(SQL_CREATE_MESSAGES_TABLE);
 		
@@ -57,4 +58,19 @@ public class ChatDBHelper extends SQLiteOpenHelper{
 
 	}
 
+/*
+	final String SQL_CREATE_MESSAGES_TABLE = "CREATE TABLE "
+			+ MessagesEntry.TABLE_NAME + " (" 
+			+ MessagesEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+			+ MessagesEntry.COLUMN_CONTENT + " TEXT NOT NULL,"
+			+ MessagesEntry.COLUMN_FROM + " TEXT NOT NULL,"
+			+ MessagesEntry.COLUMN_TO + " TEXT NOT NULL,"
+			+ MessagesEntry.COLUMN_TIME_STAMP+ " LONG,"
+			+ MessagesEntry.COLUMN_LAT + " LONG,"
+			+ MessagesEntry.COLUMN_LONG + " LONG,"
+			+ MessagesEntry.COLUMN_RADIUS + " LONG)" ;
+	
+	db.execSQL(SQL_CREATE_MESSAGES_TABLE);
+	*/
+	
 }

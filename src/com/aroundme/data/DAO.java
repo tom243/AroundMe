@@ -1,10 +1,12 @@
 package com.aroundme.data;
 
 import java.util.ArrayList;
-import com.aroundme.UserItem;
+
+import com.aroundme.ConversationItem;
 import com.aroundme.data.ChatDbContract.ConversationsEntry;
 import com.aroundme.data.ChatDbContract.MessagesEntry;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -17,7 +19,6 @@ public class DAO implements IDataAccess{
 	private static DAO instance;
 	private Context context;
 	private ChatDBHelper dbHelper;
-	
 	
 	private String[] messagesColumns = { MessagesEntry._ID, MessagesEntry.COLUMN_CONTENT,
 			MessagesEntry.COLUMN_FROM,MessagesEntry.COLUMN_TO,MessagesEntry.COLUMN_TIME_STAMP, 
@@ -56,15 +57,58 @@ public class DAO implements IDataAccess{
 	}
 
 	@Override
-	public ArrayList<UserItem> getAllOpenConversationsList(String currentUserMail) {
-		ArrayList<UserItem> openConversations = new ArrayList<UserItem>();
-		db.rawQuery("SELECT " + ConversationsEntry.COLUMN_FRIEND_MAIL+ 
+	public ArrayList<ConversationItem> getAllOpenConversationsList(String currentUserMail) {
+		ArrayList<ConversationItem> openConversations = new ArrayList<ConversationItem>();
+		Cursor cursor = db.rawQuery("SELECT " + ConversationsEntry.COLUMN_USER_MAIL + "," +
+				ConversationsEntry.COLUMN_FRIEND_MAIL + "," + 
+				ConversationsEntry.COLUMN_COUNTER_UNREAD_MESSAGES + "," +
+				MessagesEntry.COLUMN_TIME_STAMP + "," + MessagesEntry.COLUMN_CONTENT +		
 				" FROM "+ ConversationsEntry.TABLE_NAME +  
 				" INNER JOIN " + MessagesEntry.TABLE_NAME +  
-				" ON " + ConversationsEntry.COLUMN_LAST_MESSAGE_ID + "=" + MessagesEntry._ID +   
+				" ON " + ConversationsEntry.COLUMN_LAST_MESSAGE_ID + "=" + MessagesEntry.TABLE_NAME +  
+				"." + MessagesEntry._ID +   
 				" WHERE " + ConversationsEntry.COLUMN_USER_MAIL + "=?" , new String[]{currentUserMail});
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			ConversationItem conv = cursorToConversationItem(cursor);
+			openConversations.add(conv);
+			cursor.moveToNext();
+		}
 		return openConversations;
 	}
+		
+	public ConversationItem cursorToConversationItem(Cursor cursor) {
+		ConversationItem conv = new ConversationItem();
+		conv.setUserMail(cursor.getString(cursor.getColumnIndex(ConversationsEntry.COLUMN_USER_MAIL)));
+		conv.setFriendMail(cursor.getString(cursor.getColumnIndex(ConversationsEntry.COLUMN_FRIEND_MAIL)));
+		conv.setUnreadMess(cursor.getInt(cursor.getColumnIndex(ConversationsEntry.COLUMN_COUNTER_UNREAD_MESSAGES)));
+		conv.setTimeStamp(cursor.getLong(cursor.getColumnIndex(MessagesEntry.COLUMN_TIME_STAMP)));
+		conv.setContentMess(cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_CONTENT)));
+		return conv;
+	}	
+	
+	public boolean isConversationExist(String userMail,String friendMail) {
+	/*	Cursor cursor = db.query(ConversationsEntry.TABLE_NAME, conversationsColumns, 
+				conversationsColumns[1] == userMail AND conversationsColumns[2] == friendMail
+				, null, null, null, null);
+	*/
+		Cursor cursor = db.rawQuery("SELECT * FROM " + ConversationsEntry.TABLE_NAME + 
+				" WHERE " + ConversationsEntry.COLUMN_USER_MAIL + "=? AND " + 
+				ConversationsEntry.COLUMN_FRIEND_MAIL + "=?" , new String[]{userMail,friendMail});
+		
+		if (cursor == null)
+			return false;
+		
+		return true;
+		
+		/*
+		 if (cursor.moveToFirst())
+		  	return true;
+		  return false;
+		 */
+		
+	}
+	
 /*
 	@Override
 	public ArrayList<Task> getTaskList() {
@@ -81,35 +125,7 @@ public class DAO implements IDataAccess{
 		return tasks;
 	}
 */
-	
-	/**
-	 * Create task object from the cursor.
-	 * @param cursor the cursor the received
-	 * @return the task we ask for 
-	 */
-/*	private Task cursorToTask(Cursor cursor) {
-		Task t = new Task();
-		t.setId(cursor.getInt(cursor.getColumnIndex(MessagesEntry._ID)));
-		Log.i("ID-TASK","IS :   "+cursor.getInt(cursor.getColumnIndex(MessagesEntry._ID)));
-		t.setItemDescription(cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_TASK_DESC)));
-		t.setCalendarInMillis(cursor.getLong(cursor.getColumnIndex(MessagesEntry.COLUMN_DateTime)));
-		t.setStatus(cursor.getInt(cursor.getColumnIndex(MessagesEntry.COLUMN_Status)));
-		if (cursor.getInt(cursor.getColumnIndex(MessagesEntry.COLUMN_Alarm))==1)
-			t.setAlarm(true);
-		else 
-			t.setAlarm(false);
-		if (cursor.getInt(cursor.getColumnIndex(MessagesEntry.COLUMN_Importance))==1)
-			t.setImportance(true);
-		else 
-			t.setImportance(false);
-		if (cursor.getInt(cursor.getColumnIndex(MessagesEntry.COLUMN_Geo))==1) {
-			t.setLocation(true);
-			t.setAddress(cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_Address)));
-		}else 
-			t.setLocation(false);
-		return t;
-	}
-*/
+
 	
 /*	@Override
 	public Task addTask(Task task) {

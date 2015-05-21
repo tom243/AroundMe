@@ -3,9 +3,12 @@ package com.aroundme;
 public class UserItem {
 
     private String title;
+    
 //    private int icon;
 
+    public UserItem() {}
 //    public UserItem(String title, int icon) {
+    
     public UserItem(String title) {
         this.title = title;
 //        this.icon = icon;

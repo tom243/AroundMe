@@ -29,8 +29,8 @@ public class ChatDbContract {
 		        
 		        // Column names
 		        public static final String COLUMN_CONTENT = "content";
-		        public static final String COLUMN_FROM = "from";
-		        public static final String COLUMN_TO = "to";
+		        public static final String COLUMN_FROM = "from_user";
+		        public static final String COLUMN_TO = "to_user";
 		        public static final String COLUMN_TIME_STAMP= "time_stamp";
 		        public static final String COLUMN_LAT = "latitude";
 		        public static final String COLUMN_LONG = "longtitude";
