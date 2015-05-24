@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -22,6 +23,8 @@ import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMeCollection
 import com.aroundme.EndpointApiCreator;
 import com.aroundme.common.IAppCallBack;
 import com.aroundme.common.IAppCallBack2;
+import com.aroundme.data.DAO;
+import com.aroundme.data.IDataAccess;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.api.client.util.DateTime;
@@ -31,7 +34,6 @@ public class Controller {
 	private static Controller instance;
 	private Aroundmeapi endpoint;
 	private User currentUser;
-	
 	private HashMap<String, UserAroundMe> allUsers = null;
 	private List<UserAroundMe> allUsersList = null;
 	
@@ -248,7 +250,9 @@ public class Controller {
 	}
 	
 	public String getUserNameByMail(String mail) {
-		return allUsers.get(mail).getDisplayName();
+		if (!allUsers.isEmpty())
+			return allUsers.get(mail).getDisplayName();
+		else return null;
 	}
 	
 }

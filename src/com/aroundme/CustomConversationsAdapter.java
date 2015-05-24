@@ -53,7 +53,10 @@ public class CustomConversationsAdapter extends BaseAdapter{
 
         TextView txtTitle = (TextView) convertView.findViewById(R.id.friendName);
         ConversationItem row_pos = conversations.get(position);
-        txtTitle.setText(controller.getUserNameByMail(row_pos.getFriendMail()));
+        String friendName = controller.getUserNameByMail(row_pos.getFriendMail());
+        if (friendName != null){
+        	txtTitle.setText(controller.getUserNameByMail(row_pos.getFriendMail()));
+        }
 
         return convertView;
 

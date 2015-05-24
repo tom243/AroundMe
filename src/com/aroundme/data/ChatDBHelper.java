@@ -73,4 +73,8 @@ public class ChatDBHelper extends SQLiteOpenHelper{
 	db.execSQL(SQL_CREATE_MESSAGES_TABLE);
 	*/
 	
+	
+
+	
+	
 }

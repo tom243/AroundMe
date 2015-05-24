@@ -20,6 +20,7 @@ import com.appspot.enhanced_cable_88320.aroundmeapi.Aroundmeapi;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.aroundme.controller.Controller;
 import com.aroundme.data.DAO;
+import com.aroundme.data.IDataAccess;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 public class GCMIntentService extends IntentService
@@ -33,7 +34,7 @@ public class GCMIntentService extends IntentService
 
 	private Boolean alreadySignedIn;
 	
-	private DAO dao;
+	private IDataAccess dao;
 	private Controller controller;
 
 	/*
@@ -49,7 +50,6 @@ public class GCMIntentService extends IntentService
 	{
 		super("GCMIntentService");
 		msgStack = new Stack<String>();
-		dao = DAO.getInstance(getApplicationContext());
 		controller = Controller.getInstance();
 	}
 	
@@ -92,29 +92,13 @@ public class GCMIntentService extends IntentService
 						Message m = api.getMessage(Long.parseLong(mId)).execute();
 						sendNotification(m.getContnet());
 						// insert to conversation table
-						dao.open();
-						if (dao.isConversationExist(controller.getCurrentUser().getMail(), m.getFrom())) {
-							// insert message to messages table
-							
-							// update last message and counter unread messages to conversations table
-							
-						}
-						else {
-							// insert message to messages table
-							
-							// insert new conversation to conversations table
-							
-						}
-						dao.close();
-						
-						
-						// insert message to the db with DAO object
-						
+						dao = DAO.getInstance(getApplicationContext());
+						Long messageId = addMessageToDB(m);
+						updateConversationTable(m, messageId);
+
 						//send intent with the id from the insert query
 						Intent chatIntent = new Intent("chatMessage");
-						chatIntent.putExtra("message", m.getContnet());
-						chatIntent.putExtra("from", m.getFrom());
-						chatIntent.putExtra("time", m.getTimestamp());
+						chatIntent.putExtra("messageId", messageId);
 					    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(chatIntent);
 					} catch (NumberFormatException e) {
 						e.printStackTrace();
@@ -129,6 +113,29 @@ public class GCMIntentService extends IntentService
         Log.i("GCM-iNTENT","type: "+messageType);
         GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
+	
+	public Long addMessageToDB(Message message){
+		dao.open();
+		Long id = dao.addToMessagesTable(message);
+		dao.close();
+		return id;
+	}
+	
+	public void updateConversationTable(Message message, Long messageId){
+		dao.open();
+		if (dao.isConversationExist(controller.getCurrentUser().getMail(), message.getFrom())) {
+			System.out.println("Conversation  exist");
+			
+			// update last message and counter unread messages to conversations table
+			
+		}
+		else {
+			System.out.println("Conversation not exist");
+			dao.addToConversationsTable(message.getFrom(), message.getTo(), messageId);
+		}
+		dao.close();
+	}
+
 	
 		
 	// Put the message into a notification and post it.

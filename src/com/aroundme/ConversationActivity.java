@@ -1,8 +1,15 @@
 package com.aroundme;
 
+import java.util.ArrayList;
+import java.util.Date;
+
+import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.aroundme.common.AppConsts;
 import com.aroundme.common.IAppCallBack;
 import com.aroundme.controller.Controller;
+import com.aroundme.data.DAO;
+import com.aroundme.data.IDataAccess;
+import com.google.api.client.util.DateTime;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -32,6 +39,8 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
     private Intent intent;
     private boolean side = false;
     private Controller controller;
+    private IDataAccess dao;
+    private  ArrayList<Message> historyMessages;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,8 +48,8 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
         setContentView(R.layout.activity_conversation);
         Intent intent = getIntent();
         controller = Controller.getInstance();
-        myFriendMail = intent.getStringExtra(AppConsts.email_friend); 
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("chatMessage"));
+        dao = DAO.getInstance(getApplicationContext());
+        myFriendMail = intent.getStringExtra(AppConsts.email_friend);
         buttonSend = (Button) findViewById(R.id.buttonSend);
 
         listView = (ListView) findViewById(R.id.listView1);
@@ -75,40 +84,128 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
                 listView.setSelection(chatArrayAdapter.getCount() - 1);
             }
         });
+        getHistoryMessagesFromDB(myFriendMail);
     }
+    
+    public  void getHistoryMessagesFromDB(String friendMail){
+		dao.open();
+		historyMessages = dao.getAllMessagesForFriend(controller.getCurrentUser().getMail(), friendMail);
+		dao.close();
+		if (!historyMessages.isEmpty()){
+			for (Message message: historyMessages){
+				if (message != null){
+					if (message.getFrom().equals(myFriendMail)) {
+			        	 side = true;
+			        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet()));
+			        }
+					else{
+						side=false;
+						chatArrayAdapter.add(new ChatMessage(side, message.getContnet()));
+					}
+				}
+			}
+		}
+		
+    }
+    
     
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
 	        String action = intent.getAction();
-	        String message = intent.getStringExtra("message");
-	        String from = intent.getStringExtra("from");
-	        String time = intent.getStringExtra("time");
-	        if (from.equals(myFriendMail)) {
+	        Long messageId = intent.getLongExtra("messageId",999);
+	        dao.open();
+	        Message message = dao.getMessageFromDB(messageId);
+	        dao.close();
+	        if (message.getFrom().equals(myFriendMail)) {
 	        	 side = true;
-	        	 chatArrayAdapter.add(new ChatMessage(side, message));
+	        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet()));
 	        }
-	        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+	        Toast.makeText(getApplicationContext(), message.getContnet(), Toast.LENGTH_SHORT).show();
 	        //  ... react to local broadcast message
 	    }
 	};
 
     private boolean sendChatMessage(){
     	if (!chatText.getText().toString().isEmpty()) {
-    		controller.sendMessageToUser(chatText.getText().toString(),myFriendMail,this);
+    		String messageContent = chatText.getText().toString();
+    		controller.sendMessageToUser(messageContent,myFriendMail,this);
+			Message message = new Message();;
+			message.setContnet(messageContent);
+			message.setFrom(controller.getCurrentUser().getMail());
+			message.setTo(myFriendMail);
+			message.setTimestamp(new DateTime(new Date()));
+	   		Long messageId = addMessageToDB(message);
+    		updateConversationTable(message, messageId);
+			// Here I need to send brodacts to tell the reciver to refresh the adapter for open conversation list
+			Intent updateAdapterIntent = new Intent("updateOpenCoversationsAdapter");
+		    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(updateAdapterIntent);
     		return true;
     	}
     	return false;
     }
+    
+    
 
 	@Override
 	public void done(Void ret, Exception e) {
 		if (e==null) {
 			String text = chatText.getText().toString();
 			side = false;
-			chatArrayAdapter.add(new ChatMessage(side, chatText.getText().toString()));
+			chatArrayAdapter.add(new ChatMessage(side, text));
 			chatText.setText("");
 		}
 	}
+	
+	
+	public Long addMessageToDB(Message message){
+		dao.open();
+		Long id = dao.addToMessagesTable(message);
+		dao.close();
+		return id;
+	}
+	
+	public void updateConversationTable(Message message, Long messageId){
+		dao.open();
+		if (dao.isConversationExist(message.getFrom(), message.getTo())) {
+			System.out.println("Conversation  exist");
+			
+			// update last message and counter unread messages to conversations table
+			
+		}
+		else {
+			System.out.println("Conversation not exist");
+			dao.addToConversationsTable(message.getTo(), message.getFrom(), messageId);
+		}
+		dao.close();
+	}
+	
+	
+	
+	
+	@Override
+	protected void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
+		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("chatMessage"));
+	}
+
+
+
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+		super.onStop();
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+	}
+
+
+
+/*	@Override
+	protected void onDestroy() {
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+		super.onDestroy();
+	}*/
+	
 
 }

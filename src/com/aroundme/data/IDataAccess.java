@@ -2,6 +2,7 @@ package com.aroundme.data;
 
 import java.util.ArrayList;
 
+import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.aroundme.ConversationItem;
 import com.aroundme.UserItem;
 
@@ -30,13 +31,17 @@ public interface IDataAccess {
 	 */
 	ArrayList<ConversationItem> getAllOpenConversationsList(String currentUserMail);
 
-	public boolean isConversationExist(String userMail,String friendMail);
+	 boolean isConversationExist(String userMail,String friendMail);
 	
+	 Long  addToMessagesTable(Message message);
 	
+	 Message getMessageFromDB(Long id);
 	
+	 void  addToConversationsTable(String  friendMail, String userMail, Long messageId);
 	
-	
-	
+	 ArrayList<Message> getAllMessagesForFriend(String userMail,String friendMail);
+	 
+	 
 	
 	/**
 	 * add task to the data base 

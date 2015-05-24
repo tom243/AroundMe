@@ -1,10 +1,14 @@
 package com.aroundme.data;
 
-import java.util.ArrayList;
 
+import java.util.ArrayList;
+import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
+import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.aroundme.ConversationItem;
 import com.aroundme.data.ChatDbContract.ConversationsEntry;
 import com.aroundme.data.ChatDbContract.MessagesEntry;
+import com.google.api.client.util.DateTime;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -55,6 +59,25 @@ public class DAO implements IDataAccess{
 	public void close() {
 		dbHelper.close();
 	}
+	
+	
+	public ArrayList<Message> getAllMessagesForFriend(String userMail,String friendMail) {
+		ArrayList<Message> messages = new ArrayList<Message>();
+		Cursor cursor = db.rawQuery("SELECT * FROM " + MessagesEntry.TABLE_NAME + 
+				" WHERE (" + MessagesEntry.COLUMN_TO + "=? AND " + 
+				MessagesEntry.COLUMN_FROM+ "=?) OR (" + MessagesEntry.COLUMN_FROM + "=? AND " + 
+				MessagesEntry.COLUMN_TO + "=?)" +  "ORDER BY DATETIME(" +MessagesEntry.COLUMN_TIME_STAMP +") DESC" ,new String[]{userMail,friendMail,userMail,friendMail});
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			Message message = cursorToMessage(cursor);
+			messages.add(message);
+			cursor.moveToNext();
+		}
+		// make sure to close the cursor
+		cursor.close();
+		return messages;
+	}
+	
 
 	@Override
 	public ArrayList<ConversationItem> getAllOpenConversationsList(String currentUserMail) {
@@ -74,6 +97,7 @@ public class DAO implements IDataAccess{
 			openConversations.add(conv);
 			cursor.moveToNext();
 		}
+		cursor.close();
 		return openConversations;
 	}
 		
@@ -87,6 +111,24 @@ public class DAO implements IDataAccess{
 		return conv;
 	}	
 	
+	
+	public Message cursorToMessage(Cursor cursor) {
+		Message message = new Message();
+		message.setContnet(cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_CONTENT)));
+		message.setFrom(cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_FROM)));
+		message.setTo(cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_TO)));
+		message.setTimestamp(new DateTime(cursor.getLong(cursor.getColumnIndex(MessagesEntry.COLUMN_TIME_STAMP))));
+		Long latitude = cursor.getLong(cursor.getColumnIndex(MessagesEntry.COLUMN_LAT));
+		Long longitude = cursor.getLong(cursor.getColumnIndex(MessagesEntry.COLUMN_LONG));
+		GeoPt geoPt = new GeoPt();
+		geoPt.setLatitude((float)latitude);
+		geoPt.setLongitude((float) longitude);
+		message.setLocation(geoPt);
+		message.setReadRadius(cursor.getInt(cursor.getColumnIndex(MessagesEntry.COLUMN_RADIUS)));
+		return message;
+	}
+	
+	
 	public boolean isConversationExist(String userMail,String friendMail) {
 	/*	Cursor cursor = db.query(ConversationsEntry.TABLE_NAME, conversationsColumns, 
 				conversationsColumns[1] == userMail AND conversationsColumns[2] == friendMail
@@ -96,16 +138,21 @@ public class DAO implements IDataAccess{
 				" WHERE " + ConversationsEntry.COLUMN_USER_MAIL + "=? AND " + 
 				ConversationsEntry.COLUMN_FRIEND_MAIL + "=?" , new String[]{userMail,friendMail});
 		
-		if (cursor == null)
+	/*	if (cursor == null)
 			return false;
 		
-		return true;
+		return true;*/
 		
 		/*
 		 if (cursor.moveToFirst())
 		  	return true;
 		  return false;
 		 */
+		System.out.println("the cursor count is: " + cursor.getCount());
+		if(cursor.getCount() <= 0){
+            return false;
+        }
+		return true;
 		
 	}
 	
@@ -127,29 +174,57 @@ public class DAO implements IDataAccess{
 */
 
 	
-/*	@Override
-	public Task addTask(Task task) {
-		Log.i("DAO", "addTask");
-		
-		if (task == null)
+	@Override
+	public Long  addToMessagesTable(Message message) {		
+		if (message == null)
 			return null;
 		//build the content values.
-		ContentValues values = putValues(task);
+		ContentValues values = putMessagesValues(message);
 		
 		//do the insert.
-		long insertId = database.insert(MessagesEntry.TABLE_NAME, null, values);
-		Log.i("DAO: addTask","insertId: "+insertId);
+		long insertId = db.insert(MessagesEntry.TABLE_NAME, null, values);
 		
 		//get the entity from the data base - extra validation, entity was insert properly.
-		Cursor cursor = database.query(MessagesEntry.TABLE_NAME, tasksColumns,
+		Cursor cursor = db.query(MessagesEntry.TABLE_NAME, messagesColumns,
 				MessagesEntry._ID + " = " + insertId, null, null, null, null);
 		cursor.moveToFirst();
 		//create the task object from the cursor.
-		Task newTask = cursorToTask(cursor);
+		Message newMessage = cursorToMessage(cursor);
 		cursor.close();
-		return newTask;
+		return insertId;
 	}
-*/
+
+	public Message getMessageFromDB(Long id){
+		Cursor cursor =  db.rawQuery("select * from " + MessagesEntry.TABLE_NAME + " where " + MessagesEntry._ID + "='" + id + "'" , null);
+		cursor.moveToFirst();
+		Message message = cursorToMessage(cursor);
+		return message;
+		
+	}
+	
+	
+	@Override
+	public void  addToConversationsTable(String  friendMail, String userMail, Long messageId) {		
+		//build the content values.
+		ContentValues values = putConversationsValues(friendMail, userMail, messageId);
+		
+		//do the insert.
+		long insertId = db.insert(ConversationsEntry.TABLE_NAME, null, values);
+		
+		//get the entity from the data base - extra validation, entity was insert properly.
+		Cursor cursor = db.query(ConversationsEntry.TABLE_NAME, conversationsColumns,
+				ConversationsEntry._ID + " = " + insertId, null, null, null, null);
+		cursor.moveToFirst();
+		//create the task object from the cursor.
+		cursor.close();
+	}
+	
+	/* Code how to increment a value +1
+	 db.execSQL("UPDATE " + Table_KOT_ITEMS_TEMP + " SET "
+                   + col_Sl_No + " = " + col_Sl_No + " +1 WHERE "
+                   + col_Sl_No + " >" +into);
+	 */
+	
 	
 /*	@Override
 	public void removeTask(Task task) {
@@ -175,21 +250,38 @@ public class DAO implements IDataAccess{
 	}
 */
 	/**
-	 * crate content values form a task parameters
-	 * @param task the task we want  to get the parameters from it
+	 * crate content values form a message parameters
+	 * @param message the message we want  to get the parameters from it
 	 * @return the values that we will need to crate in the table 
 	 */
-/*	public ContentValues putValues(Task task) {
+	public ContentValues putMessagesValues(Message message) {
 		ContentValues values = new ContentValues();
-		values.put(MessagesEntry.COLUMN_TASK_DESC, task.getItemDescription());
-		values.put(MessagesEntry.COLUMN_DateTime, task.getCalendarInMillis());
-		values.put(MessagesEntry.COLUMN_Status,task.getStatus());
-		values.put(MessagesEntry.COLUMN_Alarm, task.isAlarm());
-		values.put(MessagesEntry.COLUMN_Importance, task.isImportance());
-		values.put(MessagesEntry.COLUMN_Geo, task.isLocation());
-		values.put(MessagesEntry.COLUMN_Address, task.getAddress());
+		values.put(MessagesEntry.COLUMN_CONTENT, message.getContnet());
+		values.put(MessagesEntry.COLUMN_FROM, message.getFrom());
+		values.put(MessagesEntry.COLUMN_TO,message.getTo());
+		values.put(MessagesEntry.COLUMN_TIME_STAMP, message.getTimestamp().getValue());
+		if (message.getLocation() != null){ // ASK CHEN
+			values.put(MessagesEntry.COLUMN_LAT, message.getLocation().getLatitude());
+			values.put(MessagesEntry.COLUMN_LONG, message.getLocation().getLongitude());
+		}
+		values.put(MessagesEntry.COLUMN_RADIUS, message.getReadRadius());
 		return values;
 	}
-*/
+	
+	
+	/**
+	 * crate content values form a message parameters
+	 * @param message the message we want  to get the parameters from it
+	 * @return the values that we will need to crate in the table 
+	 */
+	public ContentValues putConversationsValues(String  friendMail, String userMail, Long messageId) {
+		ContentValues values = new ContentValues();
+		values.put(ConversationsEntry.COLUMN_COUNTER_UNREAD_MESSAGES, 0);
+		values.put(ConversationsEntry.COLUMN_FRIEND_MAIL, friendMail);
+		values.put(ConversationsEntry.COLUMN_LAST_MESSAGE_ID,messageId);
+		values.put(ConversationsEntry.COLUMN_USER_MAIL,  userMail);
+		return values;
+	}
+	
 	
 }

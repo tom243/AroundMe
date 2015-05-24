@@ -2,19 +2,23 @@ package com.aroundme;
 
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
 import com.aroundme.common.AppConsts;
 import com.aroundme.common.IAppCallBack;
 import com.aroundme.controller.Controller;
+
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 import android.content.res.TypedArray;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +54,6 @@ public class UsersTab extends ListFragment implements OnItemClickListener, IAppC
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		 //Toast.makeText(getActivity(), menutitles[position], Toast.LENGTH_SHORT).show();
 	     // ListView Clicked item value
 	     String friendMail = allUsers.get(position).getMail();
 	     Toast.makeText(getActivity(), friendMail , Toast.LENGTH_SHORT).show();
@@ -73,7 +76,12 @@ public class UsersTab extends ListFragment implements OnItemClickListener, IAppC
 				allUsers.add(user);
 		   	updateUsersList();
 		}
+		Intent updateAdapterIntent = new Intent("updateOpenCoversationsAdapter");
+	    LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).sendBroadcast(updateAdapterIntent);
 	}
+	
+	
+	
 	
 	public void updateUsersList() {
 
