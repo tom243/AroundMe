@@ -66,7 +66,7 @@ public class DAO implements IDataAccess{
 		Cursor cursor = db.rawQuery("SELECT * FROM " + MessagesEntry.TABLE_NAME + 
 				" WHERE (" + MessagesEntry.COLUMN_TO + "=? AND " + 
 				MessagesEntry.COLUMN_FROM+ "=?) OR (" + MessagesEntry.COLUMN_FROM + "=? AND " + 
-				MessagesEntry.COLUMN_TO + "=?)" +  "ORDER BY DATETIME(" +MessagesEntry.COLUMN_TIME_STAMP +") DESC" ,new String[]{userMail,friendMail,userMail,friendMail});
+				MessagesEntry.COLUMN_TO + "=?)" ,new String[]{userMail,friendMail,userMail,friendMail});
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			Message message = cursorToMessage(cursor);

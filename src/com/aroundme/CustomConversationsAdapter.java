@@ -2,6 +2,9 @@ package com.aroundme;
 
 import java.util.List;
 
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
+import com.aroundme.controller.AppController;
 import com.aroundme.controller.Controller;
 
 import android.app.Activity;
@@ -17,6 +20,7 @@ public class CustomConversationsAdapter extends BaseAdapter{
 	private Controller controller;
     private Context context;
     private List<ConversationItem> conversations;
+    ImageLoader imageLoader = AppController.getInstance().getImageLoader();
 
     CustomConversationsAdapter(Context context, List<ConversationItem> conversations) {
     	this.controller = Controller.getInstance();
@@ -50,13 +54,20 @@ public class CustomConversationsAdapter extends BaseAdapter{
                     .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             convertView = mInflater.inflate(R.layout.conversations_list_item, null);
         }
+        if (imageLoader == null)
+            imageLoader = AppController.getInstance().getImageLoader();
 
+        NetworkImageView thumbNail = (NetworkImageView) convertView.findViewById(R.id.icon2);
         TextView txtTitle = (TextView) convertView.findViewById(R.id.friendName);
         ConversationItem row_pos = conversations.get(position);
         String friendName = controller.getUserNameByMail(row_pos.getFriendMail());
         if (friendName != null){
         	txtTitle.setText(controller.getUserNameByMail(row_pos.getFriendMail()));
         }
+        if(row_pos.getImageUrl() != null)
+        	thumbNail.setImageUrl(row_pos.getImageUrl(), imageLoader);
+        else
+        	thumbNail.setDefaultImageResId(R.drawable.user_default);
 
         return convertView;
 

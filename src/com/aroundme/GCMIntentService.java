@@ -95,7 +95,6 @@ public class GCMIntentService extends IntentService
 						dao = DAO.getInstance(getApplicationContext());
 						Long messageId = addMessageToDB(m);
 						updateConversationTable(m, messageId);
-
 						//send intent with the id from the insert query
 						Intent chatIntent = new Intent("chatMessage");
 						chatIntent.putExtra("messageId", messageId);
@@ -132,6 +131,8 @@ public class GCMIntentService extends IntentService
 		else {
 			System.out.println("Conversation not exist");
 			dao.addToConversationsTable(message.getFrom(), message.getTo(), messageId);
+			Intent chatIntent = new Intent("updateOpenCoversationsAdapter");
+		    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(chatIntent);
 		}
 		dao.close();
 	}

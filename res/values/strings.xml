@@ -16,6 +16,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>
     <string name="title_activity_conversation">ConversationActivity</string>
+    <string name="action_open_map">open map</string>
+    
      
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>

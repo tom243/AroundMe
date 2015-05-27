@@ -6,6 +6,7 @@ public class ConversationItem {
 	private int unreadMess;
 	private long timeStamp;
 	private String contentMess;
+	private String imageUrl;
 	
 	
 	public ConversationItem() {
@@ -20,6 +21,15 @@ public class ConversationItem {
 		this.unreadMess = unreadMess;
 		this.timeStamp = timeStamp;
 		this.contentMess = contentMess;
+		this.imageUrl = null;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 
 	public String getUserMail() {
