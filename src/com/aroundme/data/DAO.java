@@ -2,12 +2,14 @@ package com.aroundme.data;
 
 
 import java.util.ArrayList;
+
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
-import com.aroundme.ConversationItem;
+import com.aroundme.common.ConversationItem;
 import com.aroundme.data.ChatDbContract.ConversationsEntry;
 import com.aroundme.data.ChatDbContract.MessagesEntry;
 import com.google.api.client.util.DateTime;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;

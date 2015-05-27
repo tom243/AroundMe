@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
+import com.aroundme.adapter.ChatArrayAdapter;
 import com.aroundme.common.AppConsts;
+import com.aroundme.common.ChatMessage;
 import com.aroundme.common.IAppCallBack;
 import com.aroundme.controller.Controller;
 import com.aroundme.data.DAO;

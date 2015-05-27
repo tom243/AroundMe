@@ -1,4 +1,4 @@
-package com.aroundme;
+package com.aroundme.common;
 
 /*
  * Copyright 2014 Google Inc. All rights reserved.

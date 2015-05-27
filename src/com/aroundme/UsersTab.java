@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
+import com.aroundme.adapter.CustomUsersAdapter;
 import com.aroundme.common.AppConsts;
 import com.aroundme.common.IAppCallBack;
 import com.aroundme.controller.Controller;

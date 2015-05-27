@@ -1,4 +1,4 @@
-package com.aroundme;
+package com.aroundme.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -13,6 +13,12 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.aroundme.R;
+import com.aroundme.R.drawable;
+import com.aroundme.R.id;
+import com.aroundme.R.layout;
+import com.aroundme.common.ChatMessage;
 
 public class ChatArrayAdapter extends ArrayAdapter {
 

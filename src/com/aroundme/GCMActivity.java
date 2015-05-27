@@ -2,11 +2,13 @@ package com.aroundme;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+
 import com.aroundme.deviceinfoendpoint.Deviceinfoendpoint;
 import com.aroundme.deviceinfoendpoint.model.DeviceInfo;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;

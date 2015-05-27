@@ -1,4 +1,7 @@
-package com.aroundme;
+package com.aroundme.adapter;
+
+import com.aroundme.OpenConversationsTab;
+import com.aroundme.UsersTab;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

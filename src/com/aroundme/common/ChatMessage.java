@@ -1,4 +1,4 @@
-package com.aroundme;
+package com.aroundme.common;
 
 public class ChatMessage {
 	public boolean left;

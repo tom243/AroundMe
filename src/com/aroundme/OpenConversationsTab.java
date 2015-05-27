@@ -9,7 +9,9 @@ import android.view.ViewGroup;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
+import com.aroundme.adapter.CustomConversationsAdapter;
 import com.aroundme.common.AppConsts;
+import com.aroundme.common.ConversationItem;
 import com.aroundme.common.IAppCallBack;
 import com.aroundme.controller.Controller;
 import com.aroundme.data.DAO;

@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-package com.aroundme;
+package com.aroundme.common;
+
+import com.aroundme.R;
+import com.aroundme.R.color;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

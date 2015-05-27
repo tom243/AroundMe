@@ -1,10 +1,14 @@
-package com.aroundme;
+package com.aroundme.adapter;
 
 import java.util.List;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
+import com.aroundme.R;
+import com.aroundme.R.drawable;
+import com.aroundme.R.id;
+import com.aroundme.R.layout;
 import com.aroundme.controller.AppController;
 
 import android.app.Activity;
@@ -18,11 +22,11 @@ import android.widget.TextView;
 
 public class CustomUsersAdapter extends BaseAdapter {
 
-    Context context;
-    List<UserAroundMe> users;
-    ImageLoader imageLoader = AppController.getInstance().getImageLoader();
+    private Context context;
+    private List<UserAroundMe> users;
+    private ImageLoader imageLoader = AppController.getInstance().getImageLoader();
 
-    CustomUsersAdapter(Context context, List<UserAroundMe> users) {
+   public CustomUsersAdapter(Context context, List<UserAroundMe> users) {
         this.context = context;
         this.users = users;
     }
