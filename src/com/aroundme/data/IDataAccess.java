@@ -31,7 +31,7 @@ public interface IDataAccess {
 	 */
 	ArrayList<ConversationItem> getAllOpenConversationsList(String currentUserMail);
 
-	 boolean isConversationExist(String userMail,String friendMail);
+	ConversationItem isConversationExist(String userMail,String friendMail);
 	
 	 Long  addToMessagesTable(Message message);
 	
@@ -41,6 +41,9 @@ public interface IDataAccess {
 	
 	 ArrayList<Message> getAllMessagesForFriend(String userMail,String friendMail);
 	 
+	 void updateOpenConversation(ConversationItem conv, Long messageId);
+	 
+	 void removeFromConversationTable(ConversationItem conv);
 	 
 	
 	/**

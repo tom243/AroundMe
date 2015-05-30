@@ -3,7 +3,10 @@ package com.aroundme;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -23,6 +26,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.TypedArray;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
@@ -59,9 +63,32 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 	    setListAdapter(adapter);
 		getListView().setOnItemClickListener(this);
 		LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(newOpenConversation, new IntentFilter("updateOpenCoversationsAdapter"));
+		/** Registering context menu for the listview */
+        registerForContextMenu(getListView());
 	}
 	
-	
+    /** This will be invoked when an item in the listview is long pressed */
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        getActivity().getMenuInflater().inflate(R.menu.actions , menu);
+    }
+    
+    
+    /** This will be invoked when a menu item is selected */
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+ 
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+        long currentFriend = info.id;
+        String friendMail = conversations.get((int)currentFriend).getFriendMail();
+        switch(item.getItemId()){
+            case R.id.cnt_mnu_delete:
+            	removeOpenConversation(friendMail);
+                break;
+        }
+        return true;
+    }
 	
 	
 	
@@ -78,15 +105,31 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 	private BroadcastReceiver newOpenConversation = new BroadcastReceiver() {
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
-	    	getConversationListFromDB();
-			adapter = new CustomConversationsAdapter(getActivity(), conversations); // Im not sure i need to create new adapter every time ask with chen about it 
-		    setListAdapter(adapter);
-	        adapter.notifyDataSetChanged();
+	    	refreshAdapter();
 	    }
 	};
 	
 	
-	public void getConversationListFromDB(){
+	private void refreshAdapter(){
+		getConversationListFromDB();
+		adapter = new CustomConversationsAdapter(getActivity(), conversations); // Im not sure i need to create new adapter every time ask with chen about it 
+	    setListAdapter(adapter);
+        adapter.notifyDataSetChanged();
+	}
+	
+	private void removeOpenConversation(String friendMail){
+		dao.open();
+		ConversationItem conv = dao.isConversationExist(controller.getCurrentUser().getMail(),friendMail);
+		if (conv != null) {
+		dao.removeFromConversationTable(conv);
+		dao.close();
+    	refreshAdapter();
+		}
+	}
+	
+	
+	
+	private void getConversationListFromDB(){
 		dao.open();
 		conversations = dao.getAllOpenConversationsList(controller.getCurrentUser().getMail());
 		dao.close();
@@ -120,7 +163,7 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 	}
 	
 	
-	public void addImageUrlToConversationItem(){
+	private void addImageUrlToConversationItem(){
 		HashMap<String, UserAroundMe> allUsers = controller.getAllUsers();
 		for (ConversationItem conv: conversations){
 			conv.setImageUrl(allUsers.get(conv.getFriendMail()).getImageUrl());

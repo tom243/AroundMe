@@ -18,6 +18,7 @@ import android.util.Log;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.Aroundmeapi;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
+import com.aroundme.common.ConversationItem;
 import com.aroundme.controller.Controller;
 import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
@@ -122,10 +123,13 @@ public class GCMIntentService extends IntentService
 	
 	public void updateConversationTable(Message message, Long messageId){
 		dao.open();
-		if (dao.isConversationExist(controller.getCurrentUser().getMail(), message.getFrom())) {
+		ConversationItem conv = dao.isConversationExist(controller.getCurrentUser().getMail(), message.getFrom());
+		if (conv != null) {
 			System.out.println("Conversation  exist");
-			
-			// update last message and counter unread messages to conversations table
+			conv.setUnreadMess(conv.getUnreadMess() +1 );
+			dao.updateOpenConversation(conv, messageId);
+			Intent chatIntent = new Intent("updateOpenCoversationsAdapter");
+		    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(chatIntent);
 			
 		}
 		else {
@@ -152,7 +156,7 @@ public class GCMIntentService extends IntentService
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
         .setSmallIcon(R.drawable.ic_launcher)
-        .setContentTitle("GCM Notification")
+        .setContentTitle("New Message")
         .setStyle(new NotificationCompat.BigTextStyle()
         .bigText(msg))
         .setContentText(msg);

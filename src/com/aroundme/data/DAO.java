@@ -131,7 +131,7 @@ public class DAO implements IDataAccess{
 	}
 	
 	
-	public boolean isConversationExist(String userMail,String friendMail) {
+	public ConversationItem isConversationExist(String userMail,String friendMail) {
 	/*	Cursor cursor = db.query(ConversationsEntry.TABLE_NAME, conversationsColumns, 
 				conversationsColumns[1] == userMail AND conversationsColumns[2] == friendMail
 				, null, null, null, null);
@@ -139,22 +139,19 @@ public class DAO implements IDataAccess{
 		Cursor cursor = db.rawQuery("SELECT * FROM " + ConversationsEntry.TABLE_NAME + 
 				" WHERE " + ConversationsEntry.COLUMN_USER_MAIL + "=? AND " + 
 				ConversationsEntry.COLUMN_FRIEND_MAIL + "=?" , new String[]{userMail,friendMail});
-		
-	/*	if (cursor == null)
-			return false;
-		
-		return true;*/
-		
-		/*
-		 if (cursor.moveToFirst())
-		  	return true;
-		  return false;
-		 */
+
 		System.out.println("the cursor count is: " + cursor.getCount());
 		if(cursor.getCount() <= 0){
-            return false;
+            return null;
         }
-		return true;
+		else{
+			cursor.moveToFirst();
+			ConversationItem conv = new ConversationItem();
+			conv.setUserMail(cursor.getString(cursor.getColumnIndex(ConversationsEntry.COLUMN_USER_MAIL)));
+			conv.setFriendMail(cursor.getString(cursor.getColumnIndex(ConversationsEntry.COLUMN_FRIEND_MAIL)));
+			conv.setUnreadMess(cursor.getInt(cursor.getColumnIndex(ConversationsEntry.COLUMN_COUNTER_UNREAD_MESSAGES)));
+			return conv;
+		}
 		
 	}
 	
@@ -208,7 +205,7 @@ public class DAO implements IDataAccess{
 	@Override
 	public void  addToConversationsTable(String  friendMail, String userMail, Long messageId) {		
 		//build the content values.
-		ContentValues values = putConversationsValues(friendMail, userMail, messageId);
+		ContentValues values = putConversationsValues(friendMail, userMail, messageId,1);
 		
 		//do the insert.
 		long insertId = db.insert(ConversationsEntry.TABLE_NAME, null, values);
@@ -221,6 +218,22 @@ public class DAO implements IDataAccess{
 		cursor.close();
 	}
 	
+	
+	@Override
+	public void updateOpenConversation(ConversationItem conv , Long messageId) {
+		ContentValues values = putConversationsValues(conv.getFriendMail(), conv.getUserMail(), messageId, conv.getUnreadMess());
+		db.update(ConversationsEntry.TABLE_NAME, values, ConversationsEntry.COLUMN_USER_MAIL + "=? AND " + 
+				ConversationsEntry.COLUMN_FRIEND_MAIL + "=?",  new String[] {conv.getUserMail(), conv.getFriendMail()});
+	}
+	
+	
+	@Override
+	public void removeFromConversationTable(ConversationItem conv) {
+		db.delete(ConversationsEntry.TABLE_NAME, ConversationsEntry.COLUMN_USER_MAIL + "=? AND " + 
+				ConversationsEntry.COLUMN_FRIEND_MAIL + "=?",  new String[] {conv.getUserMail(), conv.getFriendMail()});
+	}
+	
+	
 	/* Code how to increment a value +1
 	 db.execSQL("UPDATE " + Table_KOT_ITEMS_TEMP + " SET "
                    + col_Sl_No + " = " + col_Sl_No + " +1 WHERE "
@@ -228,20 +241,9 @@ public class DAO implements IDataAccess{
 	 */
 	
 	
-/*	@Override
-	public void removeTask(Task task) {
-		long id = task.getId();
-		database.delete(MessagesEntry.TABLE_NAME, MessagesEntry._ID + " = " + id,null);
-	}
-*/
+
 	
-/*	@Override
-	public void updateTask(Task task) {
-		long id= task.getId();
-		ContentValues values = putValues(task);
-		database.update(MessagesEntry.TABLE_NAME, values, MessagesEntry._ID + " = " + id, null);
-	}
-*/
+
 	
 /*	@Override
 	public void changeTaskStatus(Task task){
@@ -262,7 +264,7 @@ public class DAO implements IDataAccess{
 		values.put(MessagesEntry.COLUMN_FROM, message.getFrom());
 		values.put(MessagesEntry.COLUMN_TO,message.getTo());
 		values.put(MessagesEntry.COLUMN_TIME_STAMP, message.getTimestamp().getValue());
-		if (message.getLocation() != null){ // ASK CHEN
+		if (message.getLocation() != null){ // Talk with chen about it
 			values.put(MessagesEntry.COLUMN_LAT, message.getLocation().getLatitude());
 			values.put(MessagesEntry.COLUMN_LONG, message.getLocation().getLongitude());
 		}
@@ -272,13 +274,12 @@ public class DAO implements IDataAccess{
 	
 	
 	/**
-	 * crate content values form a message parameters
-	 * @param message the message we want  to get the parameters from it
+	 * crate content values form a conversation parameters
 	 * @return the values that we will need to crate in the table 
 	 */
-	public ContentValues putConversationsValues(String  friendMail, String userMail, Long messageId) {
+	public ContentValues putConversationsValues(String  friendMail, String userMail, Long messageId, int unreadMessages) {
 		ContentValues values = new ContentValues();
-		values.put(ConversationsEntry.COLUMN_COUNTER_UNREAD_MESSAGES, 0);
+		values.put(ConversationsEntry.COLUMN_COUNTER_UNREAD_MESSAGES, unreadMessages);
 		values.put(ConversationsEntry.COLUMN_FRIEND_MAIL, friendMail);
 		values.put(ConversationsEntry.COLUMN_LAST_MESSAGE_ID,messageId);
 		values.put(ConversationsEntry.COLUMN_USER_MAIL,  userMail);

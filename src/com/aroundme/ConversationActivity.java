@@ -7,6 +7,7 @@ import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.aroundme.adapter.ChatArrayAdapter;
 import com.aroundme.common.AppConsts;
 import com.aroundme.common.ChatMessage;
+import com.aroundme.common.ConversationItem;
 import com.aroundme.common.IAppCallBack;
 import com.aroundme.controller.Controller;
 import com.aroundme.data.DAO;
@@ -169,11 +170,11 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
 	
 	public void updateConversationTable(Message message, Long messageId){
 		dao.open();
-		if (dao.isConversationExist(message.getFrom(), message.getTo())) {
+		ConversationItem conv = dao.isConversationExist(message.getFrom(),message.getTo());
+		if (conv != null) {
 			System.out.println("Conversation  exist");
-			
-			// update last message and counter unread messages to conversations table
-			
+			conv.setUnreadMess(conv.getUnreadMess() +1 );
+			dao.updateOpenConversation(conv, messageId);
 		}
 		else {
 			System.out.println("Conversation not exist");

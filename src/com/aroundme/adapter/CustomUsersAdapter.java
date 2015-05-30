@@ -51,7 +51,6 @@ public class CustomUsersAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
         if (convertView == null) {
             LayoutInflater mInflater = (LayoutInflater) context
                     .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
@@ -63,10 +62,8 @@ public class CustomUsersAdapter extends BaseAdapter {
         TextView txtTitle = (TextView) convertView.findViewById(R.id.userName);
         UserAroundMe row_pos = users.get(position);
         txtTitle.setText(row_pos.getDisplayName());
-        if(row_pos.getImageUrl() != null)
-        	thumbNail.setImageUrl(row_pos.getImageUrl(), imageLoader);
-        else
-        	thumbNail.setDefaultImageResId(R.drawable.user_default);
+        thumbNail.setDefaultImageResId(R.drawable.user_default);
+        thumbNail.setImageUrl(row_pos.getImageUrl(), imageLoader);
         return convertView;
 
     }

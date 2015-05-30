@@ -2,6 +2,7 @@ package com.aroundme.adapter;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import com.android.volley.toolbox.ImageLoader;
@@ -68,19 +69,22 @@ public class CustomConversationsAdapter extends BaseAdapter{
         NetworkImageView thumbNail = (NetworkImageView) convertView.findViewById(R.id.icon2);
         TextView txtTitle = (TextView) convertView.findViewById(R.id.friendName);
         TextView txtDate = (TextView) convertView.findViewById(R.id.date);
+        TextView txtMessage = (TextView) convertView.findViewById(R.id.message);
         ConversationItem row_pos = conversations.get(position);
         String friendName = controller.getUserNameByMail(row_pos.getFriendMail());
         if (friendName != null){
         	txtTitle.setText(controller.getUserNameByMail(row_pos.getFriendMail()));
         }
         
-        if(row_pos.getImageUrl() != null)
-        	thumbNail.setImageUrl(row_pos.getImageUrl(), imageLoader);
-        else
-        	thumbNail.setDefaultImageResId(R.drawable.user_default);
+        thumbNail.setDefaultImageResId(R.drawable.user_default);
+        thumbNail.setImageUrl(row_pos.getImageUrl(), imageLoader);
         
-         txtDate.setText(getDate(row_pos.getTimeStamp(),"dd/MM hh:mm"));
-        	
+         if (checkIfMoreThen24Hours(row_pos.getTimeStamp()))
+        	 txtDate.setText(getDate(row_pos.getTimeStamp(),"dd/MM"));
+         else
+        	 txtDate.setText(getDate(row_pos.getTimeStamp(),"HH:mm"));
+        	 
+         txtMessage.setText(row_pos.getContentMess());
         return convertView;
 
     }
@@ -102,5 +106,14 @@ public class CustomConversationsAdapter extends BaseAdapter{
          return formatter.format(calendar.getTime());
     }
     
+    private boolean checkIfMoreThen24Hours(Long date){
+    	Long currentDate = new DateTime(new Date()).getValue();
+        long diff = currentDate - date;
+        int diffInDays = (int) (diff / (1000 * 60 * 60 * 24));
+        if (diffInDays >= 1) 
+        	return true; 
+        else
+        	return false;
+    }
 
 }
