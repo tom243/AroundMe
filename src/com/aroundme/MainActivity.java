@@ -32,17 +32,14 @@ public class MainActivity extends ActionBarActivity {
         // Creating The Toolbar and setting it as the Toolbar for the activity
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
-        // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
+        // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles for the Tabs and Number Of Tabs.
         adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,Numboftabs);
-        
         // Assigning ViewPager View and setting the adapter
         pager = (ViewPager) findViewById(R.id.pager);
 		pager.setAdapter(adapter);
- 
-		// Assiging the Sliding Tab Layout View
+		// Assigning the Sliding Tab Layout View
 		tabs = (SlidingTabLayout) findViewById(R.id.tabs);
         tabs.setDistributeEvenly(true); // To make the Tabs Fixed set this true, This makes the tabs Space Evenly in Available width
- 
         // Setting Custom Color for the Scroll bar indicator of the Tab View
         tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
             @Override
@@ -51,11 +48,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
         tabs.setViewPager(pager);
-        
-        //controller.getAllUsersFromServer(this);
-        
     }
- 
  
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -70,20 +63,10 @@ public class MainActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
- 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
- 
         return super.onOptionsItemSelected(item);
     }
-/*
-	@Override
-	public void done(List<UserAroundMe> ret, Exception e) {
-        // Setting the ViewPager For the SlidingTabsLayout
-		System.out.println("BOOOOOOOOOOOOOOOOOOOOOOOOO MAIN-ACTIVITY");
-      
-	}
-*/
+    
 }

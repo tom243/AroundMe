@@ -1,19 +1,14 @@
 package com.aroundme.controller;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-
 import com.appspot.enhanced_cable_88320.aroundmeapi.Aroundmeapi;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
@@ -23,8 +18,6 @@ import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMeCollection
 import com.aroundme.EndpointApiCreator;
 import com.aroundme.common.IAppCallBack;
 import com.aroundme.common.IAppCallBack2;
-import com.aroundme.data.DAO;
-import com.aroundme.data.IDataAccess;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.api.client.util.DateTime;

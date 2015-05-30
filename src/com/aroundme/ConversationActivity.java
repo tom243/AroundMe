@@ -13,7 +13,6 @@ import com.aroundme.controller.Controller;
 import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
 import com.google.api.client.util.DateTime;
-
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -32,14 +31,12 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class ConversationActivity extends Activity implements IAppCallBack<Void>{
-    private static final String TAG = "ConversationActivity";
 
     private ChatArrayAdapter chatArrayAdapter;
     private ListView listView;
     private EditText chatText;
     private Button buttonSend;
     private String myFriendMail;
-    private Intent intent;
     private boolean side = false;
     private Controller controller;
     private IDataAccess dao;
@@ -57,7 +54,7 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
 
         listView = (ListView) findViewById(R.id.listView1);
 
-        chatArrayAdapter = new ChatArrayAdapter(getApplicationContext(), R.layout.activity_chat_singlemessage);
+        chatArrayAdapter = new ChatArrayAdapter(getApplicationContext(), R.layout.conversation_singlemessage);
         listView.setAdapter(chatArrayAdapter);
 
         chatText = (EditText) findViewById(R.id.chatText);
@@ -111,11 +108,9 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
 		
     }
     
-    
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
-	        String action = intent.getAction();
 	        Long messageId = intent.getLongExtra("messageId",999);
 	        dao.open();
 	        Message message = dao.getMessageFromDB(messageId);
@@ -148,8 +143,6 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
     	return false;
     }
     
-    
-
 	@Override
 	public void done(Void ret, Exception e) {
 		if (e==null) {
@@ -160,15 +153,14 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
 		}
 	}
 	
-	
-	public Long addMessageToDB(Message message){
+	private Long addMessageToDB(Message message){
 		dao.open();
 		Long id = dao.addToMessagesTable(message);
 		dao.close();
 		return id;
 	}
 	
-	public void updateConversationTable(Message message, Long messageId){
+	private void updateConversationTable(Message message, Long messageId){
 		dao.open();
 		ConversationItem conv = dao.isConversationExist(message.getFrom(),message.getTo());
 		if (conv != null) {
@@ -183,9 +175,6 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
 		dao.close();
 	}
 	
-	
-	
-	
 	@Override
 	protected void onStart() {
 		// TODO Auto-generated method stub
@@ -193,22 +182,11 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("chatMessage"));
 	}
 
-
-
 	@Override
 	protected void onStop() {
 		// TODO Auto-generated method stub
 		super.onStop();
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 	}
-
-
-
-/*	@Override
-	protected void onDestroy() {
-		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
-		super.onDestroy();
-	}*/
-	
 
 }

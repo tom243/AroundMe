@@ -72,6 +72,4 @@ public class ConversationItem {
 		this.contentMess = contentMess;
 	}
 
-	
-
 }

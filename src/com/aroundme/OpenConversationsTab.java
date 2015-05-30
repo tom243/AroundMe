@@ -9,8 +9,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
 import com.aroundme.adapter.CustomConversationsAdapter;
 import com.aroundme.common.AppConsts;
@@ -19,12 +17,10 @@ import com.aroundme.common.IAppCallBack;
 import com.aroundme.controller.Controller;
 import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.TypedArray;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Toast;
@@ -37,8 +33,6 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 
 	private Controller controller;
 	private Context context;
-	private String[] menutitles;
-	private TypedArray menuIcons;
 	private CustomConversationsAdapter adapter;
 	private List<ConversationItem> conversations;
 	private IDataAccess dao;
@@ -90,9 +84,6 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
         return true;
     }
 	
-	
-	
-	
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
@@ -101,14 +92,12 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 		
 	}
 
-
 	private BroadcastReceiver newOpenConversation = new BroadcastReceiver() {
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
 	    	refreshAdapter();
 	    }
 	};
-	
 	
 	private void refreshAdapter(){
 		getConversationListFromDB();
@@ -127,8 +116,6 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 		}
 	}
 	
-	
-	
 	private void getConversationListFromDB(){
 		dao.open();
 		conversations = dao.getAllOpenConversationsList(controller.getCurrentUser().getMail());
@@ -139,7 +126,6 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 	    else
 	    	addImageUrlToConversationItem();
 	}
-	
 	
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -161,7 +147,6 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 	public void done(List<UserAroundMe> ret, Exception e) {
 		addImageUrlToConversationItem();
 	}
-	
 	
 	private void addImageUrlToConversationItem(){
 		HashMap<String, UserAroundMe> allUsers = controller.getAllUsers();

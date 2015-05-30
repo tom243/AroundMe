@@ -10,14 +10,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import com.aroundme.R;
-import com.aroundme.R.drawable;
-import com.aroundme.R.id;
-import com.aroundme.R.layout;
 import com.aroundme.common.ChatMessage;
 
 public class ChatArrayAdapter extends ArrayAdapter {
@@ -47,7 +42,7 @@ public class ChatArrayAdapter extends ArrayAdapter {
 		View row = convertView;
 		if (row == null) {
 			LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			row = inflater.inflate(R.layout.activity_chat_singlemessage, parent, false);
+			row = inflater.inflate(R.layout.conversation_singlemessage, parent, false);
 		}
 		singleMessageContainer = (LinearLayout) row.findViewById(R.id.singleMessageContainer);
 		ChatMessage chatMessageObj = getItem(position);

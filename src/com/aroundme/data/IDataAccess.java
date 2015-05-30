@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.aroundme.common.ConversationItem;
-import com.aroundme.common.UserItem;
 
 import android.database.SQLException;
 
