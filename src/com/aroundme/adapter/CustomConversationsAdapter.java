@@ -12,7 +12,7 @@ import com.aroundme.R.drawable;
 import com.aroundme.R.id;
 import com.aroundme.R.layout;
 import com.aroundme.common.ConversationItem;
-import com.aroundme.controller.AppController;
+import com.aroundme.controller.ImagesController;
 import com.aroundme.controller.Controller;
 import com.google.api.client.util.DateTime;
 
@@ -29,7 +29,7 @@ public class CustomConversationsAdapter extends BaseAdapter{
 	private Controller controller;
     private Context context;
     private List<ConversationItem> conversations;
-    ImageLoader imageLoader = AppController.getInstance().getImageLoader();
+    ImageLoader imageLoader = ImagesController.getInstance().getImageLoader();
 
    public CustomConversationsAdapter(Context context, List<ConversationItem> conversations) {
     	this.controller = Controller.getInstance();
@@ -64,7 +64,7 @@ public class CustomConversationsAdapter extends BaseAdapter{
             convertView = mInflater.inflate(R.layout.conversations_list_item, null);
         }
         if (imageLoader == null)
-            imageLoader = AppController.getInstance().getImageLoader();
+            imageLoader = ImagesController.getInstance().getImageLoader();
 
         NetworkImageView thumbNail = (NetworkImageView) convertView.findViewById(R.id.icon2);
         TextView txtTitle = (TextView) convertView.findViewById(R.id.friendName);

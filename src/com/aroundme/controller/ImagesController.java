@@ -10,14 +10,14 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 import com.aroundme.util.LruBitmapCache;
  
-public class AppController extends Application {
+public class ImagesController extends Application {
  
-    public static final String TAG = AppController.class.getSimpleName();
+    public static final String TAG = ImagesController.class.getSimpleName();
  
     private RequestQueue mRequestQueue;
     private ImageLoader mImageLoader;
  
-    private static AppController mInstance;
+    private static ImagesController mInstance;
  
     @Override
     public void onCreate() {
@@ -25,7 +25,7 @@ public class AppController extends Application {
         mInstance = this;
     }
  
-    public static synchronized AppController getInstance() {
+    public static synchronized ImagesController getInstance() {
         return mInstance;
     }
  

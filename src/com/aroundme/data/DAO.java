@@ -63,6 +63,7 @@ public class DAO implements IDataAccess{
 	}
 	
 	public ArrayList<Message> getAllMessagesForFriend(String userMail,String friendMail) {
+		// get history of conversation
 		ArrayList<Message> messages = new ArrayList<Message>();
 		Cursor cursor = db.rawQuery("SELECT * FROM " + MessagesEntry.TABLE_NAME + 
 				" WHERE (" + MessagesEntry.COLUMN_TO + "=? AND " + 
@@ -74,9 +75,24 @@ public class DAO implements IDataAccess{
 			messages.add(message);
 			cursor.moveToNext();
 		}
-		// make sure to close the cursor
 		cursor.close();
 		return messages;
+	}
+	
+	public Message cursorToMessage(Cursor cursor) {
+		Message message = new Message();
+		message.setContnet(cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_CONTENT)));
+		message.setFrom(cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_FROM)));
+		message.setTo(cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_TO)));
+		message.setTimestamp(new DateTime(cursor.getLong(cursor.getColumnIndex(MessagesEntry.COLUMN_TIME_STAMP))));
+		Long latitude = cursor.getLong(cursor.getColumnIndex(MessagesEntry.COLUMN_LAT));
+		Long longitude = cursor.getLong(cursor.getColumnIndex(MessagesEntry.COLUMN_LONG));
+		GeoPt geoPt = new GeoPt();
+		geoPt.setLatitude((float)latitude);
+		geoPt.setLongitude((float) longitude);
+		message.setLocation(geoPt);
+		message.setReadRadius(cursor.getInt(cursor.getColumnIndex(MessagesEntry.COLUMN_RADIUS)));
+		return message;
 	}
 
 	@Override
@@ -111,27 +127,7 @@ public class DAO implements IDataAccess{
 		return conv;
 	}	
 	
-	public Message cursorToMessage(Cursor cursor) {
-		Message message = new Message();
-		message.setContnet(cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_CONTENT)));
-		message.setFrom(cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_FROM)));
-		message.setTo(cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_TO)));
-		message.setTimestamp(new DateTime(cursor.getLong(cursor.getColumnIndex(MessagesEntry.COLUMN_TIME_STAMP))));
-		Long latitude = cursor.getLong(cursor.getColumnIndex(MessagesEntry.COLUMN_LAT));
-		Long longitude = cursor.getLong(cursor.getColumnIndex(MessagesEntry.COLUMN_LONG));
-		GeoPt geoPt = new GeoPt();
-		geoPt.setLatitude((float)latitude);
-		geoPt.setLongitude((float) longitude);
-		message.setLocation(geoPt);
-		message.setReadRadius(cursor.getInt(cursor.getColumnIndex(MessagesEntry.COLUMN_RADIUS)));
-		return message;
-	}
-	
 	public ConversationItem isConversationExist(String userMail,String friendMail) {
-	/*	Cursor cursor = db.query(ConversationsEntry.TABLE_NAME, conversationsColumns, 
-				conversationsColumns[1] == userMail AND conversationsColumns[2] == friendMail
-				, null, null, null, null);
-	*/
 		Cursor cursor = db.rawQuery("SELECT * FROM " + ConversationsEntry.TABLE_NAME + 
 				" WHERE " + ConversationsEntry.COLUMN_USER_MAIL + "=? AND " + 
 				ConversationsEntry.COLUMN_FRIEND_MAIL + "=?" , new String[]{userMail,friendMail});
@@ -151,7 +147,7 @@ public class DAO implements IDataAccess{
 	}
 	
 	@Override
-	public Long  addToMessagesTable(Message message) {		
+	public Long addToMessagesTable(Message message) {		
 		if (message == null)
 			return null;
 		//build the content values.

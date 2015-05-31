@@ -121,18 +121,15 @@ public class GCMIntentService extends IntentService
 		if (conv != null) {
 			System.out.println("Conversation  exist");
 			conv.setUnreadMess(conv.getUnreadMess() +1 );
-			dao.updateOpenConversation(conv, messageId);
-			Intent chatIntent = new Intent("updateOpenCoversationsAdapter");
-		    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(chatIntent);
-			
+			dao.updateOpenConversation(conv, messageId); // update row in data-base
 		}
 		else {
 			System.out.println("Conversation not exist");
 			dao.addToConversationsTable(message.getFrom(), message.getTo(), messageId);
-			Intent chatIntent = new Intent("updateOpenCoversationsAdapter");
-		    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(chatIntent);
 		}
 		dao.close();
+		Intent chatIntent = new Intent("updateOpenCoversationsAdapter");
+	    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(chatIntent);
 	}
 
 	

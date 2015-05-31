@@ -6,9 +6,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.view.View;
+import android.widget.ProgressBar;
+
 import com.appspot.enhanced_cable_88320.aroundmeapi.Aroundmeapi;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
@@ -29,6 +33,7 @@ public class Controller {
 	private User currentUser;
 	private HashMap<String, UserAroundMe> allUsers = null;
 	private List<UserAroundMe> allUsersList = null;
+	private ProgressBar progressBar;
 	
 	public Controller() {
 		allUsers = new HashMap<String, UserAroundMe>();

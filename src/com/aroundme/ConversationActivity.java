@@ -135,7 +135,7 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
 			message.setTimestamp(new DateTime(new Date()));
 	   		Long messageId = addMessageToDB(message);
     		updateConversationTable(message, messageId);
-			// Here I need to send brodacts to tell the reciver to refresh the adapter for open conversation list
+			// Here I need to send broadcast to tell the receiver to refresh the adapter for open conversation list
 			Intent updateAdapterIntent = new Intent("updateOpenCoversationsAdapter");
 		    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(updateAdapterIntent);
     		return true;
