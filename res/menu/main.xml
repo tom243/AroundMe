@@ -4,15 +4,18 @@
     tools:context="com.aroundme.MainActivity" >
 
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_about"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never"/>
-    
-     	<item android:id="@+id/action_open_map"
-          android:icon="@drawable/map_icon"
-          android:title="@string/action_open_map"
-          android:titleCondensed="map"
-          android:showAsAction="ifRoom" />
+        android:title="About"
+        android:icon="@drawable/about_icon"
+        app:showAsAction="ifRoom"></item>
+  	
+  	<item
+        android:id="@+id/action_map"
+        android:orderInCategory="200"
+        android:title="Map"
+        android:icon="@drawable/map_icon"
+        app:showAsAction="ifRoom"
+        ></item>
 
 </menu>

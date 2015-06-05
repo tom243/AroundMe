@@ -198,6 +198,14 @@ public class DAO implements IDataAccess{
 	}
 	
 	@Override
+	public void updateUnreadMessages(ConversationItem conv) {
+		ContentValues values = new ContentValues();
+		values.put(ConversationsEntry.COLUMN_COUNTER_UNREAD_MESSAGES, conv.getUnreadMess());
+		db.update(ConversationsEntry.TABLE_NAME, values, ConversationsEntry.COLUMN_USER_MAIL + "=? AND " + 
+				ConversationsEntry.COLUMN_FRIEND_MAIL + "=?",  new String[] {conv.getUserMail(), conv.getFriendMail()});
+	}
+	
+	@Override
 	public void removeFromConversationTable(ConversationItem conv) {
 		db.delete(ConversationsEntry.TABLE_NAME, ConversationsEntry.COLUMN_USER_MAIL + "=? AND " + 
 				ConversationsEntry.COLUMN_FRIEND_MAIL + "=?",  new String[] {conv.getUserMail(), conv.getFriendMail()});

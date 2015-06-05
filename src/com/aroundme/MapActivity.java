@@ -7,6 +7,7 @@ import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
 import com.aroundme.common.AppConsts;
 import com.aroundme.common.IAppCallBack;
 import com.aroundme.common.IAppCallBack2;
+import com.aroundme.common.SplashInterface;
 import com.aroundme.controller.Controller;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -22,25 +23,30 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import android.app.Activity;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
-public class MapActivity extends Activity implements OnMapReadyCallback,IAppCallBack<List<UserAroundMe>>,
-				IAppCallBack2<ArrayList<BitmapDescriptor>>,ConnectionCallbacks, OnConnectionFailedListener{
+public class MapActivity extends ActionBarActivity implements OnMapReadyCallback,IAppCallBack<List<UserAroundMe>>,
+				IAppCallBack2<ArrayList<BitmapDescriptor>>,ConnectionCallbacks, OnConnectionFailedListener,
+				SplashInterface{
 
-	GoogleApiClient mGoogleApiClient;
-	Controller controller;
-	GoogleMap myMap = null;
-	ArrayList<Marker> markers = null;
-	List<UserAroundMe> usersAroundMe= null;
+	private GoogleApiClient mGoogleApiClient;
+	private Controller controller;
+	private GoogleMap myMap = null;
+	private ArrayList<Marker> markers = null;
+	private List<UserAroundMe> usersAroundMe= null;
+	//private ProgressBar progressBar;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_map);
+	//	progressBar = (ProgressBar) findViewById(R.id.progressBar1);
 		buildGoogleApiClient();
 		controller = Controller.getInstance();
 		MapFragment mapFragment = (MapFragment) getFragmentManager()
@@ -63,17 +69,17 @@ public class MapActivity extends Activity implements OnMapReadyCallback,IAppCall
 		return true;
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+	 @Override
+	    public boolean onOptionsItemSelected(MenuItem item) {
+	        // Handle action bar item clicks here. The action bar will
+	        // automatically handle clicks on the Home/Up button, so long
+	        // as you specify a parent activity in AndroidManifest.xml.
+	        int id = item.getItemId();
+	        if (id == R.id.action_settings) {
+	            return true;
+	        }
+	        return super.onOptionsItemSelected(item);
+	    }
 
 	@Override
 	public void onMapReady(GoogleMap map) {
@@ -102,14 +108,14 @@ public class MapActivity extends Activity implements OnMapReadyCallback,IAppCall
 	        	.tilt(40)                   // Sets the tilt of the camera to 30 degrees
 	        	.build();                   // Creates a CameraPosition from the builder
 	        myMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-	        controller.getUsersAroundMe(AppConsts.radius_around_me, geo, this);
+	        controller.getUsersAroundMe(AppConsts.radius_around_me, geo, this,this);
         }
 	}
 
 	@Override
 	public void done(final List<UserAroundMe> users, Exception e) {
 		if(e == null) {
-			controller.getImagesUsersAroundMe(users, this);
+			controller.getImagesUsersAroundMe(users, this,this);
 			usersAroundMe = users;
 		}
 		else
@@ -148,4 +154,19 @@ public class MapActivity extends Activity implements OnMapReadyCallback,IAppCall
 				markers.add(marker);
 		}
 	}
+	
+	@Override
+	public void visible(Exception e) {
+		if (e == null) {
+		//	progressBar.setVisibility(View.VISIBLE);
+		}
+	}
+
+	@Override
+	public void unvisible(Exception e) {
+		if (e == null) {
+		//	progressBar.setVisibility(View.INVISIBLE);
+		}
+	}
+
 }

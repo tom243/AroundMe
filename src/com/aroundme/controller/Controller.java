@@ -22,6 +22,7 @@ import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMeCollection
 import com.aroundme.EndpointApiCreator;
 import com.aroundme.common.IAppCallBack;
 import com.aroundme.common.IAppCallBack2;
+import com.aroundme.common.SplashInterface;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.api.client.util.DateTime;
@@ -33,7 +34,6 @@ public class Controller {
 	private User currentUser;
 	private HashMap<String, UserAroundMe> allUsers = null;
 	private List<UserAroundMe> allUsersList = null;
-	private ProgressBar progressBar;
 	
 	public Controller() {
 		allUsers = new HashMap<String, UserAroundMe>();
@@ -63,9 +63,14 @@ public class Controller {
 		return allUsersList;
 	}
 
-	public void login(final String email, final String pass, final String regId,final IAppCallBack<User> callback) {
+	public void login(final String email, final String pass, final String regId,final IAppCallBack<User> callback, final SplashInterface splash) {
 		
-		new  AsyncTask<Void, Void, Void>() {
+		new AsyncTask<Void, Void, Void>() {
+			@Override
+			protected void onPreExecute() {
+				splash.visible(null);
+				super.onPreExecute();
+			}
 			@Override
 			protected Void doInBackground(Void... params) {
 				try {
@@ -78,21 +83,25 @@ public class Controller {
 				}
 				return null;
 			}
-		
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
+				splash.unvisible(null);
 				// call callback
 				if(callback!=null)
 					callback.done(currentUser, null);
 			}
-
 		}.execute();
 	}
 
-	public void register(final User user,final IAppCallBack<User> callback) {
+	public void register(final User user,final IAppCallBack<User> callback, final SplashInterface splash) {
 		
 		new  AsyncTask<Void, Void, Void>() {
+			@Override
+			protected void onPreExecute() {
+				splash.visible(null);
+				super.onPreExecute();
+			}
 			@Override
 			protected Void doInBackground(Void... params) {
 				try {
@@ -105,21 +114,25 @@ public class Controller {
 				}
 				return null;
 			}
-		
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
+				splash.unvisible(null);
 				// call callback
 				if(callback!=null)
 					callback.done(user, null);
 			}
-
 		}.execute();
 	}
 	
-	public void getUsersAroundMe(final int rad,final GeoPt geo,final IAppCallBack<List<UserAroundMe>> callback) {
+	public void getUsersAroundMe(final int rad,final GeoPt geo,final IAppCallBack<List<UserAroundMe>> callback, final SplashInterface splash) {
 		
 		new  AsyncTask<Void, Void, UserAroundMeCollection>() {
+			@Override
+			protected void onPreExecute() {
+				splash.visible(null);
+				super.onPreExecute();
+			}
 			@Override
 			protected UserAroundMeCollection doInBackground(Void... params) {
 				UserAroundMeCollection users = null;
@@ -136,22 +149,25 @@ public class Controller {
 				}
 				return users;
 			}
-		
 			@Override
 			protected void onPostExecute(UserAroundMeCollection users) {
 				super.onPostExecute(users);
+				splash.unvisible(null);
 				// call callback
 				if(callback!=null)
 					callback.done(users.getItems(), null);
-				//getImagesUsersAroundMe(users.getItems(),callback);
 			}
-
 		}.execute();
 	}
 	
-	public void getAllUsersFromServer(final IAppCallBack<List<UserAroundMe>> callback) {
+	public void getAllUsersFromServer(final IAppCallBack<List<UserAroundMe>> callback, final SplashInterface splash) {
 		
 		new  AsyncTask<Void, Void, UserAroundMeCollection>() {
+			@Override
+			protected void onPreExecute() {
+				splash.visible(null);
+				super.onPreExecute();
+			}
 			@Override
 			protected UserAroundMeCollection doInBackground(Void... params) {
 				UserAroundMeCollection allUsers = null;
@@ -166,27 +182,31 @@ public class Controller {
 				}
 				return allUsers;
 			}
-		
 			@Override
 			protected void onPostExecute(UserAroundMeCollection users) {
-				super.onPostExecute(users);
 				// update all-users hash map
 				for (UserAroundMe user : users.getItems()) 
 					allUsers.put(user.getMail(),user);
 				
 				allUsersList = users.getItems();		// delete this or the 2 lines above 
-				
+				if (splash!=null)
+					splash.unvisible(null);
 				// call callback
 				if(callback!=null)
 					callback.done(users.getItems(), null);
+				//super.onPostExecute(users);
 			}
-
 		}.execute();
 	}
 
-	public void getImagesUsersAroundMe(final List<UserAroundMe> users,final IAppCallBack2<ArrayList<BitmapDescriptor>> callback) {
+	public void getImagesUsersAroundMe(final List<UserAroundMe> users,final IAppCallBack2<ArrayList<BitmapDescriptor>> callback, final SplashInterface splash) {
 		
 		new  AsyncTask<Void, Void,ArrayList<BitmapDescriptor>>() {
+			@Override
+			protected void onPreExecute() {
+				splash.visible(null);
+				super.onPreExecute();
+			}
 			@Override
 			protected ArrayList<BitmapDescriptor> doInBackground(Void... params) {
 		 	   ArrayList<BitmapDescriptor> imagesArr = new ArrayList<BitmapDescriptor>(users.size());
@@ -209,17 +229,22 @@ public class Controller {
 			@Override
 			protected void onPostExecute(ArrayList<BitmapDescriptor> imagesArr) {
 				super.onPostExecute(imagesArr);
+				splash.unvisible(null);
 				// call callback
 				if(callback!=null)
 					callback.done2(imagesArr, null);
 			}
-
 		}.execute();
 	}
 
-	public void sendMessageToUser(final String content,final String to,final IAppCallBack<Void> callback) {
+	public void sendMessageToUser(final String content,final String to,final IAppCallBack<Void> callback, final SplashInterface splash) {
 		
 		new  AsyncTask<Void, Void, Void>(){
+			@Override
+			protected void onPreExecute() {
+				splash.visible(null);
+				super.onPreExecute();
+			}
 			@Override
 			protected Void doInBackground(Void... params) {
 				try {
@@ -237,13 +262,11 @@ public class Controller {
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
+				splash.unvisible(null);
 				// call callback
 				if(callback!=null)
 					callback.done(null,null);
-				System.out.println("End async task of send messages!");
-				
 			}
-
 		}.execute();
 	}
 	

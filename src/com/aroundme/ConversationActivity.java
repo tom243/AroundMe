@@ -9,10 +9,12 @@ import com.aroundme.common.AppConsts;
 import com.aroundme.common.ChatMessage;
 import com.aroundme.common.ConversationItem;
 import com.aroundme.common.IAppCallBack;
+import com.aroundme.common.SplashInterface;
 import com.aroundme.controller.Controller;
 import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
 import com.google.api.client.util.DateTime;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -28,9 +30,10 @@ import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
-public class ConversationActivity extends Activity implements IAppCallBack<Void>{
+public class ConversationActivity extends Activity implements IAppCallBack<Void>, SplashInterface{
 
     private ChatArrayAdapter chatArrayAdapter;
     private ListView listView;
@@ -41,11 +44,13 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
     private Controller controller;
     private IDataAccess dao;
     private  ArrayList<Message> historyMessages;
+    private ProgressBar progressBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conversation);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar1);
         Intent intent = getIntent();
         controller = Controller.getInstance();
         dao = DAO.getInstance(getApplicationContext());
@@ -85,9 +90,23 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
             }
         });
         getHistoryMessagesFromDB(myFriendMail);
+        initializeUnreadMessages();
     }
     
-    public  void getHistoryMessagesFromDB(String friendMail){
+    public void initializeUnreadMessages() {
+	    dao.open();
+	    ConversationItem conv = dao.isConversationExist(controller.getCurrentUser().getMail(),myFriendMail);
+		if (conv != null) {
+			conv.setUnreadMess(0);
+			dao.updateUnreadMessages(conv);
+			Intent updateAdapterIntent = new Intent("updateOpenCoversationsAdapter");
+		    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(updateAdapterIntent);
+		}
+		dao.close();
+    }
+    
+    
+    public void getHistoryMessagesFromDB(String friendMail){
 		dao.open();
 		historyMessages = dao.getAllMessagesForFriend(controller.getCurrentUser().getMail(), friendMail);
 		dao.close();
@@ -119,7 +138,7 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
 	        	 side = true;
 	        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet()));
 	        }
-	        Toast.makeText(getApplicationContext(), message.getContnet(), Toast.LENGTH_SHORT).show();
+	        //Toast.makeText(getApplicationContext(), message.getContnet(), Toast.LENGTH_SHORT).show();
 	        //  ... react to local broadcast message
 	    }
 	};
@@ -127,7 +146,7 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
     private boolean sendChatMessage(){
     	if (!chatText.getText().toString().isEmpty()) {
     		String messageContent = chatText.getText().toString();
-    		controller.sendMessageToUser(messageContent,myFriendMail,this);
+    		controller.sendMessageToUser(messageContent,myFriendMail,this,this);
 			Message message = new Message();;
 			message.setContnet(messageContent);
 			message.setFrom(controller.getCurrentUser().getMail());
@@ -165,7 +184,8 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
 		ConversationItem conv = dao.isConversationExist(message.getFrom(),message.getTo());
 		if (conv != null) {
 			System.out.println("Conversation  exist");
-			conv.setUnreadMess(conv.getUnreadMess() +1 );
+			// I just send message so I saw for sure the last messages that I've got.
+			//conv.setUnreadMess(0); // no actually need to update
 			dao.updateOpenConversation(conv, messageId);
 		}
 		else {
@@ -177,16 +197,35 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
 	
 	@Override
 	protected void onStart() {
-		// TODO Auto-generated method stub
 		super.onStart();
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("chatMessage"));
 	}
 
 	@Override
 	protected void onStop() {
-		// TODO Auto-generated method stub
 		super.onStop();
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 	}
+
+	@Override
+	public void visible(Exception e) {
+		if (e == null) {
+			progressBar.setVisibility(View.VISIBLE);
+		}
+	}
+
+	@Override
+	public void unvisible(Exception e) {
+		if (e == null) {
+			progressBar.setVisibility(View.INVISIBLE);
+		}
+	}
+
+	@Override
+	protected void onPause() {		 // on pause ??
+		initializeUnreadMessages();
+		super.onPause();
+	}
+
 
 }

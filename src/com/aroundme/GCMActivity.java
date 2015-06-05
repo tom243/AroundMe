@@ -2,16 +2,16 @@ package com.aroundme;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-
 import com.aroundme.deviceinfoendpoint.Deviceinfoendpoint;
 import com.aroundme.deviceinfoendpoint.model.DeviceInfo;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +27,7 @@ public class GCMActivity extends Activity {
 	 * Substitute you own sender ID here. This is the project number you got
 	 * from the API Console, as described in "Getting Started."
 	 */
+	private ProgressBar progressBar;
 	//This is the project ID related to 'AroundMe'.
 	String SENDER_ID = "1047488186224";
 	private SharedPreferences prefs;
@@ -43,6 +44,7 @@ public class GCMActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_gcm);
+		progressBar = (ProgressBar) findViewById(R.id.progressBar1);
 		//You must initialize the EndpointApiCreator in order to use it.
 		EndpointApiCreator.initialize(null);
 		
@@ -155,6 +157,12 @@ public class GCMActivity extends Activity {
 	}
 	
 	private class RegAsyncTask extends AsyncTask<Void, Void, String>{
+		
+		@Override
+		protected void onPreExecute() {
+			progressBar.setVisibility(View.VISIBLE);
+			super.onPreExecute();
+		}
         @Override
         protected String doInBackground(Void... params) {
             Log.i(TAG,"doinBackgroud!!!!!!!");
@@ -191,6 +199,7 @@ public class GCMActivity extends Activity {
         @Override
         protected void onPostExecute(String msg) {
         	Log.i(TAG,msg);
+        	progressBar.setVisibility(View.INVISIBLE);
         	startLogin();
         }
 	}

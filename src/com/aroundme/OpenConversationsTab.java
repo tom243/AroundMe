@@ -9,19 +9,23 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
 import com.aroundme.adapter.CustomConversationsAdapter;
 import com.aroundme.common.AppConsts;
 import com.aroundme.common.ConversationItem;
 import com.aroundme.common.IAppCallBack;
+import com.aroundme.common.SplashInterface;
 import com.aroundme.controller.Controller;
 import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.widget.AdapterView;
+import android.widget.ProgressBar;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
@@ -29,7 +33,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import java.util.HashMap;
 import java.util.List;
 
-public class OpenConversationsTab extends ListFragment implements OnItemClickListener, IAppCallBack<List<UserAroundMe>>{
+public class OpenConversationsTab extends ListFragment implements OnItemClickListener, 
+						IAppCallBack<List<UserAroundMe>>,SplashInterface{
 
 	private Controller controller;
 	private Context context;
@@ -37,6 +42,7 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 	private List<ConversationItem> conversations;
 	private IDataAccess dao;
 	private List<UserAroundMe> allUsers;
+	private ProgressBar progressBar;
 	
 	/* (non-Javadoc)
 	 * @see android.support.v4.app.ListFragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
@@ -44,6 +50,7 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 		context = inflater.getContext();
+		progressBar = (ProgressBar) getActivity().findViewById(R.id.progressBar1);
 		return inflater.inflate(R.layout.open_conversations_tab, container, false);
     }
 
@@ -53,12 +60,22 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 		controller = Controller.getInstance();
 		dao = DAO.getInstance(context);
 		getConversationListFromDB();
+		
+		
 		adapter = new CustomConversationsAdapter(getActivity(), conversations);
 	    setListAdapter(adapter);
 		getListView().setOnItemClickListener(this);
+		
 		LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(newOpenConversation, new IntentFilter("updateOpenCoversationsAdapter"));
 		/** Registering context menu for the listview */
         registerForContextMenu(getListView());
+	}
+	
+	private void refreshAdapter(){
+		getConversationListFromDB();
+		adapter = new CustomConversationsAdapter(getActivity(), conversations); // Im not sure i need to create new adapter every time ask with chen about it 
+	    setListAdapter(adapter);
+        adapter.notifyDataSetChanged();
 	}
 	
     /** This will be invoked when an item in the listview is long pressed */
@@ -99,13 +116,6 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 	    }
 	};
 	
-	private void refreshAdapter(){
-		getConversationListFromDB();
-		adapter = new CustomConversationsAdapter(getActivity(), conversations); // Im not sure i need to create new adapter every time ask with chen about it 
-	    setListAdapter(adapter);
-        adapter.notifyDataSetChanged();
-	}
-	
 	private void removeOpenConversation(String friendMail){
 		dao.open();
 		ConversationItem conv = dao.isConversationExist(controller.getCurrentUser().getMail(),friendMail);
@@ -122,7 +132,7 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 		dao.close();
 	    allUsers = controller.getAllUsersList(); // not going to server
 	    if (allUsers.isEmpty())
-	    	controller.getAllUsersFromServer(this);
+	    	controller.getAllUsersFromServer(this,this);
 	    else
 	    	addImageUrlToConversationItem();
 	}
@@ -131,7 +141,7 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 	     // ListView Clicked item value
 	     String friendMail = conversations.get(position).getFriendMail();
-	     Toast.makeText(getActivity(), friendMail , Toast.LENGTH_SHORT).show();
+	     //Toast.makeText(getActivity(), friendMail , Toast.LENGTH_SHORT).show();
 	     
 		 Intent i = new Intent(getActivity(), ConversationActivity.class);
 	     i.putExtra(AppConsts.email_friend,friendMail);
@@ -152,6 +162,20 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 		HashMap<String, UserAroundMe> allUsers = controller.getAllUsers();
 		for (ConversationItem conv: conversations){
 			conv.setImageUrl(allUsers.get(conv.getFriendMail()).getImageUrl());
+		}
+	}
+	
+	@Override
+	public void visible(Exception e) {
+		if (e == null) {
+			progressBar.setVisibility(View.VISIBLE);
+		}
+	}
+
+	@Override
+	public void unvisible(Exception e) {
+		if (e == null) {
+			progressBar.setVisibility(View.INVISIBLE);
 		}
 	}
 	

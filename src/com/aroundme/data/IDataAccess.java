@@ -42,6 +42,8 @@ public interface IDataAccess {
 	 
 	 void updateOpenConversation(ConversationItem conv, Long messageId);
 	 
+	 public void updateUnreadMessages(ConversationItem conv);
+	 
 	 void removeFromConversationTable(ConversationItem conv);
 	 
 	

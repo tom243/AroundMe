@@ -13,16 +13,23 @@
         -->
     </style>
 
-    <!-- Application theme. -->
-    <style name="AppTheme" parent="AppBaseTheme">
-        <item name="windowActionBar"> false </item>
-        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+     <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/ColorPrimary</item>
+        <item name="colorPrimaryDark">@color/ColorPrimaryDark</item>
+        <!-- Customize your theme here. -->
     </style>
     
-     <style name="AppThemeNoTitle" parent="AppBaseTheme">
+    <!-- Application theme. -->
+   <!--  <style name="AppTheme" parent="AppBaseTheme">
+        <item name="windowActionBar"> false </item>
+        All customizations that are NOT specific to a particular API-level can go here.
+    </style> -->
+    
+   <!--   <style name="AppThemeNoTitle" parent="AppBaseTheme">
         <item name="windowActionBar"> false </item>
         <item name="android:windowNoTitle"> true </item>
-        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
-    </style>
+        All customizations that are NOT specific to a particular API-level can go here.
+    </style> -->
 
 </resources>

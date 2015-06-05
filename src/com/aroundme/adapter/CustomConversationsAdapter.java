@@ -18,6 +18,7 @@ import com.google.api.client.util.DateTime;
 
 import android.app.Activity;
 import android.content.Context;
+import android.opengl.Visibility;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,6 +71,8 @@ public class CustomConversationsAdapter extends BaseAdapter{
         TextView txtTitle = (TextView) convertView.findViewById(R.id.friendName);
         TextView txtDate = (TextView) convertView.findViewById(R.id.date);
         TextView txtMessage = (TextView) convertView.findViewById(R.id.message);
+        TextView txtUnreadMessages = (TextView) convertView.findViewById(R.id.unread_messages);
+        
         ConversationItem row_pos = conversations.get(position);
         String friendName = controller.getUserNameByMail(row_pos.getFriendMail());
         if (friendName != null){
@@ -83,6 +86,13 @@ public class CustomConversationsAdapter extends BaseAdapter{
         	 txtDate.setText(getDate(row_pos.getTimeStamp(),"dd/MM"));
          else
         	 txtDate.setText(getDate(row_pos.getTimeStamp(),"HH:mm"));
+         
+          if (row_pos.getUnreadMess() > 0) {
+        	  txtUnreadMessages.setVisibility(View.VISIBLE);
+        	  txtUnreadMessages.setText(String.valueOf(row_pos.getUnreadMess()));
+       		}
+         	else 
+         		txtUnreadMessages.setVisibility(View.INVISIBLE);
         	 
          txtMessage.setText(row_pos.getContentMess());
         return convertView;

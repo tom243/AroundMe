@@ -120,7 +120,7 @@ public class GCMIntentService extends IntentService
 		ConversationItem conv = dao.isConversationExist(controller.getCurrentUser().getMail(), message.getFrom());
 		if (conv != null) {
 			System.out.println("Conversation  exist");
-			conv.setUnreadMess(conv.getUnreadMess() +1 );
+			conv.setUnreadMess(conv.getUnreadMess()+1);	// ***
 			dao.updateOpenConversation(conv, messageId); // update row in data-base
 		}
 		else {

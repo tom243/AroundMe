@@ -2,36 +2,33 @@ package com.aroundme;
 
 import com.aroundme.adapter.ViewPagerAdapter;
 import com.aroundme.common.SlidingTabLayout;
-import com.aroundme.controller.Controller;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
  
 public class MainActivity extends ActionBarActivity { 
-	//implements IAppCallBack<List<UserAroundMe>> {
- 
-    // Declaring Your View and Variables
- 
-    Toolbar toolbar;
-    ViewPager pager;
-    ViewPagerAdapter adapter;
-    SlidingTabLayout tabs;
-    CharSequence Titles[]={"Friends","Conversations"};
-    int Numboftabs =2;
-    Controller controller;
+
+	private Toolbar toolbar;
+    private ViewPager pager;
+    private ViewPagerAdapter adapter;
+    private SlidingTabLayout tabs;
+    private CharSequence Titles[]={"Friends","Conversations"};
+    private int Numboftabs =2;
  
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        controller = Controller.getInstance();
         // Creating The Toolbar and setting it as the Toolbar for the activity
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
+        
         // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles for the Tabs and Number Of Tabs.
         adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,Numboftabs);
         // Assigning ViewPager View and setting the adapter
@@ -66,6 +63,20 @@ public class MainActivity extends ActionBarActivity {
         if (id == R.id.action_settings) {
             return true;
         }
+        if (id == R.id.action_about) {
+        	Toast.makeText(this, "about" , Toast.LENGTH_SHORT).show();
+        	// if...
+        	Intent intent = new Intent(this, AboutActivity.class);
+    		startActivity(intent);
+        	return true;
+        }
+        if (id == R.id.action_map) {
+        	Toast.makeText(this, "map" , Toast.LENGTH_SHORT).show();
+        	Intent intent = new Intent(this, MapActivity.class);
+    		startActivity(intent);
+        	return true;
+        }
+        
         return super.onOptionsItemSelected(item);
     }
     

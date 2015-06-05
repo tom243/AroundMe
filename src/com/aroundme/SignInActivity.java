@@ -2,6 +2,7 @@ package com.aroundme;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.User;
 import com.aroundme.common.IAppCallBack;
+import com.aroundme.common.SplashInterface;
 import com.aroundme.controller.Controller;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -20,11 +21,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 public class SignInActivity extends Activity implements ConnectionCallbacks,
-		OnConnectionFailedListener, OnClickListener, IAppCallBack<User> {
+		OnConnectionFailedListener, OnClickListener, IAppCallBack<User>, SplashInterface {
 
+	private ProgressBar progressBar;
 
 	/* Request code used to invoke sign in user interactions. */
 	private static final int RC_SIGN_IN = 0;
@@ -51,12 +54,13 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	private String regId=null;
 	private Controller controller;
 	private String email;
-	Person currentPerson;
+	private Person currentPerson;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sign_in);
+		progressBar = (ProgressBar) findViewById(R.id.progressBar1);
 		controller = Controller.getInstance();
 		mGoogleApiClient = new GoogleApiClient.Builder(this)
 				.addConnectionCallbacks(this)
@@ -104,7 +108,7 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 				}
 
 		      });
-		      Toast.makeText(getApplicationContext(), "User is disconnected!", Toast.LENGTH_SHORT).show();
+		     // Toast.makeText(getApplicationContext(), "User is disconnected!", Toast.LENGTH_SHORT).show();
 		      mGoogleApiClient.disconnect();
 		      mGoogleApiClient.connect();
 		    }
@@ -133,10 +137,10 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		mSignInClicked = false;
-		Toast.makeText(this, "User is connected!", Toast.LENGTH_LONG).show();
+		//Toast.makeText(this, "User is connected!", Toast.LENGTH_LONG).show();
 		email = Plus.AccountApi.getAccountName(mGoogleApiClient);
 		currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-		controller.login(email,currentPerson.getId(),regId,this);
+		controller.login(email,currentPerson.getId(),regId,this,this);
 	}
 
 	protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
@@ -202,7 +206,7 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 					this.user.setPassword(password);
 					this.user.setImageUrl(personPhoto);
 					this.user.setRegistrationId(regId);
-					controller.register(this.user,this);
+					controller.register(this.user,this,this);
 				}
 			} else{
 				this.user = user;
@@ -212,5 +216,20 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 			System.out.println("error");
 			// handle ??
 	}
+
+	@Override
+	public void visible(Exception e) {
+		if (e == null) {
+			progressBar.setVisibility(View.VISIBLE);
+		}
+	}
+
+	@Override
+	public void unvisible(Exception e) {
+		if (e == null) {
+			progressBar.setVisibility(View.INVISIBLE);
+		}
+	}
+
 
 }

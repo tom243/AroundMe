@@ -31,6 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
         android:layout_alignParentRight="true"
         android:gravity="center_vertical"
         android:textColor="#000000"
@@ -41,10 +42,23 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_marginTop="10dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
+        android:layout_below="@+id/friendName"
+         android:layout_toRightOf="@id/icon2"
         android:gravity="center_vertical"
         android:textColor="#000000"
         android:textSize="16sp" />
 
+       	<TextView
+        android:id="@+id/unread_messages"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginTop="3dp"
+        android:layout_below="@+id/date"
+        android:layout_alignParentRight="true"
+        android:textColor="#000000"
+        android:gravity="center_vertical|center_horizontal"
+        android:background="@drawable/orange_circle"
+        android:visibility="visible"
+        android:textSize="16sp" />
+       	
 </RelativeLayout>

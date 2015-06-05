@@ -28,7 +28,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
    //This method return the fragment for the every position in the View Pager
    @Override
    public Fragment getItem(int position) {
-
+	   
        if(position == 0){ // if the position is 0 we are returning the First tab
            UsersTab tab1 = new UsersTab();
            return tab1;
