@@ -2,6 +2,7 @@ package com.aroundme;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
 import com.aroundme.common.AppConsts;
@@ -19,10 +20,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -32,21 +35,18 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 public class MapActivity extends ActionBarActivity implements OnMapReadyCallback,IAppCallBack<List<UserAroundMe>>,
-				IAppCallBack2<ArrayList<BitmapDescriptor>>,ConnectionCallbacks, OnConnectionFailedListener,
-				SplashInterface{
+				IAppCallBack2<ArrayList<BitmapDescriptor>>,ConnectionCallbacks, OnConnectionFailedListener{
 
 	private GoogleApiClient mGoogleApiClient;
 	private Controller controller;
 	private GoogleMap myMap = null;
 	private ArrayList<Marker> markers = null;
 	private List<UserAroundMe> usersAroundMe= null;
-	//private ProgressBar progressBar;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_map);
-	//	progressBar = (ProgressBar) findViewById(R.id.progressBar1);
 		buildGoogleApiClient();
 		controller = Controller.getInstance();
 		MapFragment mapFragment = (MapFragment) getFragmentManager()
@@ -108,15 +108,24 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	        	.tilt(40)                   // Sets the tilt of the camera to 30 degrees
 	        	.build();                   // Creates a CameraPosition from the builder
 	        myMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-	        controller.getUsersAroundMe(AppConsts.radius_around_me, geo, this,this);
+	        controller.getUsersAroundMe(AppConsts.radius_around_me, geo, this);
         }
 	}
 
 	@Override
 	public void done(final List<UserAroundMe> users, Exception e) {
 		if(e == null) {
-			controller.getImagesUsersAroundMe(users, this,this);
 			usersAroundMe = users;
+			Marker marker = null; 
+			for (int i=0; i<usersAroundMe.size(); i++) {
+				marker = myMap.addMarker(new MarkerOptions()
+	    			.position(new LatLng(usersAroundMe.get(i).getLocation().getLatitude(), usersAroundMe.get(i).getLocation().getLongitude()))
+	    			.title(usersAroundMe.get(i).getDisplayName()));
+				marker.setDraggable(true);
+				if (markers != null && !markers.contains(marker))
+					markers.add(marker);
+			}
+			controller.getImagesUsersAroundMe(users, this);
 		}
 		else
 			; // error
@@ -143,6 +152,13 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 
 	@Override
 	public void done2(ArrayList<BitmapDescriptor> imagesArr, Exception e) {
+		// delete all previous markers
+		/*for (int i=0; i<.size(); i++) {
+			markers.get(i).remove();
+		}*/
+		markers.clear();
+		myMap.clear();
+		// add new markers with the pictures from G+
 		Marker marker = null; 
 		for (int i=0; i<usersAroundMe.size(); i++) {
 			marker = myMap.addMarker(new MarkerOptions()
@@ -154,19 +170,6 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 				markers.add(marker);
 		}
 	}
-	
-	@Override
-	public void visible(Exception e) {
-		if (e == null) {
-		//	progressBar.setVisibility(View.VISIBLE);
-		}
-	}
 
-	@Override
-	public void unvisible(Exception e) {
-		if (e == null) {
-		//	progressBar.setVisibility(View.INVISIBLE);
-		}
-	}
 
 }

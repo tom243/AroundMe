@@ -65,7 +65,7 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBwbwVKtCayXL78KXHIdXiWLyurzrRiFp0" />
+            android:value="AIzaSyBBcLhfWy-vnmXyQGw1U6wgM5HV8Q6skPQ" />
 
         <activity
             android:name=".SignInActivity"
@@ -73,7 +73,7 @@
         </activity>
         <activity
             android:name=".MapActivity"
-            android:label="@string/title_activity_main" >
+  			>
         </activity>
         <activity
             android:name=".ChatActivity"
@@ -85,7 +85,7 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:label="@string/title_activity_main"
+            android:label=""
             android:theme="@style/AppTheme" >
         </activity>
         <activity

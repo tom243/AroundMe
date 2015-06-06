@@ -125,14 +125,9 @@ public class Controller {
 		}.execute();
 	}
 	
-	public void getUsersAroundMe(final int rad,final GeoPt geo,final IAppCallBack<List<UserAroundMe>> callback, final SplashInterface splash) {
+	public void getUsersAroundMe(final int rad,final GeoPt geo,final IAppCallBack<List<UserAroundMe>> callback) {
 		
 		new  AsyncTask<Void, Void, UserAroundMeCollection>() {
-			@Override
-			protected void onPreExecute() {
-				splash.visible(null);
-				super.onPreExecute();
-			}
 			@Override
 			protected UserAroundMeCollection doInBackground(Void... params) {
 				UserAroundMeCollection users = null;
@@ -152,7 +147,6 @@ public class Controller {
 			@Override
 			protected void onPostExecute(UserAroundMeCollection users) {
 				super.onPostExecute(users);
-				splash.unvisible(null);
 				// call callback
 				if(callback!=null)
 					callback.done(users.getItems(), null);
@@ -199,14 +193,10 @@ public class Controller {
 		}.execute();
 	}
 
-	public void getImagesUsersAroundMe(final List<UserAroundMe> users,final IAppCallBack2<ArrayList<BitmapDescriptor>> callback, final SplashInterface splash) {
+	public void getImagesUsersAroundMe(final List<UserAroundMe> users,final IAppCallBack2<ArrayList<BitmapDescriptor>> callback) {
 		
 		new  AsyncTask<Void, Void,ArrayList<BitmapDescriptor>>() {
-			@Override
-			protected void onPreExecute() {
-				splash.visible(null);
-				super.onPreExecute();
-			}
+			
 			@Override
 			protected ArrayList<BitmapDescriptor> doInBackground(Void... params) {
 		 	   ArrayList<BitmapDescriptor> imagesArr = new ArrayList<BitmapDescriptor>(users.size());
@@ -229,7 +219,6 @@ public class Controller {
 			@Override
 			protected void onPostExecute(ArrayList<BitmapDescriptor> imagesArr) {
 				super.onPostExecute(imagesArr);
-				splash.unvisible(null);
 				// call callback
 				if(callback!=null)
 					callback.done2(imagesArr, null);
