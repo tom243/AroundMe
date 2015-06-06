@@ -87,6 +87,8 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	
 	public void onClick(View view) {
 		if (view.getId() == R.id.sign_in_button && !mGoogleApiClient.isConnecting()) {
+			this.findViewById(R.id.sign_in_button).setVisibility(View.INVISIBLE);
+			this.findViewById(R.id.sign_out_button).setVisibility(View.INVISIBLE);
 			mSignInClicked = true;
 			mGoogleApiClient.connect();
 		}
@@ -220,7 +222,10 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	public void visible(Exception e) {
 		if (e == null) {
+			this.findViewById(R.id.sign_in_button).setVisibility(View.INVISIBLE);
+			this.findViewById(R.id.sign_out_button).setVisibility(View.INVISIBLE);
 			progressBar.setVisibility(View.VISIBLE);
+			
 		}
 	}
 
@@ -230,6 +235,5 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 			progressBar.setVisibility(View.INVISIBLE);
 		}
 	}
-
 
 }
