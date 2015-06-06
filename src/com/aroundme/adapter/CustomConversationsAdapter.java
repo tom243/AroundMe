@@ -19,6 +19,7 @@ import com.google.api.client.util.DateTime;
 import android.app.Activity;
 import android.content.Context;
 import android.opengl.Visibility;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,10 +83,10 @@ public class CustomConversationsAdapter extends BaseAdapter{
         thumbNail.setDefaultImageResId(R.drawable.user_default);
         thumbNail.setImageUrl(row_pos.getImageUrl(), imageLoader);
         
-         if (checkIfMoreThen24Hours(row_pos.getTimeStamp()))
-        	 txtDate.setText(getDate(row_pos.getTimeStamp(),"dd/MM"));
-         else
+          if (DateUtils.isToday(row_pos.getTimeStamp()))
         	 txtDate.setText(getDate(row_pos.getTimeStamp(),"HH:mm"));
+          else
+        	 txtDate.setText(getDate(row_pos.getTimeStamp(),"dd/MM"));
          
           if (row_pos.getUnreadMess() > 0) {
         	  txtUnreadMessages.setVisibility(View.VISIBLE);
@@ -94,7 +95,13 @@ public class CustomConversationsAdapter extends BaseAdapter{
          	else 
          		txtUnreadMessages.setVisibility(View.INVISIBLE);
         	 
-         txtMessage.setText(row_pos.getContentMess());
+          String dotMessage;
+          if (row_pos.getContentMess().length() >= 18) {
+        	  dotMessage = row_pos.getContentMess().substring(0, 18)+ "...";
+          } else {
+        	  dotMessage = row_pos.getContentMess();
+          	}
+          txtMessage.setText(dotMessage); 
         return convertView;
 
     }
@@ -116,14 +123,15 @@ public class CustomConversationsAdapter extends BaseAdapter{
          return formatter.format(calendar.getTime());
     }
     
-    private boolean checkIfMoreThen24Hours(Long date){
+/*    private boolean checkIfMoreThen24Hours(Long date){
     	Long currentDate = new DateTime(new Date()).getValue();
         long diff = currentDate - date;
         int diffInDays = (int) (diff / (1000 * 60 * 60 * 24));
         if (diffInDays >= 1) 
-        	return true; 
+    	if (DateUtils.isToday(date))
+        	return true;
         else
         	return false;
-    }
+    }*/
 
 }
