@@ -41,7 +41,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	private Controller controller;
 	private GoogleMap myMap = null;
 	private ArrayList<Marker> markers = null;
-	private List<UserAroundMe> usersAroundMe= null;
+	private List<UserAroundMe> usersAroundMe = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +84,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	@Override
 	public void onMapReady(GoogleMap map) {
 		myMap = map;
+		mGoogleApiClient.connect();
 	}
 	
 	@Override
@@ -117,10 +118,10 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		if(e == null) {
 			usersAroundMe = users;
 			Marker marker = null; 
-			for (int i=0; i<usersAroundMe.size(); i++) {
+			for (int i=0; i<users.size(); i++) {
 				marker = myMap.addMarker(new MarkerOptions()
-	    			.position(new LatLng(usersAroundMe.get(i).getLocation().getLatitude(), usersAroundMe.get(i).getLocation().getLongitude()))
-	    			.title(usersAroundMe.get(i).getDisplayName()));
+	    			.position(new LatLng(users.get(i).getLocation().getLatitude(), users.get(i).getLocation().getLongitude()))
+	    			.title(users.get(i).getDisplayName()));
 				marker.setDraggable(true);
 				if (markers != null && !markers.contains(marker))
 					markers.add(marker);
@@ -140,7 +141,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
     protected void onStart() {
         super.onStart();
   //      if (!mResolvingError) {  // more about this later
-            mGoogleApiClient.connect();
+            //mGoogleApiClient.connect();
   //      }
     }
 
@@ -153,10 +154,6 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	@Override
 	public void done2(ArrayList<BitmapDescriptor> imagesArr, Exception e) {
 		// delete all previous markers
-		/*for (int i=0; i<.size(); i++) {
-			markers.get(i).remove();
-		}*/
-		markers.clear();
 		myMap.clear();
 		// add new markers with the pictures from G+
 		Marker marker = null; 
