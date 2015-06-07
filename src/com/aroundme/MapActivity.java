@@ -3,6 +3,8 @@ package com.aroundme;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.ImageLoader.ImageContainer;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
 import com.aroundme.common.AppConsts;
@@ -10,6 +12,7 @@ import com.aroundme.common.IAppCallBack;
 import com.aroundme.common.IAppCallBack2;
 import com.aroundme.common.SplashInterface;
 import com.aroundme.controller.Controller;
+import com.aroundme.controller.ImagesController;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -26,11 +29,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -126,6 +132,27 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 				if (markers != null && !markers.contains(marker))
 					markers.add(marker);
 			}
+/*			LinearLayout picLL = new LinearLayout(this);
+			ImageView imageView = new ImageView(this);
+			imageView.setImageResource(R.drawable.ic_launcher);
+	        picLL.addView(imageView);
+	        setContentView(picLL);
+			for (int i=0; i<users.size(); i++) {
+				//ImageView imageView = (ImageView)this.findViewById(R.);
+				
+				ImageLoader imageLoader = ImagesController.getInstance().getImageLoader();
+				ImageContainer imageContainer = imageLoader.get(users.get(i).getImageUrl(), imageLoader.getImageListener(imageView, R.drawable.user_default, R.drawable.user_default));
+				Bitmap bitmap = imageContainer.getBitmap();
+				
+				marker = myMap.addMarker(new MarkerOptions()
+	    			.position(new LatLng(users.get(i).getLocation().getLatitude(), users.get(i).getLocation().getLongitude()))
+    			.title(usersAroundMe.get(i).getDisplayName())
+    			.icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
+				marker.setDraggable(true);
+				if (markers != null && !markers.contains(marker))
+					markers.add(marker);
+			}*/
+
 			controller.getImagesUsersAroundMe(users, this);
 		}
 		else
