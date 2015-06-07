@@ -182,7 +182,7 @@ public class Controller {
 				for (UserAroundMe user : users.getItems()) 
 					allUsers.put(user.getMail(),user);
 				
-				allUsersList = users.getItems();		// delete this or the 2 lines above 
+				allUsersList = users.getItems();		
 				if (splash!=null)
 					splash.unvisible(null);
 				// call callback

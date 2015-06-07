@@ -60,22 +60,12 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 		controller = Controller.getInstance();
 		dao = DAO.getInstance(context);
 		getConversationListFromDB();
+		getUsers(); // maybe async
 		
-		
-		adapter = new CustomConversationsAdapter(getActivity(), conversations);
-	    setListAdapter(adapter);
-		getListView().setOnItemClickListener(this);
-		
+		getListView().setOnItemClickListener(this); 
 		LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(newOpenConversation, new IntentFilter("updateOpenCoversationsAdapter"));
 		/** Registering context menu for the listview */
         registerForContextMenu(getListView());
-	}
-	
-	private void refreshAdapter(){
-		getConversationListFromDB();
-		adapter = new CustomConversationsAdapter(getActivity(), conversations); // Im not sure i need to create new adapter every time ask with chen about it 
-	    setListAdapter(adapter);
-        adapter.notifyDataSetChanged();
 	}
 	
     /** This will be invoked when an item in the listview is long pressed */
@@ -103,8 +93,7 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 	
 	@Override
 	public void onDestroy() {
-		// TODO Auto-generated method stub
-		super.onPause();
+		super.onDestroy();
 		LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(newOpenConversation);
 		
 	}
@@ -130,6 +119,9 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 		dao.open();
 		conversations = dao.getAllOpenConversationsList(controller.getCurrentUser().getMail());
 		dao.close();
+	}	
+		
+	public void getUsers() {
 	    allUsers = controller.getAllUsersList(); // not going to server
 	    if (allUsers.isEmpty())
 	    	controller.getAllUsersFromServer(this,this);
@@ -163,6 +155,15 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 		for (ConversationItem conv: conversations){
 			conv.setImageUrl(allUsers.get(conv.getFriendMail()).getImageUrl());
 		}
+		// create adapter
+		adapter = new CustomConversationsAdapter(getActivity(), conversations);
+	    setListAdapter(adapter);
+		adapter.notifyDataSetChanged();
+	}
+
+	private void refreshAdapter(){
+		getConversationListFromDB();
+		getUsers();
 	}
 	
 	@Override
