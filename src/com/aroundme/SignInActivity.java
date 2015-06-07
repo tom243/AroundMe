@@ -14,9 +14,13 @@ import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.IntentSender.SendIntentException;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -55,6 +59,7 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	private Controller controller;
 	private String email;
 	private Person currentPerson;
+	private boolean signoutPressed = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -68,11 +73,23 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 				.addScope(Plus.SCOPE_PLUS_LOGIN).build();
 		
 		findViewById(R.id.sign_in_button).setOnClickListener(this);
-		findViewById(R.id.sign_out_button).setOnClickListener(this);
-		extars= getIntent().getExtras();
-		regId = extars.getString("regid");
+		//findViewById(R.id.sign_out_button).setOnClickListener(this);
+		extars = getIntent().getExtras();
+		if (extars != null)
+			regId = extars.getString("regid");
+		LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(signoutBroadcast, new IntentFilter("Signout"));
 	}
 
+	private BroadcastReceiver signoutBroadcast = new BroadcastReceiver() {
+	    @Override
+	    public void onReceive(Context context, Intent intent) {
+			signoutPressed = true;
+			// Prior to disconnecting, run clearDefaultAccount().
+			//mGoogleApiClient.connect();
+			// finish();
+	  }
+	};
+	
 	protected void onStart() {
 		super.onStart();
 		mGoogleApiClient.connect();
@@ -88,32 +105,10 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	public void onClick(View view) {
 		if (view.getId() == R.id.sign_in_button && !mGoogleApiClient.isConnecting()) {
 			this.findViewById(R.id.sign_in_button).setVisibility(View.INVISIBLE);
-			this.findViewById(R.id.sign_out_button).setVisibility(View.INVISIBLE);
+			//this.findViewById(R.id.sign_out_button).setVisibility(View.INVISIBLE);
 			mSignInClicked = true;
 			mGoogleApiClient.connect();
-		}
-		if (view.getId() == R.id.sign_out_button) {
-		    if (mGoogleApiClient.isConnected()) {
-		      Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-		   // Prior to disconnecting, run clearDefaultAccount().
-		      Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-		      Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient)
-		          .setResultCallback(new ResultCallback<Status>() {
-				@Override
-				public void onResult(Status status) {
-		          // mGoogleApiClient is now disconnected and access has been revoked.
-		          // Trigger app logic to comply with the developer policies
-				 // I think we need to do actions in server side
-					
-				/* In the onResult callback, you can respond to the event and trigger any appropriate logic in 
-				  your app or your back-end code. For more information, see the deletion rules in the developer policies.*/
-				}
-
-		      });
-		     // Toast.makeText(getApplicationContext(), "User is disconnected!", Toast.LENGTH_SHORT).show();
-		      mGoogleApiClient.disconnect();
-		      mGoogleApiClient.connect();
-		    }
+			signoutPressed = false;
 		}
 	}
 
@@ -140,9 +135,25 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	public void onConnected(Bundle connectionHint) {
 		mSignInClicked = false;
 		//Toast.makeText(this, "User is connected!", Toast.LENGTH_LONG).show();
-		email = Plus.AccountApi.getAccountName(mGoogleApiClient);
-		currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-		controller.login(email,currentPerson.getId(),regId,this,this);
+		if (!signoutPressed) {
+			email = Plus.AccountApi.getAccountName(mGoogleApiClient);
+			currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+			signoutPressed = false;
+			controller.login(email,currentPerson.getId(),regId,this,this);
+		}
+		else {
+			Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+			Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient)
+					.setResultCallback(new ResultCallback<Status>() {
+						@Override
+						public void onResult(Status status) {
+
+						}
+					});
+			mGoogleApiClient.disconnect();
+			//mGoogleApiClient.connect();
+			signoutPressed = false;
+		}
 	}
 
 	protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
@@ -150,9 +161,7 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 		    if (responseCode != RESULT_OK) {
 		      mSignInClicked = false;
 		    }
-
 		    mIntentInProgress = false;
-
 		    if (!mGoogleApiClient.isConnected()) {
 		      mGoogleApiClient.reconnect();
 		    }
@@ -189,7 +198,7 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 		//intent.putExtra("regid",regid);
 		startActivity(intent);
 		/* Since this is just a wrapper to start the main activity, finish it after launching SignInActivity */
-		finish();
+		//finish();
 	}
 
 	@Override
@@ -223,9 +232,8 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	public void visible(Exception e) {
 		if (e == null) {
 			this.findViewById(R.id.sign_in_button).setVisibility(View.INVISIBLE);
-			this.findViewById(R.id.sign_out_button).setVisibility(View.INVISIBLE);
+//			this.findViewById(R.id.sign_out_button).setVisibility(View.INVISIBLE);
 			progressBar.setVisibility(View.VISIBLE);
-			
 		}
 	}
 
@@ -234,6 +242,13 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 		if (e == null) {
 			progressBar.setVisibility(View.INVISIBLE);
 		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(signoutBroadcast);
+		
 	}
 
 }

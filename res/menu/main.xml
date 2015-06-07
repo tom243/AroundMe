@@ -4,18 +4,26 @@
     tools:context="com.aroundme.MainActivity" >
 
     <item
-        android:id="@+id/action_about"
+        android:id="@+id/action_signout"
         android:orderInCategory="100"
+        android:title="Signout"
+        android:icon="@drawable/map_icon"
+        app:showAsAction="ifRoom"
+        ></item>
+    
+    <item
+        android:id="@+id/action_about"
+        android:orderInCategory="200"
         android:title="About"
         android:icon="@drawable/about_icon"
         app:showAsAction="ifRoom"></item>
   	
   	<item
         android:id="@+id/action_map"
-        android:orderInCategory="200"
+        android:orderInCategory="300"
         android:title="Map"
         android:icon="@drawable/map_icon"
         app:showAsAction="ifRoom"
         ></item>
-
+  	
 </menu>

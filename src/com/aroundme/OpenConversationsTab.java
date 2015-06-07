@@ -62,7 +62,6 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 		getConversationListFromDB();
 		getUsers(); // maybe async
 		
-		getListView().setOnItemClickListener(this); 
 		LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(newOpenConversation, new IntentFilter("updateOpenCoversationsAdapter"));
 		/** Registering context menu for the listview */
         registerForContextMenu(getListView());
@@ -158,6 +157,7 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 		// create adapter
 		adapter = new CustomConversationsAdapter(getActivity(), conversations);
 	    setListAdapter(adapter);
+	    getListView().setOnItemClickListener(this); 
 		adapter.notifyDataSetChanged();
 	}
 

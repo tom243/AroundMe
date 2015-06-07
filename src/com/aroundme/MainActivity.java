@@ -2,9 +2,11 @@ package com.aroundme;
 
 import com.aroundme.adapter.ViewPagerAdapter;
 import com.aroundme.common.SlidingTabLayout;
+import com.google.android.gms.common.api.GoogleApiClient;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
@@ -77,7 +79,16 @@ public class MainActivity extends ActionBarActivity {
         	return true;
         }
         
+        if (id == R.id.action_signout) {
+        	Toast.makeText(this, "sign-out" , Toast.LENGTH_SHORT).show();
+        	Intent signOutIntent = new Intent("Signout");
+		    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(signOutIntent);
+		    Intent intent = new Intent(this, SignInActivity.class);
+    		startActivity(intent);
+        	return true;
+        }
+        
         return super.onOptionsItemSelected(item);
     }
-    
+
 }
