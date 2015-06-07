@@ -106,7 +106,7 @@ public class DAO implements IDataAccess{
 				" INNER JOIN " + MessagesEntry.TABLE_NAME +  
 				" ON " + ConversationsEntry.COLUMN_LAST_MESSAGE_ID + "=" + MessagesEntry.TABLE_NAME +  
 				"." + MessagesEntry._ID +   
-				" WHERE " + ConversationsEntry.COLUMN_USER_MAIL + "=?" , new String[]{currentUserMail});
+				" WHERE " + ConversationsEntry.COLUMN_USER_MAIL + "=?" + "ORDER BY " + MessagesEntry.COLUMN_TIME_STAMP + " DESC" , new String[]{currentUserMail});
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			ConversationItem conv = cursorToConversationItem(cursor);
