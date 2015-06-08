@@ -7,9 +7,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -20,6 +25,7 @@ import com.appspot.enhanced_cable_88320.aroundmeapi.model.User;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMeCollection;
 import com.aroundme.EndpointApiCreator;
+import com.aroundme.GCMActivity;
 import com.aroundme.common.IAppCallBack;
 import com.aroundme.common.IAppCallBack2;
 import com.aroundme.common.SplashInterface;
@@ -34,11 +40,14 @@ public class Controller {
 	private User currentUser;
 	private HashMap<String, UserAroundMe> allUsers = null;
 	private List<UserAroundMe> allUsersList = null;
+    private static final String PROPERTY_APP_VERSION = "appVersion";
+    public static final String PROPERTY_REG_ID = "registration_id";
 	
 	public Controller() {
 		allUsers = new HashMap<String, UserAroundMe>();
 		allUsersList = new ArrayList<UserAroundMe>();
 		try {
+			EndpointApiCreator.initialize(null);
 			endpoint = EndpointApiCreator.getApi(Aroundmeapi.class);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -65,7 +74,9 @@ public class Controller {
 
 	public void login(final String email, final String pass, final String regId,final IAppCallBack<User> callback, final SplashInterface splash) {
 		
+
 		new AsyncTask<Void, Void, Void>() {
+			private Exception e;
 			@Override
 			protected void onPreExecute() {
 				splash.visible(null);
@@ -78,8 +89,10 @@ public class Controller {
 				}
 				catch (IOException e) {
 					e.printStackTrace();
+					this.e=e;;
 				} catch (Exception e) {
 					e.printStackTrace();
+					this.e= e;
 				}
 				return null;
 			}
@@ -89,7 +102,7 @@ public class Controller {
 				splash.unvisible(null);
 				// call callback
 				if(callback!=null)
-					callback.done(currentUser, null);
+					callback.done(currentUser, e);
 			}
 		}.execute();
 	}
@@ -264,5 +277,76 @@ public class Controller {
 			return allUsers.get(mail).getDisplayName();
 		else return null;
 	}
+
+	/**
+	 * Stores the registration ID and app versionCode in the application's
+	 * {@code SharedPreferences}.
+	 *
+	 * @param context application's context.
+	 * @param regId registration ID
+	 */
+	public void storeRegistrationId(Context context, String regId) {
+	    final SharedPreferences prefs = getGCMPreferences(context);
+	    int appVersion = getAppVersion(context);
+	    //Log.i(TAG, "Saving regId on app version " + appVersion);
+	    SharedPreferences.Editor editor = prefs.edit();
+	    editor.putString(PROPERTY_REG_ID, regId);
+	    editor.putInt(PROPERTY_APP_VERSION, appVersion);
+	    editor.commit();
+	}
+
+	/**
+	 * Gets the current registration ID for application on GCM service.
+	 * <p>
+	 * If result is empty, the app needs to register.
+	 *
+	 * @return registration ID, or empty string if there is no existing
+	 *         registration ID.
+	 */
+	public String getRegistrationId(Context context) {
+	    final SharedPreferences prefs = getGCMPreferences(context);
+	    String registrationId = prefs.getString(PROPERTY_REG_ID, "");
+	    if (registrationId.isEmpty()) {
+	        Log.i("", "Registration not found.");
+	        return "";
+	    }
+	    // Check if app was updated; if so, it must clear the registration ID
+	    // since the existing registration ID is not guaranteed to work with
+	    // the new app version.
+	    int registeredVersion = prefs.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
+	    int currentVersion = getAppVersion(context);
+	    if (registeredVersion != currentVersion) {
+	        Log.i("", "App version changed.");
+	        return "";
+	    }
+	    return registrationId;
+	}
 	
+	/**
+	 * @return Application's version code from the {@code PackageManager}.
+	 */
+	private static int getAppVersion(Context context) {
+	    try {
+	        PackageInfo packageInfo = context.getPackageManager()
+	                .getPackageInfo(context.getPackageName(), 0);
+	        return packageInfo.versionCode;
+	    } catch (NameNotFoundException e) {
+	        // should never happen
+	        throw new RuntimeException("Could not get package name: " + e);
+	    }
+	}
+
+	/**
+	 * @return Application's {@code SharedPreferences}.
+	 */
+	private SharedPreferences getGCMPreferences(Context context) {
+	    // This sample app persists the registration ID in shared preferences, but
+	    // how you store the registration ID in your app is up to you.
+	    return context.getSharedPreferences(GCMActivity.class.getSimpleName(),
+	            Context.MODE_PRIVATE);
+	}
+	
+	public void clear() {
+		instance = null;
+	}
 }

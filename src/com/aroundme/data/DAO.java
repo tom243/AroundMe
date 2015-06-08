@@ -243,6 +243,5 @@ public class DAO implements IDataAccess{
 		values.put(ConversationsEntry.COLUMN_USER_MAIL,  userMail);
 		return values;
 	}
-	
-	
+
 }

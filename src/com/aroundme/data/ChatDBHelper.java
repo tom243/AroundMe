@@ -57,24 +57,6 @@ public class ChatDBHelper extends SQLiteOpenHelper{
 		onCreate(db);
 
 	}
-
-/*
-	final String SQL_CREATE_MESSAGES_TABLE = "CREATE TABLE "
-			+ MessagesEntry.TABLE_NAME + " (" 
-			+ MessagesEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-			+ MessagesEntry.COLUMN_CONTENT + " TEXT NOT NULL,"
-			+ MessagesEntry.COLUMN_FROM + " TEXT NOT NULL,"
-			+ MessagesEntry.COLUMN_TO + " TEXT NOT NULL,"
-			+ MessagesEntry.COLUMN_TIME_STAMP+ " LONG,"
-			+ MessagesEntry.COLUMN_LAT + " LONG,"
-			+ MessagesEntry.COLUMN_LONG + " LONG,"
-			+ MessagesEntry.COLUMN_RADIUS + " LONG)" ;
-	
-	db.execSQL(SQL_CREATE_MESSAGES_TABLE);
-	*/
-	
-	
-
 	
 	
 }

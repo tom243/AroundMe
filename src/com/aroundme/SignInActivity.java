@@ -59,7 +59,7 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	private Controller controller;
 	private String email;
 	private Person currentPerson;
-	private boolean signoutPressed = false;
+	//private boolean signoutPressed = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -74,13 +74,12 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 		
 		findViewById(R.id.sign_in_button).setOnClickListener(this);
 		//findViewById(R.id.sign_out_button).setOnClickListener(this);
-		extars = getIntent().getExtras();
-		if (extars != null)
-			regId = extars.getString("regid");
-		LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(signoutBroadcast, new IntentFilter("Signout"));
+		
+		regId = controller.getRegistrationId(getApplicationContext());
+		//LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(signoutBroadcast, new IntentFilter("Signout"));
 	}
 
-	private BroadcastReceiver signoutBroadcast = new BroadcastReceiver() {
+/*	private BroadcastReceiver signoutBroadcast = new BroadcastReceiver() {
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
 			signoutPressed = true;
@@ -88,7 +87,7 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 			//mGoogleApiClient.connect();
 			// finish();
 	  }
-	};
+	};*/
 	
 	protected void onStart() {
 		super.onStart();
@@ -108,7 +107,7 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 			//this.findViewById(R.id.sign_out_button).setVisibility(View.INVISIBLE);
 			mSignInClicked = true;
 			mGoogleApiClient.connect();
-			signoutPressed = false;
+			//signoutPressed = false;
 		}
 	}
 
@@ -135,13 +134,13 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	public void onConnected(Bundle connectionHint) {
 		mSignInClicked = false;
 		//Toast.makeText(this, "User is connected!", Toast.LENGTH_LONG).show();
-		if (!signoutPressed) {
+		//if (!signoutPressed) {
 			email = Plus.AccountApi.getAccountName(mGoogleApiClient);
 			currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-			signoutPressed = false;
+			//signoutPressed = false;
 			controller.login(email,currentPerson.getId(),regId,this,this);
-		}
-		else {
+		//}
+/*		else {
 			Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
 			Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient)
 					.setResultCallback(new ResultCallback<Status>() {
@@ -153,7 +152,7 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 			mGoogleApiClient.disconnect();
 			//mGoogleApiClient.connect();
 			signoutPressed = false;
-		}
+		}*/
 	}
 
 	protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
@@ -198,7 +197,7 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 		//intent.putExtra("regid",regid);
 		startActivity(intent);
 		/* Since this is just a wrapper to start the main activity, finish it after launching SignInActivity */
-		//finish();
+		finish();
 	}
 
 	@Override
@@ -223,9 +222,11 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 				this.user = user;
 				moveToMainActivity();
 			}
-		} else 
+		} else {
 			System.out.println("error");
+		    Toast.makeText(this, "Error while try login.", Toast.LENGTH_SHORT).show();
 			// handle ??
+		}
 	}
 
 	@Override
@@ -247,7 +248,7 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(signoutBroadcast);
+		//LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(signoutBroadcast);
 		
 	}
 

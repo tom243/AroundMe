@@ -2,7 +2,14 @@ package com.aroundme;
 
 import com.aroundme.adapter.ViewPagerAdapter;
 import com.aroundme.common.SlidingTabLayout;
+import com.aroundme.controller.Controller;
+import com.aroundme.data.DAO;
+import com.aroundme.data.IDataAccess;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.plus.Plus;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,9 +19,12 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Toast;
  
-public class MainActivity extends ActionBarActivity { 
+public class MainActivity extends ActionBarActivity implements ConnectionCallbacks,
+OnConnectionFailedListener { 
 
 	private Toolbar toolbar;
     private ViewPager pager;
@@ -22,6 +32,9 @@ public class MainActivity extends ActionBarActivity {
     private SlidingTabLayout tabs;
     private CharSequence Titles[]={"Friends","Conversations"};
     private int Numboftabs =2;
+    
+    /* Client used to interact with Google APIs. */
+	private GoogleApiClient mGoogleApiClient;
  
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,14 +94,38 @@ public class MainActivity extends ActionBarActivity {
         
         if (id == R.id.action_signout) {
         	Toast.makeText(this, "sign-out" , Toast.LENGTH_SHORT).show();
-        	Intent signOutIntent = new Intent("Signout");
-		    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(signOutIntent);
-		    Intent intent = new Intent(this, SignInActivity.class);
-    		startActivity(intent);
+        	//Intent signOutIntent = new Intent("Signout");
+		    //LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(signOutIntent);
+    		mGoogleApiClient = new GoogleApiClient.Builder(this)
+			.addConnectionCallbacks(this)
+			.addOnConnectionFailedListener(this).addApi(Plus.API)
+			.addScope(Plus.SCOPE_PLUS_LOGIN).build();
+			mGoogleApiClient.connect();
         	return true;
         }
         
         return super.onOptionsItemSelected(item);
     }
+    
+	@Override
+	public void onConnected(Bundle connectionHint) {
+		Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+		Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient);
+	    Intent intent = new Intent(this, SignInActivity.class);
+	    // clear the singletone controller
+	    Controller.getInstance().clear(); 
+		startActivity(intent);
+		finish();
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult result) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void onConnectionSuspended(int cause) {
+		// TODO Auto-generated method stub
+	}
 
 }
