@@ -1,5 +1,7 @@
 package com.aroundme;
 
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -49,7 +51,10 @@ public class UsersTab extends ListFragment implements OnItemClickListener,
 		controller = Controller.getInstance();
 	    allUsers = controller.getAllUsersList(); // not going to the server
 	    if (allUsers.isEmpty())
-	    	controller.getAllUsersFromServer(this,this);
+	    	if (isOnline())
+	    		controller.getAllUsersFromServer(this,this);
+	    	else
+	    		Toast.makeText(context, "No internet connection available", Toast.LENGTH_SHORT).show();
 	    else
 			updateUsersList();
 		super.onViewCreated(view, savedInstanceState);
@@ -100,6 +105,12 @@ public class UsersTab extends ListFragment implements OnItemClickListener,
 		if (e == null) {
 			progressBar.setVisibility(View.INVISIBLE);
 		}
+	}
+	
+	private boolean isOnline() {
+		ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		return netInfo != null && netInfo.isConnectedOrConnecting();
 	}
 	
 

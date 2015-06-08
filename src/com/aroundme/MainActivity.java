@@ -11,7 +11,10 @@ import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.plus.Plus;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
@@ -109,8 +112,12 @@ OnConnectionFailedListener {
     
 	@Override
 	public void onConnected(Bundle connectionHint) {
-		Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-		Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient);
+		if (isOnline()){	
+			Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+			Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient);
+		}
+		else
+			Toast.makeText(getApplicationContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
 	    Intent intent = new Intent(this, SignInActivity.class);
 	    // clear the singletone controller
 	    Controller.getInstance().clear(); 
@@ -126,6 +133,12 @@ OnConnectionFailedListener {
 	@Override
 	public void onConnectionSuspended(int cause) {
 		// TODO Auto-generated method stub
+	}
+	
+	private boolean isOnline() {
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		return netInfo != null && netInfo.isConnectedOrConnecting();
 	}
 
 }

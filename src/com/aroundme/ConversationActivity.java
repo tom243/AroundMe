@@ -21,6 +21,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.DataSetObserver;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.KeyEvent;
@@ -66,7 +68,10 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
         chatText.setOnKeyListener(new OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    return sendChatMessage();
+                	if (isOnline())
+                		return sendChatMessage();
+                	else
+                		Toast.makeText(getApplicationContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
                 }
                 return false;
             }
@@ -74,7 +79,10 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                sendChatMessage();
+            	if (isOnline())
+            		sendChatMessage();
+            	else
+            		Toast.makeText(getApplicationContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -227,5 +235,11 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
 		super.onPause();
 	}
 
+	private boolean isOnline() {
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		return netInfo != null && netInfo.isConnectedOrConnecting();
+	}
+	
 
 }

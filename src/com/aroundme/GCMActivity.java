@@ -10,11 +10,14 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -61,7 +64,10 @@ public class GCMActivity extends Activity {
           gcm = GoogleCloudMessaging.getInstance(this);
           regid = controller.getRegistrationId(context); // FROM prefs
           if (regid.isEmpty()) {
-        	  registerInBackground();
+        		if (isOnline())
+        			registerInBackground();
+        		else
+        			Toast.makeText(context, "No internet connection available", Toast.LENGTH_SHORT).show();
           } else
         	  startLogin();
       } else {
@@ -208,4 +214,10 @@ public class GCMActivity extends Activity {
 		finish();  
 	}
 
+	private boolean isOnline() {
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		return netInfo != null && netInfo.isConnectedOrConnecting();
+	}
+	
 }

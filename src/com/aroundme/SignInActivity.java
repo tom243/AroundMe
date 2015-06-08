@@ -19,6 +19,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender.SendIntentException;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
@@ -102,13 +104,17 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	}
 	
 	public void onClick(View view) {
-		if (view.getId() == R.id.sign_in_button && !mGoogleApiClient.isConnecting()) {
-			this.findViewById(R.id.sign_in_button).setVisibility(View.INVISIBLE);
-			//this.findViewById(R.id.sign_out_button).setVisibility(View.INVISIBLE);
-			mSignInClicked = true;
-			mGoogleApiClient.connect();
-			//signoutPressed = false;
+		if (isOnline()){	
+			if (view.getId() == R.id.sign_in_button && !mGoogleApiClient.isConnecting()) {
+				this.findViewById(R.id.sign_in_button).setVisibility(View.INVISIBLE);
+				//this.findViewById(R.id.sign_out_button).setVisibility(View.INVISIBLE);
+				mSignInClicked = true;
+				mGoogleApiClient.connect();
+				//signoutPressed = false;
+			}
 		}
+		else
+			Toast.makeText(getApplicationContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
@@ -129,30 +135,20 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	    }
 	  }
 	}
-
+	
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		mSignInClicked = false;
-		//Toast.makeText(this, "User is connected!", Toast.LENGTH_LONG).show();
-		//if (!signoutPressed) {
+		if (isOnline()){	
 			email = Plus.AccountApi.getAccountName(mGoogleApiClient);
 			currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-			//signoutPressed = false;
-			controller.login(email,currentPerson.getId(),regId,this,this);
-		//}
-/*		else {
-			Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-			Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient)
-					.setResultCallback(new ResultCallback<Status>() {
-						@Override
-						public void onResult(Status status) {
+			if (currentPerson != null && email != null) {
+				controller.login(email,currentPerson.getId(),regId,this,this);
+			}
+		}
+		else
+			Toast.makeText(getApplicationContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
 
-						}
-					});
-			mGoogleApiClient.disconnect();
-			//mGoogleApiClient.connect();
-			signoutPressed = false;
-		}*/
 	}
 
 	protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
@@ -216,7 +212,10 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 					this.user.setPassword(password);
 					this.user.setImageUrl(personPhoto);
 					this.user.setRegistrationId(regId);
-					controller.register(this.user,this,this);
+					if (isOnline())	
+						controller.register(this.user,this,this);
+					else
+						Toast.makeText(getApplicationContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
 				}
 			} else{
 				this.user = user;
@@ -250,6 +249,12 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 		super.onDestroy();
 		//LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(signoutBroadcast);
 		
+	}
+	
+	private boolean isOnline() {
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		return netInfo != null && netInfo.isConnectedOrConnecting();
 	}
 
 }

@@ -10,6 +10,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
@@ -166,6 +168,5 @@ public class GCMIntentService extends IntentService
 		}
 		return endpointUrl.replace("/_ah/api/", "/index.html");
 	}
-	
 	
 }

@@ -13,6 +13,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
@@ -349,4 +351,9 @@ public class Controller {
 	public void clear() {
 		instance = null;
 	}
+	/**
+	 * @return true if Internet connection is available otherwise it returns
+	 *         false
+	 */
+
 }

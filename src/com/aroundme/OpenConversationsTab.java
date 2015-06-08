@@ -1,5 +1,7 @@
 package com.aroundme;
 
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -60,7 +62,10 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 		controller = Controller.getInstance();
 		dao = DAO.getInstance(context);
 		getConversationListFromDB();
-		getUsers(); // maybe async
+		if (isOnline())
+			getUsers(); // maybe async
+		else
+			Toast.makeText(context, "No internet connection available", Toast.LENGTH_SHORT).show();
 		
 		LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(newOpenConversation, new IntentFilter("updateOpenCoversationsAdapter"));
 		/** Registering context menu for the listview */
@@ -163,7 +168,10 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 
 	private void refreshAdapter(){
 		getConversationListFromDB();
-		getUsers();
+		if (isOnline())
+			getUsers();
+		else
+			Toast.makeText(context, "No internet connection available", Toast.LENGTH_SHORT).show();
 	}
 	
 	@Override
@@ -178,6 +186,12 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 		if (e == null) {
 			progressBar.setVisibility(View.INVISIBLE);
 		}
+	}
+	
+	private boolean isOnline() {
+		ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		return netInfo != null && netInfo.isConnectedOrConnecting();
 	}
 	
 }
