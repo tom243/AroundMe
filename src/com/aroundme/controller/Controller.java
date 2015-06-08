@@ -355,5 +355,11 @@ public class Controller {
 	 * @return true if Internet connection is available otherwise it returns
 	 *         false
 	 */
+	
+	public boolean isOnline(Context context) {
+		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		return netInfo != null && netInfo.isConnectedOrConnecting();
+	}
 
 }

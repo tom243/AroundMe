@@ -64,7 +64,7 @@ public class GCMActivity extends Activity {
           gcm = GoogleCloudMessaging.getInstance(this);
           regid = controller.getRegistrationId(context); // FROM prefs
           if (regid.isEmpty()) {
-        		if (isOnline())
+        		if (controller.isOnline(getApplicationContext()))
         			registerInBackground();
         		else
         			Toast.makeText(context, "No internet connection available", Toast.LENGTH_SHORT).show();
@@ -213,11 +213,4 @@ public class GCMActivity extends Activity {
 		/* Since this is just a wrapper to start the main activity, finish it after launching SignInActivity */
 		finish();  
 	}
-
-	private boolean isOnline() {
-		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo netInfo = cm.getActiveNetworkInfo();
-		return netInfo != null && netInfo.isConnectedOrConnecting();
-	}
-	
 }

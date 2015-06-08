@@ -35,6 +35,7 @@ OnConnectionFailedListener {
     private SlidingTabLayout tabs;
     private CharSequence Titles[]={"Friends","Conversations"};
     private int Numboftabs =2;
+    private Controller controller;
     
     /* Client used to interact with Google APIs. */
 	private GoogleApiClient mGoogleApiClient;
@@ -63,6 +64,7 @@ OnConnectionFailedListener {
             }
         });
         tabs.setViewPager(pager);
+        controller=Controller.getInstance();
     }
  
     @Override
@@ -112,7 +114,7 @@ OnConnectionFailedListener {
     
 	@Override
 	public void onConnected(Bundle connectionHint) {
-		if (isOnline()){	
+		if (controller.isOnline(getApplicationContext())){	
 			Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
 			Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient);
 		}
@@ -135,10 +137,4 @@ OnConnectionFailedListener {
 		// TODO Auto-generated method stub
 	}
 	
-	private boolean isOnline() {
-		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo netInfo = cm.getActiveNetworkInfo();
-		return netInfo != null && netInfo.isConnectedOrConnecting();
-	}
-
 }

@@ -104,7 +104,7 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	}
 	
 	public void onClick(View view) {
-		if (isOnline()){	
+		if (controller.isOnline(getApplicationContext())){	
 			if (view.getId() == R.id.sign_in_button && !mGoogleApiClient.isConnecting()) {
 				this.findViewById(R.id.sign_in_button).setVisibility(View.INVISIBLE);
 				//this.findViewById(R.id.sign_out_button).setVisibility(View.INVISIBLE);
@@ -139,7 +139,7 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		mSignInClicked = false;
-		if (isOnline()){	
+		if (controller.isOnline(getApplicationContext())){	
 			email = Plus.AccountApi.getAccountName(mGoogleApiClient);
 			currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
 			if (currentPerson != null && email != null) {
@@ -212,7 +212,7 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 					this.user.setPassword(password);
 					this.user.setImageUrl(personPhoto);
 					this.user.setRegistrationId(regId);
-					if (isOnline())	
+					if (controller.isOnline(getApplicationContext()))	
 						controller.register(this.user,this,this);
 					else
 						Toast.makeText(getApplicationContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
@@ -250,11 +250,4 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 		//LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(signoutBroadcast);
 		
 	}
-	
-	private boolean isOnline() {
-		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo netInfo = cm.getActiveNetworkInfo();
-		return netInfo != null && netInfo.isConnectedOrConnecting();
-	}
-
 }

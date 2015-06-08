@@ -62,7 +62,7 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 		controller = Controller.getInstance();
 		dao = DAO.getInstance(context);
 		getConversationListFromDB();
-		if (isOnline())
+		if (controller.isOnline(getActivity().getApplicationContext()))
 			getUsers(); // maybe async
 		else
 			Toast.makeText(context, "No internet connection available", Toast.LENGTH_SHORT).show();
@@ -168,7 +168,7 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 
 	private void refreshAdapter(){
 		getConversationListFromDB();
-		if (isOnline())
+		if (controller.isOnline(getActivity().getApplicationContext()))
 			getUsers();
 		else
 			Toast.makeText(context, "No internet connection available", Toast.LENGTH_SHORT).show();
@@ -186,12 +186,6 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 		if (e == null) {
 			progressBar.setVisibility(View.INVISIBLE);
 		}
-	}
-	
-	private boolean isOnline() {
-		ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo netInfo = cm.getActiveNetworkInfo();
-		return netInfo != null && netInfo.isConnectedOrConnecting();
 	}
 	
 }

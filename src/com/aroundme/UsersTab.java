@@ -51,7 +51,7 @@ public class UsersTab extends ListFragment implements OnItemClickListener,
 		controller = Controller.getInstance();
 	    allUsers = controller.getAllUsersList(); // not going to the server
 	    if (allUsers.isEmpty())
-	    	if (isOnline())
+	    	if (controller.isOnline(getActivity().getApplicationContext()))
 	    		controller.getAllUsersFromServer(this,this);
 	    	else
 	    		Toast.makeText(context, "No internet connection available", Toast.LENGTH_SHORT).show();
@@ -106,12 +106,5 @@ public class UsersTab extends ListFragment implements OnItemClickListener,
 			progressBar.setVisibility(View.INVISIBLE);
 		}
 	}
-	
-	private boolean isOnline() {
-		ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo netInfo = cm.getActiveNetworkInfo();
-		return netInfo != null && netInfo.isConnectedOrConnecting();
-	}
-	
 
 }

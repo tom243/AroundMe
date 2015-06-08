@@ -68,7 +68,7 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
         chatText.setOnKeyListener(new OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                	if (isOnline())
+                	if (controller.isOnline(getApplicationContext()))
                 		return sendChatMessage();
                 	else
                 		Toast.makeText(getApplicationContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
@@ -79,7 +79,7 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-            	if (isOnline())
+            	if (controller.isOnline(getApplicationContext()))
             		sendChatMessage();
             	else
             		Toast.makeText(getApplicationContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
@@ -234,12 +234,5 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
 		initializeUnreadMessages();
 		super.onPause();
 	}
-
-	private boolean isOnline() {
-		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo netInfo = cm.getActiveNetworkInfo();
-		return netInfo != null && netInfo.isConnectedOrConnecting();
-	}
-	
 
 }
