@@ -94,7 +94,7 @@ public class Controller {
 					this.e=e;;
 				} catch (Exception e) {
 					e.printStackTrace();
-					this.e= e;
+					this.e=e;
 				}
 				return null;
 			}
@@ -143,6 +143,7 @@ public class Controller {
 	public void getUsersAroundMe(final int rad,final GeoPt geo,final IAppCallBack<List<UserAroundMe>> callback) {
 		
 		new  AsyncTask<Void, Void, UserAroundMeCollection>() {
+			private Exception e;
 			@Override
 			protected UserAroundMeCollection doInBackground(Void... params) {
 				UserAroundMeCollection users = null;
@@ -154,8 +155,10 @@ public class Controller {
 				}
 				catch (IOException e) {
 					e.printStackTrace();
+					this.e = e;
 				} catch (Exception e) {
 					e.printStackTrace();
+					this.e = e;
 				}
 				return users;
 			}
@@ -164,7 +167,7 @@ public class Controller {
 				super.onPostExecute(users);
 				// call callback
 				if(callback!=null)
-					callback.done(users.getItems(), null);
+					callback.done(users.getItems(), e);
 			}
 		}.execute();
 	}

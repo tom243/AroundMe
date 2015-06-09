@@ -20,6 +20,7 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -29,6 +30,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
@@ -46,7 +48,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	private GoogleApiClient mGoogleApiClient;
 	private Controller controller;
 	private GoogleMap myMap = null;
-	private ArrayList<Marker> markers = null;
+	//private ArrayList<Marker> markers = null;
 	private List<UserAroundMe> usersAroundMe = null;
 	
 	@Override
@@ -57,7 +59,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		controller = Controller.getInstance();
 		MapFragment mapFragment = (MapFragment) getFragmentManager()
 			    .findFragmentById(R.id.map);
-			mapFragment.getMapAsync(this);
+		mapFragment.getMapAsync(this);
 	}
 	
 	protected synchronized void buildGoogleApiClient() {
@@ -90,6 +92,20 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	@Override
 	public void onMapReady(GoogleMap map) {
 		myMap = map;
+
+		OnMarkerClickListener markersListener = new OnMarkerClickListener() {
+			@Override
+			public boolean onMarkerClick(Marker arg0) {
+				//Toast.makeText(getApplicationContext(), arg0.getTitle(),Toast.LENGTH_SHORT).show();
+				
+				Intent intent = new Intent(getApplicationContext(),	ConversationActivity.class);
+				intent.putExtra(AppConsts.email_friend, arg0.getTitle());
+				startActivity(intent);
+				return true;
+			}
+		};
+		myMap.setOnMarkerClickListener(markersListener);
+		
 		mGoogleApiClient.connect();
 	}
 	
@@ -127,36 +143,19 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 			for (int i=0; i<users.size(); i++) {
 				marker = myMap.addMarker(new MarkerOptions()
 	    			.position(new LatLng(users.get(i).getLocation().getLatitude(), users.get(i).getLocation().getLongitude()))
-	    			.title(users.get(i).getDisplayName()));
-				marker.setDraggable(true);
-				if (markers != null && !markers.contains(marker))
-					markers.add(marker);
+	    			.title(users.get(i).getMail()));
+				//if (markers != null && !markers.contains(marker)) // it was markers != null
+				//	markers.add(marker);
 			}
-/*			LinearLayout picLL = new LinearLayout(this);
-			ImageView imageView = new ImageView(this);
-			imageView.setImageResource(R.drawable.ic_launcher);
-	        picLL.addView(imageView);
-	        setContentView(picLL);
-			for (int i=0; i<users.size(); i++) {
-				//ImageView imageView = (ImageView)this.findViewById(R.);
-				
-				ImageLoader imageLoader = ImagesController.getInstance().getImageLoader();
-				ImageContainer imageContainer = imageLoader.get(users.get(i).getImageUrl(), imageLoader.getImageListener(imageView, R.drawable.user_default, R.drawable.user_default));
-				Bitmap bitmap = imageContainer.getBitmap();
-				
-				marker = myMap.addMarker(new MarkerOptions()
-	    			.position(new LatLng(users.get(i).getLocation().getLatitude(), users.get(i).getLocation().getLongitude()))
-    			.title(usersAroundMe.get(i).getDisplayName())
-    			.icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
-				marker.setDraggable(true);
-				if (markers != null && !markers.contains(marker))
-					markers.add(marker);
-			}*/
-
-			controller.getImagesUsersAroundMe(users, this);
+			if (users == null ) {
+				System.out.println("USERS in NULL");
+				Toast.makeText(getApplicationContext(),"users is null",Toast.LENGTH_SHORT).show();
+			}else
+				controller.getImagesUsersAroundMe(users, this);
 		}
-		else
-			; // error
+		else { // exception thrown from function: getUsersAroundMe from server
+			Toast.makeText(getApplicationContext(),"Ex' thrown from func getUsersAroundMe",Toast.LENGTH_SHORT).show();
+		}
 	}
 	
 	@Override
@@ -180,20 +179,44 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 
 	@Override
 	public void done2(ArrayList<BitmapDescriptor> imagesArr, Exception e) {
-		// delete all previous markers
-		myMap.clear();
-		// add new markers with the pictures from G+
-		Marker marker = null; 
-		for (int i=0; i<usersAroundMe.size(); i++) {
-			marker = myMap.addMarker(new MarkerOptions()
-    			.position(new LatLng(usersAroundMe.get(i).getLocation().getLatitude(), usersAroundMe.get(i).getLocation().getLongitude()))
-    			.title(usersAroundMe.get(i).getDisplayName())
-    			.icon(imagesArr.get(i)));
-			marker.setDraggable(true);
-			if (markers != null && !markers.contains(marker))
-				markers.add(marker);
+		if (e == null){
+			// delete all previous markers
+			myMap.clear();
+			// add new markers with the pictures from G+
+			Marker marker = null; 
+			for (int i=0; i<usersAroundMe.size(); i++) {
+				marker = myMap.addMarker(new MarkerOptions()
+	    			.position(new LatLng(usersAroundMe.get(i).getLocation().getLatitude(), usersAroundMe.get(i).getLocation().getLongitude()))
+	    			.title(usersAroundMe.get(i).getMail())
+	    			.icon(imagesArr.get(i)));
+				//if (markers != null && !markers.contains(marker))
+				//	markers.add(marker);
+			}
+		} else {
+			// ?
 		}
 	}
-
-
 }
+
+
+
+/*			LinearLayout picLL = new LinearLayout(this);
+	ImageView imageView = new ImageView(this);
+	imageView.setImageResource(R.drawable.ic_launcher);
+    picLL.addView(imageView);
+    setContentView(picLL);
+	for (int i=0; i<users.size(); i++) {
+		//ImageView imageView = (ImageView)this.findViewById(R.);
+		
+		ImageLoader imageLoader = ImagesController.getInstance().getImageLoader();
+		ImageContainer imageContainer = imageLoader.get(users.get(i).getImageUrl(), imageLoader.getImageListener(imageView, R.drawable.user_default, R.drawable.user_default));
+		Bitmap bitmap = imageContainer.getBitmap();
+		
+		marker = myMap.addMarker(new MarkerOptions()
+			.position(new LatLng(users.get(i).getLocation().getLatitude(), users.get(i).getLocation().getLongitude()))
+		.title(usersAroundMe.get(i).getDisplayName())
+		.icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
+		marker.setDraggable(true);
+		if (markers != null && !markers.contains(marker))
+			markers.add(marker);
+	}*/

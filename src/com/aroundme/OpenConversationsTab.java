@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.appspot.enhanced_cable_88320.aroundmeapi.model.User;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
 import com.aroundme.adapter.CustomConversationsAdapter;
 import com.aroundme.common.AppConsts;
@@ -157,6 +158,11 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 	private void addImageUrlToConversationItem(){
 		HashMap<String, UserAroundMe> allUsers = controller.getAllUsers();
 		for (ConversationItem conv: conversations){
+			
+			String mail = conv.getFriendMail();
+			UserAroundMe user = allUsers.get(mail);
+			String url = user.getImageUrl();
+			
 			conv.setImageUrl(allUsers.get(conv.getFriendMail()).getImageUrl());
 		}
 		// create adapter
