@@ -58,7 +58,10 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		controller = Controller.getInstance();
 		MapFragment mapFragment = (MapFragment) getFragmentManager()
 			    .findFragmentById(R.id.map);
-		mapFragment.getMapAsync(this);
+		if (controller.isOnline(getApplicationContext()))	
+			mapFragment.getMapAsync(this);
+		else
+			Toast.makeText(getApplicationContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
 	}
 	
 	protected synchronized void buildGoogleApiClient() {
@@ -114,23 +117,26 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 
 	@Override
 	public void onConnected(Bundle connectionHint) {
-		 
-		Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (mLastLocation != null) {
-        	GeoPt geo = new GeoPt();
-        	geo.setLatitude((float) mLastLocation.getLatitude());
-        	geo.setLongitude((float) mLastLocation.getLongitude());
-        	myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-	                new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), 13));
-	        CameraPosition cameraPosition = new CameraPosition.Builder()
-	        	.target(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))      // Sets the center of the map to location user
-	        	.zoom(17)                   // Sets the zoom
-	        	.bearing(90)                // Sets the orientation of the camera to east
-	        	.tilt(40)                   // Sets the tilt of the camera to 30 degrees
-	        	.build();                   // Creates a CameraPosition from the builder
-	        myMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-	        controller.getUsersAroundMe(AppConsts.radius_around_me, geo, this);
-        }
+		if (controller.isOnline(getApplicationContext())){	  
+			Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+	        if (mLastLocation != null) {
+	        	GeoPt geo = new GeoPt();
+	        	geo.setLatitude((float) mLastLocation.getLatitude());
+	        	geo.setLongitude((float) mLastLocation.getLongitude());
+	        	myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+		                new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), 13));
+		        CameraPosition cameraPosition = new CameraPosition.Builder()
+		        	.target(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))      // Sets the center of the map to location user
+		        	.zoom(17)                   // Sets the zoom
+		        	.bearing(90)                // Sets the orientation of the camera to east
+		        	.tilt(40)                   // Sets the tilt of the camera to 30 degrees
+		        	.build();                   // Creates a CameraPosition from the builder
+		        myMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+		        controller.getUsersAroundMe(AppConsts.radius_around_me, geo, this);
+	        }
+		}
+		else
+			Toast.makeText(getApplicationContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
@@ -143,7 +149,10 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	    			.position(new LatLng(users.get(i).getLocation().getLatitude(), users.get(i).getLocation().getLongitude()))
 	    			.title(users.get(i).getMail()));
 			}
-			controller.getImagesUsersAroundMe(users, this);
+			if (controller.isOnline(getApplicationContext()))				
+				controller.getImagesUsersAroundMe(users, this);
+			else
+				Toast.makeText(getApplicationContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
 		}
 		else { // exception thrown from function: getUsersAroundMe from server
 			Toast.makeText(getApplicationContext(),"Ex' thrown from func getUsersAroundMe",Toast.LENGTH_SHORT).show();
