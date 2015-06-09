@@ -222,7 +222,12 @@ public class Controller {
 		    	   for(int i=0; i<users.size(); i++) {
 			           String urlImage = users.get(i).getImageUrl();
 			           if (urlImage != null){
-			        	   URL url = new URL(users.get(i).getImageUrl());
+				           int index = urlImage.indexOf('=');
+				           if (index > 0){
+				        	   urlImage = urlImage.substring(0, index+1);
+				        	   urlImage= urlImage + "100";
+				           }
+			        	   URL url = new URL(urlImage);
 				           Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
 				           imagesArr.add(i,BitmapDescriptorFactory.fromBitmap(bmp));
 			           } else
