@@ -12,10 +12,7 @@
         android:paddingTop="25dp"
         android:paddingLeft="18dp"
         android:paddingRight="15dp"
-        android:text="In this application you can easily 
-        chat with your friends and to
-        look what is their location
-        with google map. Start use it.\n"
+        android:text="@string/about"
         android:layout_centerHorizontal="true"
         android:textSize="22dp"
         android:textColor="@color/white" />
