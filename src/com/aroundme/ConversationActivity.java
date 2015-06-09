@@ -25,6 +25,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
@@ -35,7 +37,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-public class ConversationActivity extends Activity implements IAppCallBack<Void>, SplashInterface{
+public class ConversationActivity extends ActionBarActivity implements IAppCallBack<Void>, SplashInterface{
 
     private ChatArrayAdapter chatArrayAdapter;
     private ListView listView;
@@ -46,24 +48,26 @@ public class ConversationActivity extends Activity implements IAppCallBack<Void>
     private Controller controller;
     private IDataAccess dao;
     private  ArrayList<Message> historyMessages;
+    private Toolbar toolbar;
     private ProgressBar progressBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conversation);
+        // Creating The Toolbar and setting it as the Toolbar for the activity
+        toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        setSupportActionBar(toolbar);
         progressBar = (ProgressBar) findViewById(R.id.progressBar1);
         Intent intent = getIntent();
         controller = Controller.getInstance();
         dao = DAO.getInstance(getApplicationContext());
         myFriendMail = intent.getStringExtra(AppConsts.email_friend);
+        setTitle(controller.getUserNameByMail(myFriendMail));
         buttonSend = (Button) findViewById(R.id.buttonSend);
-
         listView = (ListView) findViewById(R.id.listView1);
-
         chatArrayAdapter = new ChatArrayAdapter(getApplicationContext(), R.layout.conversation_singlemessage);
         listView.setAdapter(chatArrayAdapter);
-
         chatText = (EditText) findViewById(R.id.chatText);
         chatText.setOnKeyListener(new OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {

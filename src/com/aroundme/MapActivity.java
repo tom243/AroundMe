@@ -20,6 +20,7 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -37,6 +38,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View.OnLongClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -100,7 +102,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 			public boolean onMarkerClick(Marker arg0) {
 				//Toast.makeText(getApplicationContext(), arg0.getTitle(),Toast.LENGTH_SHORT).show();
 				Intent intent = new Intent(getApplicationContext(),	ConversationActivity.class);
-				intent.putExtra(AppConsts.email_friend, arg0.getTitle());
+				intent.putExtra(AppConsts.email_friend, arg0.getSnippet());
 				startActivity(intent);
 				return true;
 			}
@@ -147,7 +149,20 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 			for (int i=0; i<users.size(); i++) {
 				marker = myMap.addMarker(new MarkerOptions()
 	    			.position(new LatLng(users.get(i).getLocation().getLatitude(), users.get(i).getLocation().getLongitude()))
-	    			.title(users.get(i).getMail()));
+	    			.snippet(users.get(i).getMail())
+	    			.title(users.get(i).getDisplayName()));
+				/* myMap.setOnMapLongClickListener(new OnMapLongClickListener() {
+
+			            @Override
+			            public void onMapLongClick(LatLng latLng) {
+			                for(Marker marker : ***) {
+			                    if(Math.abs(marker.getPosition().latitude - latLng.latitude) < 0.05 && Math.abs(marker.getPosition().longitude - latLng.longitude) < 0.05) {
+			                        Toast.makeText(MapActivity.this, "got clicked", Toast.LENGTH_SHORT).show(); //do some stuff
+			                        break;
+			                    }
+			                }
+			            }
+			     });*/
 			}
 			if (controller.isOnline(getApplicationContext()))				
 				controller.getImagesUsersAroundMe(users, this);
@@ -188,7 +203,8 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 			for (int i=0; i<usersAroundMe.size(); i++) {
 				marker = myMap.addMarker(new MarkerOptions()
 	    			.position(new LatLng(usersAroundMe.get(i).getLocation().getLatitude(), usersAroundMe.get(i).getLocation().getLongitude()))
-	    			.title(usersAroundMe.get(i).getMail())
+	    			.snippet(usersAroundMe.get(i).getMail())
+	    			.title(usersAroundMe.get(i).getDisplayName())
 	    			.icon(imagesArr.get(i)));
 			}
 		} else {
@@ -196,26 +212,3 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		}
 	}
 }
-
-
-
-/*			LinearLayout picLL = new LinearLayout(this);
-	ImageView imageView = new ImageView(this);
-	imageView.setImageResource(R.drawable.ic_launcher);
-    picLL.addView(imageView);
-    setContentView(picLL);
-	for (int i=0; i<users.size(); i++) {
-		//ImageView imageView = (ImageView)this.findViewById(R.);
-		
-		ImageLoader imageLoader = ImagesController.getInstance().getImageLoader();
-		ImageContainer imageContainer = imageLoader.get(users.get(i).getImageUrl(), imageLoader.getImageListener(imageView, R.drawable.user_default, R.drawable.user_default));
-		Bitmap bitmap = imageContainer.getBitmap();
-		
-		marker = myMap.addMarker(new MarkerOptions()
-			.position(new LatLng(users.get(i).getLocation().getLatitude(), users.get(i).getLocation().getLongitude()))
-		.title(usersAroundMe.get(i).getDisplayName())
-		.icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
-		marker.setDraggable(true);
-		if (markers != null && !markers.contains(marker))
-			markers.add(marker);
-	}*/

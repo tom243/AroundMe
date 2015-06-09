@@ -285,7 +285,8 @@ public class Controller {
 	public String getUserNameByMail(String mail) {
 		if (!allUsers.isEmpty())
 			return allUsers.get(mail).getDisplayName();
-		else return null;
+		else 
+			return null;
 	}
 
 	/**
