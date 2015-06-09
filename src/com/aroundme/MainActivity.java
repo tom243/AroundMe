@@ -33,7 +33,7 @@ OnConnectionFailedListener {
     private ViewPager pager;
     private ViewPagerAdapter adapter;
     private SlidingTabLayout tabs;
-    private CharSequence Titles[]={"Friends","Conversations"};
+    private CharSequence Titles[]={"Conversations","Friends"};
     private int Numboftabs =2;
     private Controller controller;
     
