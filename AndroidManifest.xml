@@ -21,8 +21,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <!--
          The following two permissions are not required to use
-	     Google Maps Android API v2, but are recommended.
-    -->
+	     Google Maps Android API v2, but are recommended.    -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
@@ -65,7 +64,7 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBwbwVKtCayXL78KXHIdXiWLyurzrRiFp0" />
+            android:value="AIzaSyBBcLhfWy-vnmXyQGw1U6wgM5HV8Q6skPQ" />
 
         <activity
             android:name=".SignInActivity"
