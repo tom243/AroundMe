@@ -84,21 +84,21 @@ OnConnectionFailedListener {
             return true;
         }
         if (id == R.id.action_about) {
-        	Toast.makeText(this, "about" , Toast.LENGTH_SHORT).show();
+        	//Toast.makeText(this, "about" , Toast.LENGTH_SHORT).show();
         	// if...
         	Intent intent = new Intent(this, AboutActivity.class);
     		startActivity(intent);
         	return true;
         }
         if (id == R.id.action_map) {
-        	Toast.makeText(this, "map" , Toast.LENGTH_SHORT).show();
+        	//Toast.makeText(this, "map" , Toast.LENGTH_SHORT).show();
         	Intent intent = new Intent(this, MapActivity.class);
     		startActivity(intent);
         	return true;
         }
         
         if (id == R.id.action_signout) {
-        	Toast.makeText(this, "sign-out" , Toast.LENGTH_SHORT).show();
+        	//Toast.makeText(this, "sign-out" , Toast.LENGTH_SHORT).show();
         	//Intent signOutIntent = new Intent("Signout");
 		    //LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(signOutIntent);
     		mGoogleApiClient = new GoogleApiClient.Builder(this)

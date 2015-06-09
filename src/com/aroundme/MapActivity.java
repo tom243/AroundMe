@@ -48,7 +48,6 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	private GoogleApiClient mGoogleApiClient;
 	private Controller controller;
 	private GoogleMap myMap = null;
-	//private ArrayList<Marker> markers = null;
 	private List<UserAroundMe> usersAroundMe = null;
 	
 	@Override
@@ -97,7 +96,6 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 			@Override
 			public boolean onMarkerClick(Marker arg0) {
 				//Toast.makeText(getApplicationContext(), arg0.getTitle(),Toast.LENGTH_SHORT).show();
-				
 				Intent intent = new Intent(getApplicationContext(),	ConversationActivity.class);
 				intent.putExtra(AppConsts.email_friend, arg0.getTitle());
 				startActivity(intent);
@@ -144,14 +142,8 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 				marker = myMap.addMarker(new MarkerOptions()
 	    			.position(new LatLng(users.get(i).getLocation().getLatitude(), users.get(i).getLocation().getLongitude()))
 	    			.title(users.get(i).getMail()));
-				//if (markers != null && !markers.contains(marker)) // it was markers != null
-				//	markers.add(marker);
 			}
-			if (users == null ) {
-				System.out.println("USERS in NULL");
-				Toast.makeText(getApplicationContext(),"users is null",Toast.LENGTH_SHORT).show();
-			}else
-				controller.getImagesUsersAroundMe(users, this);
+			controller.getImagesUsersAroundMe(users, this);
 		}
 		else { // exception thrown from function: getUsersAroundMe from server
 			Toast.makeText(getApplicationContext(),"Ex' thrown from func getUsersAroundMe",Toast.LENGTH_SHORT).show();
@@ -189,8 +181,6 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	    			.position(new LatLng(usersAroundMe.get(i).getLocation().getLatitude(), usersAroundMe.get(i).getLocation().getLongitude()))
 	    			.title(usersAroundMe.get(i).getMail())
 	    			.icon(imagesArr.get(i)));
-				//if (markers != null && !markers.contains(marker))
-				//	markers.add(marker);
 			}
 		} else {
 			// ?

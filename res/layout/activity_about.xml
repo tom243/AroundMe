@@ -6,11 +6,66 @@
     tools:context="${relativePackage}.${activityClass}" >
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/about_app"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/white"
-        android:text="@string/hello_world" />
+        android:paddingTop="25dp"
+        android:paddingLeft="18dp"
+        android:paddingRight="15dp"
+        android:text="In this application you can easily 
+        chat with your friends and to
+        look what is their location
+        with google map. Start use it.\n"
+        android:layout_centerHorizontal="true"
+        android:textSize="22dp"
+        android:textColor="@color/white" />
+    
+    <TextView
+        android:id="@+id/developer2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/developer1"
+        android:layout_below="@+id/developers"
+        android:layout_marginLeft="185dp"
+        android:layout_marginTop="30dp"
+        android:text="Chen Shamir"
+        android:textSize="20dp"
+        android:textStyle="italic"
+        android:lineSpacingMultiplier="1.5"
+        android:textColor="@color/white" />
 
+    <TextView
+        android:id="@+id/developer1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/developers"
+        android:layout_marginLeft="37dp"
+        android:layout_marginTop="19dp"
+        android:text="Tomer Luster"
+        android:textSize="20dp"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/developers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/developer2"
+        android:layout_below="@+id/logo_icon"
+        android:layout_marginRight="53dp"
+        android:layout_marginTop="46dp"
+        android:text="Developers : "
+        android:textSize="20dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/white" />
+
+    <ImageView
+        android:id="@+id/logo_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/about_app"
+        android:layout_marginTop="38dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/icon_logo_arounme" />
    
 </RelativeLayout>

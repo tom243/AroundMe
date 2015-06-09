@@ -7,7 +7,7 @@
         android:id="@+id/action_signout"
         android:orderInCategory="100"
         android:title="Signout"
-        android:icon="@drawable/map_icon"
+        android:icon="@drawable/signout_gplus"
         app:showAsAction="ifRoom"
         ></item>
     

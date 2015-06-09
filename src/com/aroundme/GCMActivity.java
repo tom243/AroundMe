@@ -33,7 +33,7 @@ public class GCMActivity extends Activity {
 	 * Substitute you own sender ID here. This is the project number you got
 	 * from the API Console, as described in "Getting Started."
 	 */
-	private ProgressBar progressBar;
+	//private ProgressBar progressBar;
 	//This is the project ID related to 'AroundMe'.
 	String SENDER_ID = "1047488186224";
 	private SharedPreferences prefs;
@@ -50,7 +50,7 @@ public class GCMActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_gcm);
-		progressBar = (ProgressBar) findViewById(R.id.progressBar1);
+	//	progressBar = (ProgressBar) findViewById(R.id.progressBar1);
 		controller = Controller.getInstance();
 		//You must initialize the EndpointApiCreator in order to use it.
 		EndpointApiCreator.initialize(null);
@@ -118,7 +118,7 @@ public class GCMActivity extends Activity {
 		
 		@Override
 		protected void onPreExecute() {
-			progressBar.setVisibility(View.VISIBLE);
+		//	progressBar.setVisibility(View.VISIBLE);
 			super.onPreExecute();
 		}
         @Override
@@ -157,7 +157,7 @@ public class GCMActivity extends Activity {
         @Override
         protected void onPostExecute(String msg) {
         	Log.i(TAG,msg);
-        	progressBar.setVisibility(View.INVISIBLE);
+        	//progressBar.setVisibility(View.INVISIBLE);
         	startLogin();
         }
 	}
