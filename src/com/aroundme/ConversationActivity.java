@@ -2,7 +2,6 @@ package com.aroundme;
 
 import java.util.ArrayList;
 import java.util.Date;
-
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.aroundme.adapter.ChatArrayAdapter;
 import com.aroundme.common.AppConsts;
@@ -14,15 +13,11 @@ import com.aroundme.controller.Controller;
 import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
 import com.google.api.client.util.DateTime;
-
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.DataSetObserver;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
@@ -150,7 +145,6 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 	        	 side = true;
 	        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet()));
 	        }
-	        //Toast.makeText(getApplicationContext(), message.getContnet(), Toast.LENGTH_SHORT).show();
 	        //  ... react to local broadcast message
 	    }
 	};

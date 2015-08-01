@@ -1,7 +1,5 @@
 package com.aroundme;
 
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -11,8 +9,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.appspot.enhanced_cable_88320.aroundmeapi.model.User;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
 import com.aroundme.adapter.CustomConversationsAdapter;
 import com.aroundme.common.AppConsts;
@@ -22,7 +18,6 @@ import com.aroundme.common.SplashInterface;
 import com.aroundme.controller.Controller;
 import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -138,8 +133,6 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 	     // ListView Clicked item value
 	     String friendMail = conversations.get(position).getFriendMail();
-	     //Toast.makeText(getActivity(), friendMail , Toast.LENGTH_SHORT).show();
-	     
 		 Intent i = new Intent(getActivity(), ConversationActivity.class);
 	     i.putExtra(AppConsts.email_friend,friendMail);
 	     startActivity(i);  
@@ -158,11 +151,6 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 	private void addImageUrlToConversationItem(){
 		HashMap<String, UserAroundMe> allUsers = controller.getAllUsers();
 		for (ConversationItem conv: conversations){
-			
-			String mail = conv.getFriendMail();
-			UserAroundMe user = allUsers.get(mail);
-			String url = user.getImageUrl();
-			
 			conv.setImageUrl(allUsers.get(conv.getFriendMail()).getImageUrl());
 		}
 		// create adapter

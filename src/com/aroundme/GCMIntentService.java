@@ -1,23 +1,17 @@
 package com.aroundme;
 
-import java.io.IOException;
-import java.util.ResourceBundle.Control;
 import java.util.Stack;
-
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-
 import com.appspot.enhanced_cable_88320.aroundmeapi.Aroundmeapi;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.aroundme.common.ConversationItem;

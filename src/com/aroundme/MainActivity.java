@@ -3,27 +3,18 @@ package com.aroundme;
 import com.aroundme.adapter.ViewPagerAdapter;
 import com.aroundme.common.SlidingTabLayout;
 import com.aroundme.controller.Controller;
-import com.aroundme.data.DAO;
-import com.aroundme.data.IDataAccess;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.plus.Plus;
-
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Toast;
  
 public class MainActivity extends ActionBarActivity implements ConnectionCallbacks,
@@ -84,23 +75,18 @@ OnConnectionFailedListener {
             return true;
         }
         if (id == R.id.action_about) {
-        	//Toast.makeText(this, "about" , Toast.LENGTH_SHORT).show();
         	// if...
         	Intent intent = new Intent(this, AboutActivity.class);
     		startActivity(intent);
         	return true;
         }
         if (id == R.id.action_map) {
-        	//Toast.makeText(this, "map" , Toast.LENGTH_SHORT).show();
         	Intent intent = new Intent(this, MapActivity.class);
     		startActivity(intent);
         	return true;
         }
         
         if (id == R.id.action_signout) {
-        	//Toast.makeText(this, "sign-out" , Toast.LENGTH_SHORT).show();
-        	//Intent signOutIntent = new Intent("Signout");
-		    //LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(signOutIntent);
     		mGoogleApiClient = new GoogleApiClient.Builder(this)
 			.addConnectionCallbacks(this)
 			.addOnConnectionFailedListener(this).addApi(Plus.API)

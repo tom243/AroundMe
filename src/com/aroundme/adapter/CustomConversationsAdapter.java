@@ -2,23 +2,15 @@ package com.aroundme.adapter;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.aroundme.R;
-import com.aroundme.R.drawable;
-import com.aroundme.R.id;
-import com.aroundme.R.layout;
 import com.aroundme.common.ConversationItem;
 import com.aroundme.controller.ImagesController;
 import com.aroundme.controller.Controller;
-import com.google.api.client.util.DateTime;
-
 import android.app.Activity;
 import android.content.Context;
-import android.opengl.Visibility;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -116,22 +108,9 @@ public class CustomConversationsAdapter extends BaseAdapter{
     {
         // Create a DateFormatter object for displaying date in specified format.
         SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
-
         // Create a calendar object that will convert the date and time value in milliseconds to date. 
          Calendar calendar = Calendar.getInstance();
          calendar.setTimeInMillis(milliSeconds);
          return formatter.format(calendar.getTime());
     }
-    
-/*    private boolean checkIfMoreThen24Hours(Long date){
-    	Long currentDate = new DateTime(new Date()).getValue();
-        long diff = currentDate - date;
-        int diffInDays = (int) (diff / (1000 * 60 * 60 * 24));
-        if (diffInDays >= 1) 
-    	if (DateUtils.isToday(date))
-        	return true;
-        else
-        	return false;
-    }*/
-
 }

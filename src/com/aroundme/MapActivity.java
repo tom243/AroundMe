@@ -2,17 +2,12 @@ package com.aroundme;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.ImageLoader.ImageContainer;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
 import com.aroundme.common.AppConsts;
 import com.aroundme.common.IAppCallBack;
 import com.aroundme.common.IAppCallBack2;
-import com.aroundme.common.SplashInterface;
 import com.aroundme.controller.Controller;
-import com.aroundme.controller.ImagesController;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -20,28 +15,20 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View.OnLongClickListener;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 public class MapActivity extends ActionBarActivity implements OnMapReadyCallback,IAppCallBack<List<UserAroundMe>>,
@@ -100,7 +87,6 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		OnMarkerClickListener markersListener = new OnMarkerClickListener() {
 			@Override
 			public boolean onMarkerClick(Marker arg0) {
-				//Toast.makeText(getApplicationContext(), arg0.getTitle(),Toast.LENGTH_SHORT).show();
 				Intent intent = new Intent(getApplicationContext(),	ConversationActivity.class);
 				intent.putExtra(AppConsts.email_friend, arg0.getSnippet());
 				startActivity(intent);
@@ -151,18 +137,6 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	    			.position(new LatLng(users.get(i).getLocation().getLatitude(), users.get(i).getLocation().getLongitude()))
 	    			.snippet(users.get(i).getMail())
 	    			.title(users.get(i).getDisplayName()));
-				/* myMap.setOnMapLongClickListener(new OnMapLongClickListener() {
-
-			            @Override
-			            public void onMapLongClick(LatLng latLng) {
-			                for(Marker marker : ***) {
-			                    if(Math.abs(marker.getPosition().latitude - latLng.latitude) < 0.05 && Math.abs(marker.getPosition().longitude - latLng.longitude) < 0.05) {
-			                        Toast.makeText(MapActivity.this, "got clicked", Toast.LENGTH_SHORT).show(); //do some stuff
-			                        break;
-			                    }
-			                }
-			            }
-			     });*/
 			}
 			if (controller.isOnline(getApplicationContext()))				
 				controller.getImagesUsersAroundMe(users, this);
@@ -182,9 +156,6 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
    @Override
     protected void onStart() {
         super.onStart();
-  //      if (!mResolvingError) {  // more about this later
-            //mGoogleApiClient.connect();
-  //      }
     }
 
     @Override

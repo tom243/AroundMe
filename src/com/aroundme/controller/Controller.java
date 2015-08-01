@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -17,9 +16,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.View;
-import android.widget.ProgressBar;
-
 import com.appspot.enhanced_cable_88320.aroundmeapi.Aroundmeapi;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
@@ -206,7 +202,6 @@ public class Controller {
 				// call callback
 				if(callback!=null)
 					callback.done(users.getItems(), null);
-				//super.onPostExecute(users);
 			}
 		}.execute();
 	}
@@ -299,7 +294,6 @@ public class Controller {
 	public void storeRegistrationId(Context context, String regId) {
 	    final SharedPreferences prefs = getGCMPreferences(context);
 	    int appVersion = getAppVersion(context);
-	    //Log.i(TAG, "Saving regId on app version " + appVersion);
 	    SharedPreferences.Editor editor = prefs.edit();
 	    editor.putString(PROPERTY_REG_ID, regId);
 	    editor.putInt(PROPERTY_APP_VERSION, appVersion);

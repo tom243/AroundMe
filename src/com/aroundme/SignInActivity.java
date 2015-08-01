@@ -8,21 +8,12 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
-
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.IntentSender.SendIntentException;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -56,12 +47,10 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	private boolean mIntentInProgress;
 
 	private User user;
-	private Bundle extars=null;
 	private String regId=null;
 	private Controller controller;
 	private String email;
 	private Person currentPerson;
-	//private boolean signoutPressed = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -75,22 +64,9 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 				.addScope(Plus.SCOPE_PLUS_LOGIN).build();
 		
 		findViewById(R.id.sign_in_button).setOnClickListener(this);
-		//findViewById(R.id.sign_out_button).setOnClickListener(this);
-		
 		regId = controller.getRegistrationId(getApplicationContext());
-		//LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(signoutBroadcast, new IntentFilter("Signout"));
 	}
 
-/*	private BroadcastReceiver signoutBroadcast = new BroadcastReceiver() {
-	    @Override
-	    public void onReceive(Context context, Intent intent) {
-			signoutPressed = true;
-			// Prior to disconnecting, run clearDefaultAccount().
-			//mGoogleApiClient.connect();
-			// finish();
-	  }
-	};*/
-	
 	protected void onStart() {
 		super.onStart();
 		mGoogleApiClient.connect();
@@ -107,10 +83,8 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 		if (controller.isOnline(getApplicationContext())){	
 			if (view.getId() == R.id.sign_in_button && !mGoogleApiClient.isConnecting()) {
 				this.findViewById(R.id.sign_in_button).setVisibility(View.INVISIBLE);
-				//this.findViewById(R.id.sign_out_button).setVisibility(View.INVISIBLE);
 				mSignInClicked = true;
 				mGoogleApiClient.connect();
-				//signoutPressed = false;
 			}
 		}
 		else
@@ -189,8 +163,6 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	public void moveToMainActivity(){
 		// Move to MainActivity
 		Intent intent = new Intent(this, MainActivity.class);
-		//Intent intent = new Intent(this, MapActivity.class);
-		//intent.putExtra("regid",regid);
 		startActivity(intent);
 		/* Since this is just a wrapper to start the main activity, finish it after launching SignInActivity */
 		finish();
@@ -200,7 +172,6 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	public void done(User user, Exception e) {
 		if (e == null) {
 			if(user == null) {
-				//Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
 				if (currentPerson != null) {
 					String personName = currentPerson.getDisplayName();
 					String personPhoto = currentPerson.getImage().getUrl();
@@ -232,7 +203,6 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	public void visible(Exception e) {
 		if (e == null) {
 			this.findViewById(R.id.sign_in_button).setVisibility(View.INVISIBLE);
-//			this.findViewById(R.id.sign_out_button).setVisibility(View.INVISIBLE);
 			progressBar.setVisibility(View.VISIBLE);
 		}
 	}
@@ -247,7 +217,5 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		//LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(signoutBroadcast);
-		
 	}
 }
