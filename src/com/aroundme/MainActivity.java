@@ -1,6 +1,7 @@
 package com.aroundme;
 
 import com.aroundme.adapter.ViewPagerAdapter;
+import com.aroundme.common.AroundMeApp;
 import com.aroundme.common.SlidingTabLayout;
 import com.aroundme.controller.Controller;
 import com.google.android.gms.common.ConnectionResult;
@@ -8,6 +9,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.plus.Plus;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -100,12 +102,12 @@ OnConnectionFailedListener {
     
 	@Override
 	public void onConnected(Bundle connectionHint) {
-		if (controller.isOnline(getApplicationContext())){	
+		if (controller.isOnline(AroundMeApp.getContext())){	
 			Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
 			Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient);
 		}
 		else
-			Toast.makeText(getApplicationContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
+			Toast.makeText(AroundMeApp.getContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
 	    Intent intent = new Intent(this, SignInActivity.class);
 	    // clear the singletone controller
 	    Controller.getInstance().clear(); 

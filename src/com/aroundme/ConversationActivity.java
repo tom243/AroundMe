@@ -2,9 +2,11 @@ package com.aroundme;
 
 import java.util.ArrayList;
 import java.util.Date;
+
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.aroundme.adapter.ChatArrayAdapter;
 import com.aroundme.common.AppConsts;
+import com.aroundme.common.AroundMeApp;
 import com.aroundme.common.ChatMessage;
 import com.aroundme.common.ConversationItem;
 import com.aroundme.common.IAppCallBack;
@@ -13,6 +15,7 @@ import com.aroundme.controller.Controller;
 import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
 import com.google.api.client.util.DateTime;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -56,21 +59,21 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
         progressBar = (ProgressBar) findViewById(R.id.progressBar1);
         Intent intent = getIntent();
         controller = Controller.getInstance();
-        dao = DAO.getInstance(getApplicationContext());
+        dao = DAO.getInstance(AroundMeApp.getContext());
         myFriendMail = intent.getStringExtra(AppConsts.email_friend);
         setTitle(controller.getUserNameByMail(myFriendMail));
         buttonSend = (Button) findViewById(R.id.buttonSend);
         listView = (ListView) findViewById(R.id.listView1);
-        chatArrayAdapter = new ChatArrayAdapter(getApplicationContext(), R.layout.conversation_singlemessage);
+        chatArrayAdapter = new ChatArrayAdapter(AroundMeApp.getContext(), R.layout.conversation_singlemessage);
         listView.setAdapter(chatArrayAdapter);
         chatText = (EditText) findViewById(R.id.chatText);
         chatText.setOnKeyListener(new OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                	if (controller.isOnline(getApplicationContext()))
+                	if (controller.isOnline(AroundMeApp.getContext()))
                 		return sendChatMessage();
                 	else
-                		Toast.makeText(getApplicationContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
+                		Toast.makeText(AroundMeApp.getContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
                 }
                 return false;
             }
@@ -78,10 +81,10 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-            	if (controller.isOnline(getApplicationContext()))
+            	if (controller.isOnline(AroundMeApp.getContext()))
             		sendChatMessage();
             	else
-            		Toast.makeText(getApplicationContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
+            		Toast.makeText(AroundMeApp.getContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -107,7 +110,7 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 			conv.setUnreadMess(0);
 			dao.updateUnreadMessages(conv);
 			Intent updateAdapterIntent = new Intent("updateOpenCoversationsAdapter");
-		    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(updateAdapterIntent);
+		    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateAdapterIntent);
 		}
 		dao.close();
     }
@@ -131,7 +134,6 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 				}
 			}
 		}
-		
     }
     
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -152,17 +154,19 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
     private boolean sendChatMessage(){
     	if (!chatText.getText().toString().isEmpty()) {
     		String messageContent = chatText.getText().toString();
-    		controller.sendMessageToUser(messageContent,myFriendMail,this,this);
-			Message message = new Message();;
+    		controller.sendMessageToUser(messageContent,myFriendMail,null,this,this);
+			Message message = new Message();
 			message.setContnet(messageContent);
 			message.setFrom(controller.getCurrentUser().getMail());
 			message.setTo(myFriendMail);
 			message.setTimestamp(new DateTime(new Date()));
+			
+			
 	   		Long messageId = addMessageToDB(message);
     		updateConversationTable(message, messageId);
 			// Here I need to send broadcast to tell the receiver to refresh the adapter for open conversation list
 			Intent updateAdapterIntent = new Intent("updateOpenCoversationsAdapter");
-		    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(updateAdapterIntent);
+		    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateAdapterIntent);
     		return true;
     	}
     	return false;

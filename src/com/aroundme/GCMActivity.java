@@ -3,12 +3,14 @@ package com.aroundme;
 import java.io.IOException;
 import java.net.URLEncoder;
 
+import com.aroundme.common.AroundMeApp;
 import com.aroundme.controller.Controller;
 import com.aroundme.deviceinfoendpoint.Deviceinfoendpoint;
 import com.aroundme.deviceinfoendpoint.model.DeviceInfo;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -49,7 +51,7 @@ public class GCMActivity extends Activity {
 		EndpointApiCreator.initialize(null);
 		
 		prefs = this.getSharedPreferences("com.aroundMe", Context.MODE_PRIVATE);
-		context=this.getApplicationContext();
+		context = AroundMeApp.getContext();
 		
       // Check device for Play Services APK. If check succeeds, proceed with
       //  GCM registration.
@@ -57,7 +59,7 @@ public class GCMActivity extends Activity {
           gcm = GoogleCloudMessaging.getInstance(this);
           regid = controller.getRegistrationId(context); // FROM prefs
           if (regid.isEmpty()) {
-        		if (controller.isOnline(getApplicationContext()))
+        		if (controller.isOnline(context))
         			registerInBackground();
         		else
         			Toast.makeText(context, "No internet connection available", Toast.LENGTH_SHORT).show();

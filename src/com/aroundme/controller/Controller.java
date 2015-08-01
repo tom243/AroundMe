@@ -244,7 +244,7 @@ public class Controller {
 		}.execute();
 	}
 
-	public void sendMessageToUser(final String content,final String to,final IAppCallBack<Void> callback, final SplashInterface splash) {
+	public void sendMessageToUser(final String content,final String to,final GeoPt geoPt,final IAppCallBack<Void> callback, final SplashInterface splash) {
 		
 		new  AsyncTask<Void, Void, Void>(){
 			@Override
@@ -260,6 +260,8 @@ public class Controller {
 					message.setFrom(currentUser.getMail());
 					message.setTo(to);
 					message.setTimestamp(new DateTime(new Date()));
+					if (geoPt != null)
+						message.setLocation(geoPt);
 					endpoint.sendMessage(message).execute();
 				} catch (IOException e) {
 					e.printStackTrace();

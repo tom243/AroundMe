@@ -1,6 +1,7 @@
 package com.aroundme;
 
 import java.util.Stack;
+
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -12,10 +13,13 @@ import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+
 import com.appspot.enhanced_cable_88320.aroundmeapi.Aroundmeapi;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
+import com.aroundme.common.AroundMeApp;
 import com.aroundme.common.ConversationItem;
 import com.aroundme.controller.Controller;
+import com.aroundme.controller.GeoController;
 import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -27,6 +31,7 @@ public class GCMIntentService extends IntentService
 	private static Stack<String> msgStack;
 	private IDataAccess dao;
 	private Controller controller;
+	private GeoController geoController;
 
 	/*
 	 * TODO: Set this to a valid project number. See
@@ -42,6 +47,7 @@ public class GCMIntentService extends IntentService
 		super("GCMIntentService");
 		msgStack = new Stack<String>();
 		controller = Controller.getInstance();
+		geoController = GeoController.getInstance(AroundMeApp.getContext());
 	}
 	
 	@Override
@@ -70,10 +76,10 @@ public class GCMIntentService extends IntentService
                     MESSAGE_TYPE_MESSAGE.equals(messageType)) {
                 // This loop represents the service doing some work.
             	//onMessage(this,intent);
-            	sendNotification("Received: " + extras.toString());
+            	//sendNotification("Received: " + extras.toString());
                 Log.i("GCMIntentService", "Completed work @ " + SystemClock.elapsedRealtime());
                 // Post notification of received message.
-                sendNotification("Received: " + extras.toString());
+                //sendNotification("Received: " + extras.toString());
                 Log.i("GCMIntentService", "Received: " + extras.toString());
                 String mId = intent.getStringExtra("newMessage");
                 if(mId!=null)
@@ -81,15 +87,21 @@ public class GCMIntentService extends IntentService
                 	try {
                     	Aroundmeapi api = EndpointApiCreator.getApi(Aroundmeapi.class);
 						Message m = api.getMessage(Long.parseLong(mId)).execute();
-						sendNotification(m.getContnet());
-						// insert to conversation table
-						dao = DAO.getInstance(getApplicationContext());
-						Long messageId = addMessageToDB(m);
-						updateConversationTable(m, messageId);
-						//send intent with the id from the insert query
-						Intent chatIntent = new Intent("chatMessage");
-						chatIntent.putExtra("messageId", messageId);
-					    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(chatIntent);
+						if (m.getLocation() != null) { // it is a geofence message
+							System.out.println("GEO MESSAGE WAS RECEIVED!");
+							geoController.createGeofence(m);
+						}
+						else {
+							sendNotification(m.getContnet());
+							// insert to conversation table
+							dao = DAO.getInstance(AroundMeApp.getContext());
+							Long messageId = addMessageToDB(m);
+							updateConversationTable(m, messageId);
+							//send intent with the id from the insert query
+							Intent chatIntent = new Intent("chatMessage");
+							chatIntent.putExtra("messageId", messageId);
+						    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(chatIntent);
+						}
 					} catch (NumberFormatException e) {
 						e.printStackTrace();
 					} catch (Exception e) {
@@ -125,7 +137,7 @@ public class GCMIntentService extends IntentService
 		}
 		dao.close();
 		Intent chatIntent = new Intent("updateOpenCoversationsAdapter");
-	    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(chatIntent);
+	    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(chatIntent);
 	}
 
 	

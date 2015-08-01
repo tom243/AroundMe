@@ -9,15 +9,18 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
 import com.aroundme.adapter.CustomConversationsAdapter;
 import com.aroundme.common.AppConsts;
+import com.aroundme.common.AroundMeApp;
 import com.aroundme.common.ConversationItem;
 import com.aroundme.common.IAppCallBack;
 import com.aroundme.common.SplashInterface;
 import com.aroundme.controller.Controller;
 import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -58,12 +61,12 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 		controller = Controller.getInstance();
 		dao = DAO.getInstance(context);
 		getConversationListFromDB();
-		if (controller.isOnline(getActivity().getApplicationContext()))
+		if (controller.isOnline(AroundMeApp.getContext()))
 			getUsers(); // maybe async
 		else
 			Toast.makeText(context, "No internet connection available", Toast.LENGTH_SHORT).show();
 		
-		LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(newOpenConversation, new IntentFilter("updateOpenCoversationsAdapter"));
+		LocalBroadcastManager.getInstance(AroundMeApp.getContext()).registerReceiver(newOpenConversation, new IntentFilter("updateOpenCoversationsAdapter"));
 		/** Registering context menu for the listview */
         registerForContextMenu(getListView());
 	}
@@ -94,7 +97,7 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(newOpenConversation);
+		LocalBroadcastManager.getInstance(AroundMeApp.getContext()).unregisterReceiver(newOpenConversation);
 		
 	}
 
@@ -162,7 +165,7 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 
 	private void refreshAdapter(){
 		getConversationListFromDB();
-		if (controller.isOnline(getActivity().getApplicationContext()))
+		if (controller.isOnline(AroundMeApp.getContext()))
 			getUsers();
 		else
 			Toast.makeText(context, "No internet connection available", Toast.LENGTH_SHORT).show();

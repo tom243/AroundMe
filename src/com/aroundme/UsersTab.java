@@ -6,18 +6,22 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
 import com.aroundme.adapter.CustomUsersAdapter;
 import com.aroundme.common.AppConsts;
+import com.aroundme.common.AroundMeApp;
 import com.aroundme.common.IAppCallBack;
 import com.aroundme.common.SplashInterface;
 import com.aroundme.controller.Controller;
+
 import android.content.Context;
 import android.content.Intent;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+
 import java.util.List;
 
 public class UsersTab extends ListFragment implements OnItemClickListener, 
@@ -46,7 +50,7 @@ public class UsersTab extends ListFragment implements OnItemClickListener,
 		controller = Controller.getInstance();
 	    allUsers = controller.getAllUsersList(); // not going to the server
 	    if (allUsers.isEmpty())
-	    	if (controller.isOnline(getActivity().getApplicationContext()))
+	    	if (controller.isOnline(AroundMeApp.getContext()))
 	    		controller.getAllUsersFromServer(this,this);
 	    	else
 	    		Toast.makeText(context, "No internet connection available", Toast.LENGTH_SHORT).show();
@@ -78,7 +82,7 @@ public class UsersTab extends ListFragment implements OnItemClickListener,
 		   	updateUsersList();
 		}
 		Intent updateAdapterIntent = new Intent("updateOpenCoversationsAdapter");
-	    LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).sendBroadcast(updateAdapterIntent);
+	    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateAdapterIntent);
 	}
 	
 	public void updateUsersList() {

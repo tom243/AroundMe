@@ -21,7 +21,7 @@ public class ChatDBHelper extends SQLiteOpenHelper{
 	
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		// Create a table to hold the friends;
+		// Create a table to hold the conversations 
 		final String SQL_CREATE_CONVERSATIONS_TABLE = "CREATE TABLE "
 				+ ConversationsEntry.TABLE_NAME + " (" 
 				+ ConversationsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -33,7 +33,7 @@ public class ChatDBHelper extends SQLiteOpenHelper{
 		
 		db.execSQL(SQL_CREATE_CONVERSATIONS_TABLE);
 		System.out.println("table chat was created.");
-		
+		// Create a table to hold the messages
 		final String SQL_CREATE_MESSAGES_TABLE = "CREATE TABLE "
 				+ MessagesEntry.TABLE_NAME + " (" 
 				+ MessagesEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"

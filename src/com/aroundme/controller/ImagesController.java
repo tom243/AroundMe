@@ -1,16 +1,14 @@
 package com.aroundme.controller;
 
-import android.app.Application;
 import android.text.TextUtils;
- 
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
+import com.aroundme.common.AroundMeApp;
 import com.aroundme.util.LruBitmapCache;
  
-public class ImagesController extends Application {
+public class ImagesController {
  
     public static final String TAG = ImagesController.class.getSimpleName();
  
@@ -18,20 +16,20 @@ public class ImagesController extends Application {
     private ImageLoader mImageLoader;
  
     private static ImagesController mInstance;
- 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        mInstance = this;
+    
+    private ImagesController() {
+    	mInstance = this;
     }
- 
+    
     public static synchronized ImagesController getInstance() {
-        return mInstance;
+    	if (mInstance == null)
+    		mInstance = new ImagesController();
+    	return mInstance;
     }
  
     public RequestQueue getRequestQueue() {
         if (mRequestQueue == null) {
-            mRequestQueue = Volley.newRequestQueue(getApplicationContext());
+            mRequestQueue = Volley.newRequestQueue(AroundMeApp.getContext());
         }
  
         return mRequestQueue;
