@@ -1,8 +1,9 @@
 package com.aroundme.controller;
 
+
+import java.util.ArrayList;
 import java.util.List;
 
-import android.app.NotificationManager;
 import android.content.Context;
 import android.util.Log;
 
@@ -22,11 +23,16 @@ public class GeoController {
 	
 	public GeoController(Context context) {
 		this.context = context;
+		// Instantiate a new geofence storage area.
+		mGeofenceStorage = new MessageGeofenceStore(context);
+		// Instantiate the current List of geofences.
+		mGeofenceList = new ArrayList<Geofence>();
 	}
 	
 	public static GeoController getInstance(Context context) {
-		if(instance ==  null)
+		if(instance ==  null) {
 			instance = new GeoController(context);
+		}
 		return instance;
 	}
 

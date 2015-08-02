@@ -2,7 +2,6 @@ package com.aroundme.geofence;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
-import com.aroundme.common.AppConsts;
 import com.aroundme.common.ConversationItem;
 import com.aroundme.common.MessageGeofence;
 import com.aroundme.controller.Controller;
@@ -11,16 +10,13 @@ import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
 import com.google.api.client.util.DateTime;
 
-import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-public class GeofencingReceiverIntentService extends
-		ReceiveGeofenceTransitionBaseIntentService {
+public class GeofencingReceiverIntentService extends ReceiveGeofenceTransitionBaseIntentService {
 
 	private NotificationManager notificationManager;
 	private GeoController geoController;

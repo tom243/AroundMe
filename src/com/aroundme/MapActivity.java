@@ -1,5 +1,6 @@
 package com.aroundme;
 
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -57,7 +58,6 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 				SplashInterface{
 	
 	private GoogleApiClient mGoogleApiClient;
-	private PendingIntent mGeofenceRequestIntent;
 	private Controller controller;
 	private GoogleMap myMap = null;
 	private List<UserAroundMe> usersAroundMe = null;
@@ -161,7 +161,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		GeoPt geoPt = new GeoPt();
 		geoPt.setLatitude(lat);
 		geoPt.setLongitude(lon);
-		controller.sendMessageToUser(content,"chenshamir1203@gmail.com",geoPt,
+		controller.sendMessageToUser(content,"tomer.luster@gmail.com",geoPt,
 				new IAppCallBack<Void>() {
 					@Override
 					public void done(Void ret, Exception e) {
@@ -171,9 +171,10 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		Message message = new Message();
 		message.setContnet(content);
 		message.setFrom(controller.getCurrentUser().getMail());
-		message.setTo("chenshamir1203@gmail.com");
+		message.setTo("tomer.luster@gmail.com");
 		message.setTimestamp(new DateTime(new Date()));
 		message.setLocation(geoPt);
+		message.setReadRadius(80);
 		// set radius if we want ?
    		Long messageId = addMessageToDB(message);
 		updateConversationTable(message, messageId);

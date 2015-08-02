@@ -1,17 +1,27 @@
 package com.aroundme;
 
+import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.aroundme.adapter.ViewPagerAdapter;
 import com.aroundme.common.AroundMeApp;
+import com.aroundme.common.ChatMessage;
 import com.aroundme.common.SlidingTabLayout;
 import com.aroundme.controller.Controller;
+import com.aroundme.controller.GeoController;
+import com.aroundme.geofence.GeofencingReceiverIntentService;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.plus.Plus;
 
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
@@ -29,6 +39,10 @@ OnConnectionFailedListener {
     private CharSequence Titles[]={"Conversations","Friends"};
     private int Numboftabs =2;
     private Controller controller;
+    private GeoController geoController;
+    private Long geoMessageId = null;
+	private PendingIntent mGeofenceRequestIntent;
+	private boolean signOut = false;
     
     /* Client used to interact with Google APIs. */
 	private GoogleApiClient mGoogleApiClient;
@@ -58,6 +72,12 @@ OnConnectionFailedListener {
         });
         tabs.setViewPager(pager);
         controller=Controller.getInstance();
+        geoController = GeoController.getInstance(AroundMeApp.getContext());
+	    mGoogleApiClient = new GoogleApiClient.Builder(this)
+        .addConnectionCallbacks(this)
+        .addOnConnectionFailedListener(this)
+        .addApi(LocationServices.API)
+        .build();
     }
  
     @Override
@@ -93,6 +113,7 @@ OnConnectionFailedListener {
 			.addConnectionCallbacks(this)
 			.addOnConnectionFailedListener(this).addApi(Plus.API)
 			.addScope(Plus.SCOPE_PLUS_LOGIN).build();
+    		signOut =true;
 			mGoogleApiClient.connect();
         	return true;
         }
@@ -102,17 +123,31 @@ OnConnectionFailedListener {
     
 	@Override
 	public void onConnected(Bundle connectionHint) {
-		if (controller.isOnline(AroundMeApp.getContext())){	
-			Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-			Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient);
+		if (geoMessageId != null) {
+			// Get the PendingIntent for the geofence monitoring request.
+			// Send a request to add the current geofences.
+			mGeofenceRequestIntent = getGeofenceTransitionPendingIntent();
+			LocationServices.GeofencingApi.addGeofences(mGoogleApiClient, geoController.getmGeofenceList(), mGeofenceRequestIntent);
+			Toast.makeText(this, "Start geofence service", Toast.LENGTH_SHORT).show();
+			geoMessageId = null;
 		}
-		else
-			Toast.makeText(AroundMeApp.getContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
-	    Intent intent = new Intent(this, SignInActivity.class);
-	    // clear the singletone controller
-	    Controller.getInstance().clear(); 
-		startActivity(intent);
-		finish();
+		
+		// NEED TO THINK ABOUT REMOVE GEO HERE MYABE USE ENUM 
+		
+		if (signOut) {
+			if (controller.isOnline(AroundMeApp.getContext())){	
+				Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+				Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient);
+			}
+			else
+				Toast.makeText(AroundMeApp.getContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
+		    Intent intent = new Intent(this, SignInActivity.class);
+		    // clear the singletone controller
+		    Controller.getInstance().clear(); 
+			startActivity(intent);
+			finish();
+		}
+		//mGoogleApiClient.disconnect();
 	}
 
 	@Override
@@ -123,6 +158,41 @@ OnConnectionFailedListener {
 	@Override
 	public void onConnectionSuspended(int cause) {
 		// TODO Auto-generated method stub
+	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		LocalBroadcastManager.getInstance(this).registerReceiver(mGeoMessageReceiver, new IntentFilter("geoMessage"));
+		if (geoMessageId != null)
+			mGoogleApiClient.connect();
+	}
+	
+    @Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(mGeoMessageReceiver);
+	}
+
+	private BroadcastReceiver mGeoMessageReceiver = new BroadcastReceiver() {
+	    @Override
+	    public void onReceive(Context context, Intent intent) {
+	        geoMessageId = intent.getLongExtra("messageId",999);
+	        //mGoogleApiClient.connect();
+	    }
+	        //  ... react to local broadcast message
+	};
+	
+	/**
+	 * Create a PendingIntent that triggers GeofenceTransitionIntentService when
+	 * a geofence transition occurs.
+	 */
+	private PendingIntent getGeofenceTransitionPendingIntent() {
+		Intent intent = new Intent(this, GeofencingReceiverIntentService.class);
+		return PendingIntent.getService(this, geoMessageId.intValue(), intent, // need to make sure that casting is OK geoMessageId.intValue()
+				PendingIntent.FLAG_UPDATE_CURRENT);
+
 	}
 	
 }

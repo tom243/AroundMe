@@ -90,6 +90,9 @@ public class GCMIntentService extends IntentService
 						if (m.getLocation() != null) { // it is a geofence message
 							System.out.println("GEO MESSAGE WAS RECEIVED!");
 							geoController.createGeofence(m);
+							Intent geoIntent = new Intent("geoMessage");
+							geoIntent.putExtra("messageId", m.getId());
+						    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(geoIntent);
 						}
 						else {
 							sendNotification(m.getContnet());

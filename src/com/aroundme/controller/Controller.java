@@ -260,8 +260,10 @@ public class Controller {
 					message.setFrom(currentUser.getMail());
 					message.setTo(to);
 					message.setTimestamp(new DateTime(new Date()));
-					if (geoPt != null)
+					if (geoPt != null){
 						message.setLocation(geoPt);
+						message.setReadRadius(80);
+					}
 					endpoint.sendMessage(message).execute();
 				} catch (IOException e) {
 					e.printStackTrace();
