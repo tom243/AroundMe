@@ -33,25 +33,21 @@ public class CustomConversationsAdapter extends BaseAdapter{
 
     @Override
     public int getCount() {
-
         return conversations.size();
     }
 
     @Override
     public Object getItem(int position) {
-
         return conversations.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-
         return conversations.indexOf(getItem(position));
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
         if (convertView == null) {
             LayoutInflater mInflater = (LayoutInflater) context
                     .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
@@ -104,8 +100,7 @@ public class CustomConversationsAdapter extends BaseAdapter{
      * @param dateFormat Date format 
      * @return String representing date in specified format
      */
-    public String getDate(Long milliSeconds, String dateFormat)
-    {
+    public String getDate(Long milliSeconds, String dateFormat) {
         // Create a DateFormatter object for displaying date in specified format.
         SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
         // Create a calendar object that will convert the date and time value in milliseconds to date. 

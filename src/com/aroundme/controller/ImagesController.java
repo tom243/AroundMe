@@ -1,9 +1,12 @@
 package com.aroundme.controller;
 
+import android.graphics.Bitmap;
 import android.text.TextUtils;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.ImageLoader.ImageListener;
 import com.android.volley.toolbox.Volley;
 import com.aroundme.common.AroundMeApp;
 import com.aroundme.util.LruBitmapCache;

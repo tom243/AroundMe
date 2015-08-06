@@ -107,7 +107,6 @@ OnConnectionFailedListener {
     		startActivity(intent);
         	return true;
         }
-        
         if (id == R.id.action_signout) {
     		mGoogleApiClient = new GoogleApiClient.Builder(this)
 			.addConnectionCallbacks(this)
@@ -117,7 +116,6 @@ OnConnectionFailedListener {
 			mGoogleApiClient.connect();
         	return true;
         }
-        
         return super.onOptionsItemSelected(item);
     }
     

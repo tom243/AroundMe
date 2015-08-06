@@ -3,6 +3,11 @@ package com.aroundme;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
+import com.android.volley.toolbox.ImageLoader.ImageContainer;
+import com.android.volley.toolbox.ImageLoader.ImageListener;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.aroundme.adapter.ChatArrayAdapter;
 import com.aroundme.common.AppConsts;
@@ -12,6 +17,7 @@ import com.aroundme.common.ConversationItem;
 import com.aroundme.common.IAppCallBack;
 import com.aroundme.common.SplashInterface;
 import com.aroundme.controller.Controller;
+import com.aroundme.controller.ImagesController;
 import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
 import com.google.api.client.util.DateTime;
@@ -21,6 +27,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.DataSetObserver;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Path;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
@@ -33,6 +43,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class ConversationActivity extends ActionBarActivity implements IAppCallBack<Void>, SplashInterface{
@@ -48,6 +60,7 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
     private  ArrayList<Message> historyMessages;
     private Toolbar toolbar;
     private ProgressBar progressBar;
+    private ImageLoader imageLoader = ImagesController.getInstance().getImageLoader();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,8 +73,22 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
         Intent intent = getIntent();
         controller = Controller.getInstance();
         dao = DAO.getInstance(AroundMeApp.getContext());
+        // set the tool bar title to the friend name
         myFriendMail = intent.getStringExtra(AppConsts.email_friend);
-        setTitle(controller.getUserNameByMail(myFriendMail));
+        //setTitle(controller.getUserNameByMail(myFriendMail));
+        setTitle("");
+        TextView title = (TextView) findViewById(R.id.friend_name_title);
+        title.setText(controller.getUserNameByMail(myFriendMail));
+        // set the tool bar icon of friend
+        NetworkImageView thumbNail = (NetworkImageView) findViewById(R.id.profile_pic_chat_friend);
+		thumbNail.setDefaultImageResId(R.drawable.user_default);
+        if (imageLoader == null)
+            imageLoader = ImagesController.getInstance().getImageLoader();
+		String imageUrl = null;
+		imageUrl = controller.getImageUrlByMail(myFriendMail);
+		if (imageUrl != null)
+			thumbNail.setImageUrl(imageUrl, imageLoader);
+		
         buttonSend = (Button) findViewById(R.id.buttonSend);
         listView = (ListView) findViewById(R.id.listView1);
         chatArrayAdapter = new ChatArrayAdapter(AroundMeApp.getContext(), R.layout.conversation_singlemessage);
@@ -235,6 +262,29 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 	protected void onPause() {		 // on pause ??
 		initializeUnreadMessages();
 		super.onPause();
+	}
+	
+	public Bitmap getRoundedShape(Bitmap scaleBitmapImage) {
+	    int targetWidth = 50;
+	    int targetHeight = 50;
+	    Bitmap targetBitmap = Bitmap.createBitmap(targetWidth, 
+	                        targetHeight,Bitmap.Config.ARGB_8888);
+
+	    Canvas canvas = new Canvas(targetBitmap);
+	    Path path = new Path();
+	    path.addCircle(((float) targetWidth - 1) / 2,
+	        ((float) targetHeight - 1) / 2,
+	        (Math.min(((float) targetWidth), 
+	        ((float) targetHeight)) / 2),
+	        Path.Direction.CCW);
+
+	    canvas.clipPath(path);
+	    Bitmap sourceBitmap = scaleBitmapImage;
+	    canvas.drawBitmap(sourceBitmap, 
+	        new Rect(0, 0, sourceBitmap.getWidth(),
+	        sourceBitmap.getHeight()), 
+	        new Rect(0, 0, targetWidth, targetHeight), null);
+	    return targetBitmap;
 	}
 
 }

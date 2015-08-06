@@ -25,6 +25,7 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
@@ -118,10 +119,18 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		OnMarkerClickListener markersListener = new OnMarkerClickListener() {
 			@Override
 			public boolean onMarkerClick(Marker arg0) {
-				Intent intent = new Intent(AroundMeApp.getContext(),	ConversationActivity.class);
-				intent.putExtra(AppConsts.email_friend, arg0.getSnippet());
-				startActivity(intent);
+				// when a marker clicked the info window will be shown
+				arg0.showInfoWindow();
 				return true;
+			}
+		};
+		OnInfoWindowClickListener onInfoWindowClickListener = new OnInfoWindowClickListener() {
+			@Override
+			public void onInfoWindowClick(Marker marker) {
+				// when an info window clicked the chat with him will be opened 
+				Intent intent = new Intent(AroundMeApp.getContext(),	ConversationActivity.class);
+				intent.putExtra(AppConsts.email_friend, marker.getSnippet());
+				startActivity(intent);
 			}
 		};
 		OnMapLongClickListener longClickListener = new OnMapLongClickListener() {
@@ -153,7 +162,8 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 			}
 		};
 		myMap.setOnMarkerClickListener(markersListener);
-		myMap.setOnMapLongClickListener(longClickListener); 
+		myMap.setOnMapLongClickListener(longClickListener);
+		myMap.setOnInfoWindowClickListener(onInfoWindowClickListener);
 		mGoogleApiClient.connect();
 	}
 	
@@ -175,7 +185,6 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		message.setTimestamp(new DateTime(new Date()));
 		message.setLocation(geoPt);
 		message.setReadRadius(80);
-		// set radius if we want ?
    		Long messageId = addMessageToDB(message);
 		updateConversationTable(message, messageId);
 		// send broadcast to tell the receiver to refresh the adapter for open conversation list

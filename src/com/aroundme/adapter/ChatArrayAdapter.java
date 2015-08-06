@@ -10,17 +10,22 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
 import com.aroundme.R;
 import com.aroundme.common.ChatMessage;
+import com.aroundme.controller.ImagesController;
 
 public class ChatArrayAdapter extends ArrayAdapter {
 
 	private TextView chatText;
 	private List chatMessageList = new ArrayList();
 	private LinearLayout singleMessageContainer;
-
+	
 	public void add(ChatMessage object) {
 		chatMessageList.add(object);
 		super.add(object);

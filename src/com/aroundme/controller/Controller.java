@@ -288,6 +288,13 @@ public class Controller {
 			return null;
 	}
 
+	public String getImageUrlByMail(String mail) {
+		if (!allUsers.isEmpty())
+			return allUsers.get(mail).getImageUrl();
+		else 
+			return null;
+	}
+	
 	/**
 	 * Stores the registration ID and app versionCode in the application's
 	 * {@code SharedPreferences}.
