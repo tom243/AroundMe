@@ -5,7 +5,16 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="navigation_drawer_width">240dp</dimen>
+    
+    <string-array name="messages">
+        <item>@string/pin_msg</item>
+        <item>@string/geo_msg</item>
+    </string-array>
 
+    <string-array name="friends">
+        <item>@string/tomer</item>
+        <item>@string/chen</item>
+    </string-array>
 </resources>
 
 

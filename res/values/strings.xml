@@ -19,7 +19,18 @@
     <string name="action_open_map">open map</string>
     <string name="str_cnt_mnu_delete">Delete</string>
 	<string name= "about">"Wellcome to AroundMe, you can easily chat with your friends and see what is their location by google maps. Enjoy :)\n"</string>
-    <color name="black">#000000</color>
+	<string name="title_activity_about">AboutActivity</string>
+	<string name="choose_msg_type"> Choose type of message </string>
+	<string name="pin_msg"> Pin message </string>
+	<string name="geo_msg"> Geofence message </string>
+	<string name="choose_friends"> Choose friends </string>
+	<string name="tomer"> Tomer </string>
+	<string name="chen"> Chen </string>
+	<string name="ok"> OK </string>
+	<string name="cancel"> Cancel </string>
+	<string name="send"> Send </string>
+	
+	<color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
     <color name="pink">#FF66CC</color>
     <color name="lightBlue">#00CCFF</color>
@@ -30,12 +41,8 @@
     <color name="darkBlue">#000067</color>
     <color name="BrightBlue">#4099FF</color>
     <color name="White">#4099FF</color>
-    
     <color name="tabsScrollColor">#8a140e</color> <!-- #912CEE -->
-    
     <color name="ColorPrimary">#FF5722</color>
     <color name="ColorPrimaryDark">#E64A19</color>
-
-    <string name="title_activity_about">AboutActivity</string>
 
 </resources>

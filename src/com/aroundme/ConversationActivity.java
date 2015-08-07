@@ -2,12 +2,8 @@ package com.aroundme;
 
 import java.util.ArrayList;
 import java.util.Date;
-
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
-import com.android.volley.toolbox.ImageLoader.ImageContainer;
-import com.android.volley.toolbox.ImageLoader.ImageListener;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.aroundme.adapter.ChatArrayAdapter;
 import com.aroundme.common.AppConsts;
@@ -21,16 +17,11 @@ import com.aroundme.controller.ImagesController;
 import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
 import com.google.api.client.util.DateTime;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.DataSetObserver;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Path;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
@@ -43,7 +34,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -88,7 +78,7 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 		imageUrl = controller.getImageUrlByMail(myFriendMail);
 		if (imageUrl != null)
 			thumbNail.setImageUrl(imageUrl, imageLoader);
-		
+	    
         buttonSend = (Button) findViewById(R.id.buttonSend);
         listView = (ListView) findViewById(R.id.listView1);
         chatArrayAdapter = new ChatArrayAdapter(AroundMeApp.getContext(), R.layout.conversation_singlemessage);
@@ -262,29 +252,6 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 	protected void onPause() {		 // on pause ??
 		initializeUnreadMessages();
 		super.onPause();
-	}
-	
-	public Bitmap getRoundedShape(Bitmap scaleBitmapImage) {
-	    int targetWidth = 50;
-	    int targetHeight = 50;
-	    Bitmap targetBitmap = Bitmap.createBitmap(targetWidth, 
-	                        targetHeight,Bitmap.Config.ARGB_8888);
-
-	    Canvas canvas = new Canvas(targetBitmap);
-	    Path path = new Path();
-	    path.addCircle(((float) targetWidth - 1) / 2,
-	        ((float) targetHeight - 1) / 2,
-	        (Math.min(((float) targetWidth), 
-	        ((float) targetHeight)) / 2),
-	        Path.Direction.CCW);
-
-	    canvas.clipPath(path);
-	    Bitmap sourceBitmap = scaleBitmapImage;
-	    canvas.drawBitmap(sourceBitmap, 
-	        new Rect(0, 0, sourceBitmap.getWidth(),
-	        sourceBitmap.getHeight()), 
-	        new Rect(0, 0, targetWidth, targetHeight), null);
-	    return targetBitmap;
 	}
 
 }

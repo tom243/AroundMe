@@ -64,6 +64,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	private List<UserAroundMe> usersAroundMe = null;
 	private EditText editTextContent;
 	private IDataAccess dao;
+	private static enum type_msg {TYPE_PIN_MSG,TYPE_GEO_MSG};
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -137,28 +138,86 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 			@Override
 			public void onMapLongClick(final LatLng point) {
 				Toast.makeText(AroundMeApp.getContext(), "long click on a map", Toast.LENGTH_SHORT).show();
-				AlertDialog.Builder builder = new AlertDialog.Builder(MapActivity.this);
-				// Get the layout inflater
-			    LayoutInflater inflater = getLayoutInflater();
-			    final View v = inflater.inflate(R.layout.dialog_geo_message, null);
-				builder.setView(v)
-				
-				.setPositiveButton("send", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int id) {
-						//Toast.makeText(AroundMeApp.getContext(), id, Toast.LENGTH_SHORT).show();
-						// send message 
-						editTextContent = (EditText) v.findViewById(R.id.geo_message_content);
-						if (editTextContent.getText().toString() != null) 
-							sendGeoMessage(editTextContent.getText().toString(), (float)point.latitude, (float)point.longitude);
-					}
-				})
-				.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						//LoginDialogFragment.this.getDialog().cancel();
-					}
-				});      
-				builder.create().show();
+				// the first dialog to choose the type of message
+				AlertDialog.Builder type_builder = new AlertDialog.Builder(MapActivity.this)
+					.setTitle(R.string.choose_msg_type)
+					.setItems(R.array.messages, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							// The 'which' argument contains the index position
+							// of the selected item
+							Toast.makeText(AroundMeApp.getContext(), "index: "+which, Toast.LENGTH_SHORT).show();
+							final type_msg lastMsgType;
+							if (which == 0) { // pin message
+								lastMsgType = type_msg.TYPE_PIN_MSG;
+							}
+							else if (which == 1) { // geofence message
+								lastMsgType = type_msg.TYPE_GEO_MSG;
+							}
+							// the second dialog to choose friends
+							final ArrayList mSelectedItems = new ArrayList(); 
+						    AlertDialog.Builder friends_builder = new AlertDialog.Builder(MapActivity.this);
+						    // Set the dialog title
+						    friends_builder.setTitle(R.string.choose_friends)
+						    // Specify the list array, the items to be selected by default (null for none),
+						    // and the listener through which to receive callbacks when items are selected
+				           .setMultiChoiceItems(R.array.friends, null,
+				                      new DialogInterface.OnMultiChoiceClickListener() {
+				               @Override
+				               public void onClick(DialogInterface dialog, int which,
+				                       boolean isChecked) {
+				                   if (isChecked) {
+				                       // If the user checked the item, add it to the selected items
+				                       mSelectedItems.add(which);
+				                   } else if (mSelectedItems.contains(which)) {
+				                       // Else, if the item is already in the array, remove it 
+				                       mSelectedItems.remove(Integer.valueOf(which));
+				                   }
+				               }
+				           })
+						   // Set the action buttons
+				           .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+				               @Override
+				               public void onClick(DialogInterface dialog, int id) {
+				                    // User clicked OK, so save the mSelectedItems results somewhere
+				                    // or return them to the component that opened the dialog
+				                   
+				            	    // the third dialog to send the message
+					            	AlertDialog.Builder msg_builder = new AlertDialog.Builder(MapActivity.this);
+					   				// Get the layout inflater
+					   			    LayoutInflater inflater = getLayoutInflater();
+					   			    final View v = inflater.inflate(R.layout.dialog_geo_message, null);
+					   				msg_builder.setView(v)
+					   				.setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
+					   					@Override
+					   					public void onClick(DialogInterface dialog, int id) {
+					   						//Toast.makeText(AroundMeApp.getContext(), id, Toast.LENGTH_SHORT).show();
+					   						// send message 
+					   						editTextContent = (EditText) v.findViewById(R.id.geo_message_content);
+					   						if (editTextContent.getText().toString() != null) {
+					   							String to = "chenshamir1203@gmail.com";
+					   							// for... 
+					   								sendGeoMessage(to,editTextContent.getText().toString(), (float)point.latitude, (float)point.longitude);
+					   						}
+					   					}
+					   				})
+					   				.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+					   					public void onClick(DialogInterface dialog, int id) {
+					   						//LoginDialogFragment.this.getDialog().cancel();
+					   					}
+					   				});      
+					   				msg_builder.create().show();
+				               }
+				           })
+				           .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+				               @Override
+				               public void onClick(DialogInterface dialog, int id) {
+				                   // are you sure dialog  ??
+				               }
+				           });
+						   friends_builder.create().show();
+						}
+					});
+				type_builder.create().show();
 			}
 		};
 		myMap.setOnMarkerClickListener(markersListener);
@@ -167,11 +226,11 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		mGoogleApiClient.connect();
 	}
 	
-	public void sendGeoMessage(String content, float lat, float lon) {
+	public void sendGeoMessage(String to,String content, float lat, float lon) {
 		GeoPt geoPt = new GeoPt();
 		geoPt.setLatitude(lat);
 		geoPt.setLongitude(lon);
-		controller.sendMessageToUser(content,"tomer.luster@gmail.com",geoPt,
+		controller.sendMessageToUser(content,to,geoPt,
 				new IAppCallBack<Void>() {
 					@Override
 					public void done(Void ret, Exception e) {
@@ -181,7 +240,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		Message message = new Message();
 		message.setContnet(content);
 		message.setFrom(controller.getCurrentUser().getMail());
-		message.setTo("tomer.luster@gmail.com");
+		message.setTo(to);
 		message.setTimestamp(new DateTime(new Date()));
 		message.setLocation(geoPt);
 		message.setReadRadius(80);

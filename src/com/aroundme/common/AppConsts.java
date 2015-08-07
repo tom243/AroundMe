@@ -12,7 +12,6 @@ public class AppConsts {
 	// classes TAG
 	public static final String MAP_ACTIVITY_TAG = "MapActivity";
 	
-	
 	public static final String SHARED_PREFERENCES = "SharedPreferences";
 	
 	// For the purposes of this demo, the geofences are hard-coded and should not expire.
@@ -43,13 +42,14 @@ public class AppConsts {
     // The prefix for flattened geofence keys.
     public static final String KEY_PREFIX = "geofencing.KEY";
     
-   
-    
     // Invalid values, used to test geofence storage when retrieving geofences.
     public static final long INVALID_LONG_VALUE = -999l;
     public static final float INVALID_FLOAT_VALUE = -999.0f;
     public static final int INVALID_INT_VALUE = -999;
     public static final String INVALID_STRING_VALUE = "";
+    
+    // type messages
+    public static final String TYPE_PIN_MSG = "type_pin_msg";
+    public static final String TYPE_GEO_MSG = "type_geo_msg";
 	
 }
-
