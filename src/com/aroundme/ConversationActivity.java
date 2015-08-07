@@ -209,7 +209,9 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 			message.setTo(myFriendMail);
 			message.setTimestamp(new DateTime(new Date()));
 	   		Long messageId = controller.addMessageToDB(message);
-    		controller.updateConversationTable(message, messageId,false,false);
+    		controller.updateConversationTable(message.getFrom(), message.getTo(), messageId,false,false);
+    		Intent updateIntent = new Intent("updateOpenCoversationsAdapter");
+		    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateIntent);
     		return true;
     	}
     	return false;

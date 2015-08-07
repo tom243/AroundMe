@@ -393,10 +393,9 @@ public class Controller {
 		return id;
 	}
 	
-	public void updateConversationTable(Message message, Long messageId, 
-														boolean incUnreadMsgs, boolean resetDate){
+	public void updateConversationTable(String to, String from, Long messageId, boolean incUnreadMsgs, boolean resetDate){
 		dao.open();
-		ConversationItem conv = dao.isConversationExist(getCurrentUser().getMail(), message.getFrom());
+		ConversationItem conv = dao.isConversationExist(to,from);
 		if (conv != null) {
 			System.out.println("Conversation exist");
 			if (incUnreadMsgs)
@@ -407,11 +406,11 @@ public class Controller {
 		}
 		else {
 			System.out.println("Conversation not exist");
-			dao.addToConversationsTable(message.getFrom(), message.getTo(), messageId);
+			dao.addToConversationsTable(from, to, messageId);
 		}
 		dao.close();
-		Intent chatIntent = new Intent("updateOpenCoversationsAdapter");
-	    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(chatIntent);
+		//Intent updateIntent = new Intent("updateOpenCoversationsAdapter");
+	    //LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateIntent);
 	}
 
 }

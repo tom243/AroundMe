@@ -56,7 +56,9 @@ public class GeofencingReceiverIntentService extends ReceiveGeofenceTransitionBa
 		message.setLocation(geoPt);
 		message.setReadRadius((int)messageGeo.getRadius());
 		Long messageId = controller.addMessageToDB(message);
-		controller.updateConversationTable(message, messageId,true,true);
+		controller.updateConversationTable(message.getTo(), message.getFrom(), messageId,true,true);
+		Intent updateIntent = new Intent("updateOpenCoversationsAdapter");
+	    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateIntent);
 		// create notification
 		// ...
 		
