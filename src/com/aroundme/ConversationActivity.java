@@ -208,13 +208,8 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 			message.setFrom(controller.getCurrentUser().getMail());
 			message.setTo(myFriendMail);
 			message.setTimestamp(new DateTime(new Date()));
-			
-			
-	   		Long messageId = addMessageToDB(message);
-    		updateConversationTable(message, messageId);
-			// Here I need to send broadcast to tell the receiver to refresh the adapter for open conversation list
-			Intent updateAdapterIntent = new Intent("updateOpenCoversationsAdapter");
-		    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateAdapterIntent);
+	   		Long messageId = controller.addMessageToDB(message);
+    		controller.updateConversationTable(message, messageId,false,false);
     		return true;
     	}
     	return false;
@@ -228,29 +223,6 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 			chatArrayAdapter.add(new ChatMessage(side, text));
 			chatText.setText("");
 		}
-	}
-	
-	private Long addMessageToDB(Message message){
-		dao.open();
-		Long id = dao.addToMessagesTable(message);
-		dao.close();
-		return id;
-	}
-	
-	private void updateConversationTable(Message message, Long messageId){
-		dao.open();
-		ConversationItem conv = dao.isConversationExist(message.getFrom(),message.getTo());
-		if (conv != null) {
-			System.out.println("Conversation  exist");
-			// I just send message so I saw for sure the last messages that I've got.
-			//conv.setUnreadMess(0); // no actually need to update
-			dao.updateOpenConversation(conv, messageId);
-		}
-		else {
-			System.out.println("Conversation not exist");
-			dao.addToConversationsTable(message.getTo(), message.getFrom(), messageId);
-		}
-		dao.close();
 	}
 	
 	@Override

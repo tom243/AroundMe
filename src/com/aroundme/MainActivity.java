@@ -128,24 +128,22 @@ OnConnectionFailedListener {
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		if (!addGeoList.isEmpty()) {
+			Toast.makeText(this, "Start geofence service", Toast.LENGTH_SHORT).show();
 			for (Long geoId : addGeoList) {
 				// Get the PendingIntent for the geofence monitoring request.
 				// Send a request to add the current geofences.
 				mGeofenceRequestIntent = getGeofenceTransitionPendingIntent(geoId);
-				if (null != mGeofenceRequestIntent) {
+				if (null != mGeofenceRequestIntent) 
 					LocationServices.GeofencingApi.addGeofences(mGoogleApiClient, geoController.getmGeofenceList(), mGeofenceRequestIntent);
-					Toast.makeText(this, "Start geofence service", Toast.LENGTH_SHORT).show();
-				}
 			}
 			addGeoList.clear();
 		}
 		if (!removeGeoList.isEmpty()) {
 			for (Long geoId : removeGeoList) {
+				Toast.makeText(this, "Remove geofence", Toast.LENGTH_SHORT).show();
 				mGeofenceRequestIntent = getGeofenceTransitionPendingIntent(geoId);				
-				if (null != mGeofenceRequestIntent) {
+				if (null != mGeofenceRequestIntent) 
 					LocationServices.GeofencingApi.removeGeofences(mGoogleApiClient,mGeofenceRequestIntent);
-					Toast.makeText(this, "Remove geofence", Toast.LENGTH_SHORT).show();
-				}
 			}
 			removeGeoList.clear();
 		}

@@ -245,12 +245,9 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		message.setLocation(geoPt);
 		message.setReadRadius(80);
 		// add the new message to messages table in db 
-   		Long messageId = addMessageToDB(message);	
+   		Long messageId = controller.addMessageToDB(message);	
    		// update the conversations table in db with the last message
-		updateConversationTable(message, messageId);
-		// send broadcast to tell the receiver to refresh the adapter for open conversation list
-		Intent updateAdapterIntent = new Intent("updateOpenCoversationsAdapter");
-	    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateAdapterIntent);
+		controller.updateConversationTable(message, messageId,false,false);
 	}
 	
 	@Override
@@ -357,27 +354,6 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		}
 	}
 
-	public Long addMessageToDB(Message message){
-		dao.open();
-		Long id = dao.addToMessagesTable(message);
-		dao.close();
-		return id;
-	}
-	
-	public void updateConversationTable(Message message, Long messageId){
-		dao.open();
-		ConversationItem conv = dao.isConversationExist(controller.getCurrentUser().getMail(), message.getFrom());
-		if (conv != null) {
-			System.out.println("Conversation  exist");
-			dao.updateOpenConversation(conv, messageId); // update row in data-base
-		}
-		else {
-			System.out.println("Conversation not exist");
-			dao.addToConversationsTable(message.getFrom(), message.getTo(), messageId);
-		}
-		dao.close();
-	}
-	
 	@Override
 	public void visible(Exception e) {
 		// TODO Auto-generated method stub

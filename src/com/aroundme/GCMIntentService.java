@@ -98,8 +98,8 @@ public class GCMIntentService extends IntentService
 							sendNotification(m.getContnet());
 							// insert to conversation table
 							dao = DAO.getInstance(AroundMeApp.getContext());
-							Long messageId = addMessageToDB(m);
-							updateConversationTable(m, messageId);
+							Long messageId = controller.addMessageToDB(m);
+							controller.updateConversationTable(m, messageId,true,false);
 							//send intent with the id from the insert query
 							Intent chatIntent = new Intent("chatMessage");
 							chatIntent.putExtra("messageId", messageId);
@@ -118,32 +118,6 @@ public class GCMIntentService extends IntentService
         Log.i("GCM-iNTENT","type: "+messageType);
         GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
-	
-	public Long addMessageToDB(Message message){
-		dao.open();
-		Long id = dao.addToMessagesTable(message);
-		dao.close();
-		return id;
-	}
-	
-	public void updateConversationTable(Message message, Long messageId){
-		dao.open();
-		ConversationItem conv = dao.isConversationExist(controller.getCurrentUser().getMail(), message.getFrom());
-		if (conv != null) {
-			System.out.println("Conversation  exist");
-			conv.setUnreadMess(conv.getUnreadMess()+1);	// ***
-			dao.updateOpenConversation(conv, messageId); // update row in data-base
-		}
-		else {
-			System.out.println("Conversation not exist");
-			dao.addToConversationsTable(message.getFrom(), message.getTo(), messageId);
-		}
-		dao.close();
-		Intent chatIntent = new Intent("updateOpenCoversationsAdapter");
-	    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(chatIntent);
-	}
-
-	
 		
 	// Put the message into a notification and post it.
     // This is just one simple example of what you might choose to do with

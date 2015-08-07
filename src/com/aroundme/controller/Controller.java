@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -15,7 +17,9 @@ import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+
 import com.appspot.enhanced_cable_88320.aroundmeapi.Aroundmeapi;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
@@ -24,9 +28,13 @@ import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMeCollection;
 import com.aroundme.EndpointApiCreator;
 import com.aroundme.GCMActivity;
+import com.aroundme.common.AroundMeApp;
+import com.aroundme.common.ConversationItem;
 import com.aroundme.common.IAppCallBack;
 import com.aroundme.common.IAppCallBack2;
 import com.aroundme.common.SplashInterface;
+import com.aroundme.data.DAO;
+import com.aroundme.data.IDataAccess;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.api.client.util.DateTime;
@@ -39,11 +47,13 @@ public class Controller {
 	private HashMap<String, UserAroundMe> allUsers = null;
 	private List<UserAroundMe> allUsersList = null;
     private static final String PROPERTY_APP_VERSION = "appVersion";
-    public static final String PROPERTY_REG_ID = "registration_id";
+    private static final String PROPERTY_REG_ID = "registration_id";
+    private IDataAccess dao; 
 	
 	public Controller() {
 		allUsers = new HashMap<String, UserAroundMe>();
 		allUsersList = new ArrayList<UserAroundMe>();
+		dao = DAO.getInstance(AroundMeApp.getContext());
 		try {
 			EndpointApiCreator.initialize(null);
 			endpoint = EndpointApiCreator.getApi(Aroundmeapi.class);
@@ -374,6 +384,34 @@ public class Controller {
 		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo netInfo = cm.getActiveNetworkInfo();
 		return netInfo != null && netInfo.isConnectedOrConnecting();
+	}
+	
+	public Long addMessageToDB(Message message){
+		dao.open();
+		Long id = dao.addToMessagesTable(message);
+		dao.close();
+		return id;
+	}
+	
+	public void updateConversationTable(Message message, Long messageId, 
+														boolean incUnreadMsgs, boolean resetDate){
+		dao.open();
+		ConversationItem conv = dao.isConversationExist(getCurrentUser().getMail(), message.getFrom());
+		if (conv != null) {
+			System.out.println("Conversation exist");
+			if (incUnreadMsgs)
+				conv.setUnreadMess(conv.getUnreadMess()+1);
+			if (resetDate)
+				conv.setTimeStamp(new DateTime(new Date()).getValue());
+			dao.updateOpenConversation(conv, messageId); // update row in data-base
+		}
+		else {
+			System.out.println("Conversation not exist");
+			dao.addToConversationsTable(message.getFrom(), message.getTo(), messageId);
+		}
+		dao.close();
+		Intent chatIntent = new Intent("updateOpenCoversationsAdapter");
+	    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(chatIntent);
 	}
 
 }

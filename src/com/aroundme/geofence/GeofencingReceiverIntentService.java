@@ -55,8 +55,8 @@ public class GeofencingReceiverIntentService extends ReceiveGeofenceTransitionBa
 		geoPt.setLongitude((float)messageGeo.getLongitude());
 		message.setLocation(geoPt);
 		message.setReadRadius((int)messageGeo.getRadius());
-		Long messageId = addMessageToDB(message);
-		updateConversationTable(message, messageId);
+		Long messageId = controller.addMessageToDB(message);
+		controller.updateConversationTable(message, messageId,true,true);
 		// create notification
 		// ...
 		
@@ -84,31 +84,6 @@ public class GeofencingReceiverIntentService extends ReceiveGeofenceTransitionBa
 	public void onCreate() {
 		super.onCreate();
 		notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-	}
-
-	private Long addMessageToDB(Message message){
-		dao.open();
-		Long id = dao.addToMessagesTable(message);
-		dao.close();
-		return id;
-	}
-	
-	public void updateConversationTable(Message message, Long messageId){
-		dao.open();
-		ConversationItem conv = dao.isConversationExist(controller.getCurrentUser().getMail(), message.getFrom());
-		if (conv != null) {
-			System.out.println("Conversation  exist");
-			conv.setUnreadMess(conv.getUnreadMess()+1);	// ***
-			conv.setTimeStamp(new DateTime(new Date()).getValue());
-			dao.updateOpenConversation(conv, messageId); // update row in data-base
-		}
-		else {
-			System.out.println("Conversation not exist");
-			dao.addToConversationsTable(message.getFrom(), message.getTo(), messageId);
-		}
-		dao.close();
-		Intent chatIntent = new Intent("updateOpenCoversationsAdapter");
-	    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(chatIntent);
 	}
 	
 /*	private void CreateNotification(String text, int taskId) {
