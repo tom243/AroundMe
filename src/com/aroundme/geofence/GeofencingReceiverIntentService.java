@@ -2,6 +2,7 @@ package com.aroundme.geofence;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
+import com.aroundme.common.AroundMeApp;
 import com.aroundme.common.ConversationItem;
 import com.aroundme.common.MessageGeofence;
 import com.aroundme.controller.Controller;
@@ -24,8 +25,8 @@ public class GeofencingReceiverIntentService extends ReceiveGeofenceTransitionBa
 	private IDataAccess dao;
 
 	public GeofencingReceiverIntentService() {
-		this.geoController = GeoController.getInstance(getApplicationContext());
-		this.dao = DAO.getInstance(getApplicationContext());
+		this.geoController = GeoController.getInstance(AroundMeApp.getContext());
+		this.dao = DAO.getInstance(AroundMeApp.getContext());
 		this.controller = Controller.getInstance();
 	}
 	

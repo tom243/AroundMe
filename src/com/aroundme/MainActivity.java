@@ -43,6 +43,7 @@ OnConnectionFailedListener {
     private Long geoMessageId = null;
 	private PendingIntent mGeofenceRequestIntent;
 	private boolean signOut = false;
+	static boolean active = false;
     
     /* Client used to interact with Google APIs. */
 	private GoogleApiClient mGoogleApiClient;
@@ -162,9 +163,17 @@ OnConnectionFailedListener {
 	@Override
 	protected void onStart() {
 		super.onStart();
+		active = true;
 		LocalBroadcastManager.getInstance(this).registerReceiver(mGeoMessageReceiver, new IntentFilter("geoMessage"));
+		if (geoMessageId != null && active)
+        	mGoogleApiClient.connect();
 	}
 	
+	@Override
+	protected void onStop() {
+		super.onStop();
+		active = false;
+	}
     @Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
@@ -176,7 +185,7 @@ OnConnectionFailedListener {
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
 	        geoMessageId = intent.getLongExtra("messageId",999);
-	        if (geoMessageId != null)
+	        if (geoMessageId != null && active)
 	        	mGoogleApiClient.connect();
 	        
 	    }
