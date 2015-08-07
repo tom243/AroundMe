@@ -1,7 +1,11 @@
 package com.aroundme.geofence;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
+import com.aroundme.common.AppConsts;
 import com.aroundme.common.AroundMeApp;
 import com.aroundme.common.ConversationItem;
 import com.aroundme.common.MessageGeofence;
@@ -11,7 +15,9 @@ import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
 import com.google.api.client.util.DateTime;
 
+import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
@@ -51,15 +57,21 @@ public class GeofencingReceiverIntentService extends ReceiveGeofenceTransitionBa
 		message.setReadRadius((int)messageGeo.getRadius());
 		Long messageId = addMessageToDB(message);
 		updateConversationTable(message, messageId);
-		// send broadcast to tell the receiver to refresh the adapter for open conversation list
-		Intent updateAdapterIntent = new Intent("updateOpenCoversationsAdapter");
-	    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(updateAdapterIntent);
+		// create notification
+		// ...
+		
+		// cancel geofence
+		geoController.cancelGeofence(strings[0]);
+		// send broadcast to remove geofence
+		Intent intent = new Intent("removeGeofence");
+		intent.putExtra("geoId", message.getId());
+	    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(intent);
 	}
 
 	@Override
 	protected void onExitedGeofences(String[] strings) {
 		// cancel geofence strings[0]
-		geoController.cancelGeofence(strings[0]);
+		//geoController.cancelGeofence(strings[0]);
 		Log.d(GeofencingReceiverIntentService.class.getName(), "onExit");
 	}
 
@@ -87,6 +99,7 @@ public class GeofencingReceiverIntentService extends ReceiveGeofenceTransitionBa
 		if (conv != null) {
 			System.out.println("Conversation  exist");
 			conv.setUnreadMess(conv.getUnreadMess()+1);	// ***
+			conv.setTimeStamp(new DateTime(new Date()).getValue());
 			dao.updateOpenConversation(conv, messageId); // update row in data-base
 		}
 		else {
@@ -95,14 +108,14 @@ public class GeofencingReceiverIntentService extends ReceiveGeofenceTransitionBa
 		}
 		dao.close();
 		Intent chatIntent = new Intent("updateOpenCoversationsAdapter");
-	    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(chatIntent);
+	    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(chatIntent);
 	}
 	
-	/*private void CreateNotification(String text, int taskId) {
+/*	private void CreateNotification(String text, int taskId) {
 		Intent intent = new Intent(this, MainActivity.class);
 		PendingIntent pIntent = PendingIntent.getActivity(this, taskId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		
-		SimpleGeofenceStore mGeofenceStorage = 	new SimpleGeofenceStore(this); 
+		MessageGeofenceStore mGeofenceStorage = 	new MessageGeofenceStore(this); 
 		String strId = Integer.toString(taskId);
 		String desc = mGeofenceStorage.getmPrefs().getString(mGeofenceStorage.getGeofenceFieldKey(
 				strId, AppConsts.KEY_DESCRIPTION),

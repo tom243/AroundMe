@@ -91,7 +91,7 @@ public class GCMIntentService extends IntentService
 							System.out.println("GEO MESSAGE WAS RECEIVED!");
 							geoController.createGeofence(m);
 							Intent geoIntent = new Intent("geoMessage");
-							geoIntent.putExtra("messageId", m.getId());
+							geoIntent.putExtra("geoId", m.getId());
 						    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(geoIntent);
 						}
 						else {

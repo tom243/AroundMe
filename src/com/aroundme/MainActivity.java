@@ -1,5 +1,7 @@
 package com.aroundme;
 
+import java.util.ArrayList;
+
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.aroundme.adapter.ViewPagerAdapter;
 import com.aroundme.common.AroundMeApp;
@@ -40,10 +42,11 @@ OnConnectionFailedListener {
     private int Numboftabs =2;
     private Controller controller;
     private GeoController geoController;
-    private Long geoMessageId = null;
+    //private Long geoMessageId = null;
 	private PendingIntent mGeofenceRequestIntent;
 	private boolean signOut = false;
-	static boolean active = false;
+	private ArrayList<Long> addGeoList;
+	private ArrayList<Long> removeGeoList;
     
     /* Client used to interact with Google APIs. */
 	private GoogleApiClient mGoogleApiClient;
@@ -55,7 +58,9 @@ OnConnectionFailedListener {
         // Creating The Toolbar and setting it as the Toolbar for the activity
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
-        
+        // initialize the geo's lists
+        addGeoList = new ArrayList<Long>();
+        removeGeoList = new ArrayList<Long>();
         // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles for the Tabs and Number Of Tabs.
         adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,Numboftabs);
         // Assigning ViewPager View and setting the adapter
@@ -122,17 +127,28 @@ OnConnectionFailedListener {
     
 	@Override
 	public void onConnected(Bundle connectionHint) {
-		if (geoMessageId != null) {
-			// Get the PendingIntent for the geofence monitoring request.
-			// Send a request to add the current geofences.
-			mGeofenceRequestIntent = getGeofenceTransitionPendingIntent();
-			LocationServices.GeofencingApi.addGeofences(mGoogleApiClient, geoController.getmGeofenceList(), mGeofenceRequestIntent);
-			Toast.makeText(this, "Start geofence service", Toast.LENGTH_SHORT).show();
-			geoMessageId = null;
+		if (!addGeoList.isEmpty()) {
+			for (Long geoId : addGeoList) {
+				// Get the PendingIntent for the geofence monitoring request.
+				// Send a request to add the current geofences.
+				mGeofenceRequestIntent = getGeofenceTransitionPendingIntent(geoId);
+				if (null != mGeofenceRequestIntent) {
+					LocationServices.GeofencingApi.addGeofences(mGoogleApiClient, geoController.getmGeofenceList(), mGeofenceRequestIntent);
+					Toast.makeText(this, "Start geofence service", Toast.LENGTH_SHORT).show();
+				}
+			}
+			addGeoList.clear();
 		}
-		
-		// NEED TO THINK ABOUT REMOVE GEO HERE MYABE USE ENUM 
-		
+		if (!removeGeoList.isEmpty()) {
+			for (Long geoId : removeGeoList) {
+				mGeofenceRequestIntent = getGeofenceTransitionPendingIntent(geoId);				
+				if (null != mGeofenceRequestIntent) {
+					LocationServices.GeofencingApi.removeGeofences(mGoogleApiClient,mGeofenceRequestIntent);
+					Toast.makeText(this, "Remove geofence", Toast.LENGTH_SHORT).show();
+				}
+			}
+			removeGeoList.clear();
+		}
 		if (signOut) {
 			if (controller.isOnline(AroundMeApp.getContext())){	
 				Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
@@ -163,31 +179,41 @@ OnConnectionFailedListener {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		active = true;
 		LocalBroadcastManager.getInstance(this).registerReceiver(mGeoMessageReceiver, new IntentFilter("geoMessage"));
-		if (geoMessageId != null && active)
-        	mGoogleApiClient.connect();
+		LocalBroadcastManager.getInstance(this).registerReceiver(mGeoRemoveReceiver, new IntentFilter("removeGeofence"));
 	}
 	
 	@Override
 	protected void onStop() {
 		super.onStop();
-		active = false;
 	}
     @Override
 	protected void onDestroy() {
-		// TODO Auto-generated method stub
 		super.onDestroy();
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mGeoMessageReceiver);
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(mGeoRemoveReceiver);
 	}
 
 	private BroadcastReceiver mGeoMessageReceiver = new BroadcastReceiver() {
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
-	        geoMessageId = intent.getLongExtra("messageId",999);
-	        if (geoMessageId != null && active)
+	        Long geoMessageId = intent.getLongExtra("geoId",999);
+	        if (geoMessageId != null) {
+	        	addGeoList.add(geoMessageId);
 	        	mGoogleApiClient.connect();
-	        
+	        }
+	    }
+	        //  ... react to local broadcast message
+	};
+	
+	private BroadcastReceiver mGeoRemoveReceiver = new BroadcastReceiver() {
+	    @Override
+	    public void onReceive(Context context, Intent intent) {
+	    	Long geoMessageId = intent.getLongExtra("geoId",999);
+	        if (geoMessageId != null) {
+	        	removeGeoList.add(geoMessageId);
+	        	mGoogleApiClient.connect();
+	        }
 	    }
 	        //  ... react to local broadcast message
 	};
@@ -196,9 +222,9 @@ OnConnectionFailedListener {
 	 * Create a PendingIntent that triggers GeofenceTransitionIntentService when
 	 * a geofence transition occurs.
 	 */
-	private PendingIntent getGeofenceTransitionPendingIntent() {
+	private PendingIntent getGeofenceTransitionPendingIntent(Long geoId) {
 		Intent intent = new Intent(this, GeofencingReceiverIntentService.class);
-		return PendingIntent.getService(this, geoMessageId.intValue(), intent, // need to make sure that casting is OK geoMessageId.intValue()
+		return PendingIntent.getService(this, geoId.intValue(), intent, // need to make sure that casting is OK geoMessageId.intValue()
 				PendingIntent.FLAG_UPDATE_CURRENT);
 
 	}
