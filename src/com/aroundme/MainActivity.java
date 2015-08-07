@@ -141,11 +141,12 @@ OnConnectionFailedListener {
 				Toast.makeText(AroundMeApp.getContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
 		    Intent intent = new Intent(this, SignInActivity.class);
 		    // clear the singletone controller
-		    Controller.getInstance().clear(); 
+		    Controller.getInstance().clear();
+		    mGoogleApiClient.disconnect();	// check !!
 			startActivity(intent);
 			finish();
 		}
-		//mGoogleApiClient.disconnect();
+		mGoogleApiClient.disconnect();
 	}
 
 	@Override
@@ -162,8 +163,6 @@ OnConnectionFailedListener {
 	protected void onStart() {
 		super.onStart();
 		LocalBroadcastManager.getInstance(this).registerReceiver(mGeoMessageReceiver, new IntentFilter("geoMessage"));
-		if (geoMessageId != null)
-			mGoogleApiClient.connect();
 	}
 	
     @Override
@@ -177,7 +176,9 @@ OnConnectionFailedListener {
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
 	        geoMessageId = intent.getLongExtra("messageId",999);
-	        //mGoogleApiClient.connect();
+	        if (geoMessageId != null)
+	        	mGoogleApiClient.connect();
+	        
 	    }
 	        //  ... react to local broadcast message
 	};

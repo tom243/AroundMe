@@ -2,7 +2,11 @@ package com.aroundme;
 
 import java.util.ArrayList;
 import java.util.Date;
+
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.ImageLoader.ImageContainer;
+import com.android.volley.toolbox.ImageLoader.ImageListener;
 import com.android.volley.toolbox.NetworkImageView;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.aroundme.adapter.ChatArrayAdapter;
@@ -16,12 +20,18 @@ import com.aroundme.controller.Controller;
 import com.aroundme.controller.ImagesController;
 import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
+import com.google.api.client.googleapis.auth.clientlogin.ClientLogin.Response;
 import com.google.api.client.util.DateTime;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.DataSetObserver;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Path;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
@@ -51,6 +61,7 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
     private Toolbar toolbar;
     private ProgressBar progressBar;
     private ImageLoader imageLoader = ImagesController.getInstance().getImageLoader();
+    private NetworkImageView thumbNail; 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,7 +81,7 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
         TextView title = (TextView) findViewById(R.id.friend_name_title);
         title.setText(controller.getUserNameByMail(myFriendMail));
         // set the tool bar icon of friend
-        NetworkImageView thumbNail = (NetworkImageView) findViewById(R.id.profile_pic_chat_friend);
+        thumbNail = (NetworkImageView) findViewById(R.id.profile_pic_chat_friend);
 		thumbNail.setDefaultImageResId(R.drawable.user_default);
         if (imageLoader == null)
             imageLoader = ImagesController.getInstance().getImageLoader();
@@ -78,7 +89,19 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 		imageUrl = controller.getImageUrlByMail(myFriendMail);
 		if (imageUrl != null)
 			thumbNail.setImageUrl(imageUrl, imageLoader);
-	    
+		//imageLoader.getImageListener(imageView, R.drawable.user_default, R.drawable.user_default));
+		/*Bitmap bm_original = imageLoader.get(myFriendMail, new ImageLoader.ImageListener() {
+			@Override
+			public void onErrorResponse(VolleyError arg0) {
+				
+			}
+			@Override
+			public void onResponse(ImageLoader.ImageContainer response, boolean arg1) {
+				Bitmap bitmap = response.getBitmap();		
+				imgBitmapCallback(bitmap);
+			}
+		}).getBitmap();
+	*/
         buttonSend = (Button) findViewById(R.id.buttonSend);
         listView = (ListView) findViewById(R.id.listView1);
         chatArrayAdapter = new ChatArrayAdapter(AroundMeApp.getContext(), R.layout.conversation_singlemessage);
@@ -118,6 +141,14 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
         });
         getHistoryMessagesFromDB(myFriendMail);
         initializeUnreadMessages();
+    }
+    
+    public void imgBitmapCallback(Bitmap bitmap) {
+    	Bitmap bm = getRoundedShape(bitmap);
+    	if (bm != null){
+    		thumbNail.setImageBitmap(bm);
+    		System.out.println("$$$$$$");
+    	}
     }
     
     public void initializeUnreadMessages() {
@@ -252,6 +283,29 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 	protected void onPause() {		 // on pause ??
 		initializeUnreadMessages();
 		super.onPause();
+	}
+	
+	public Bitmap getRoundedShape(Bitmap scaleBitmapImage) {
+	    int targetWidth = 50;
+	    int targetHeight = 50;
+	    Bitmap targetBitmap = Bitmap.createBitmap(targetWidth, 
+	                        targetHeight,Bitmap.Config.ARGB_8888);
+
+	    Canvas canvas = new Canvas(targetBitmap);
+	    Path path = new Path();
+	    path.addCircle(((float) targetWidth - 1) / 2,
+	        ((float) targetHeight - 1) / 2,
+	        (Math.min(((float) targetWidth), 
+	        ((float) targetHeight)) / 2),
+	        Path.Direction.CCW);
+
+	    canvas.clipPath(path);
+	    Bitmap sourceBitmap = scaleBitmapImage;
+	    canvas.drawBitmap(sourceBitmap, 
+	        new Rect(0, 0, sourceBitmap.getWidth(),
+	        sourceBitmap.getHeight()), 
+	        new Rect(0, 0, targetWidth, targetHeight), null);
+	    return targetBitmap;
 	}
 
 }
