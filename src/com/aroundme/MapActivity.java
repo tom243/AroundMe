@@ -67,7 +67,8 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	private IDataAccess dao;
 	private static enum type_msg {TYPE_PIN_MSG,TYPE_GEO_MSG};
 	//private UserAroundMe[] allUsers = null;
-	private String allUsers [] = null;
+	private String allUsersMail [] = null;
+	private String allUsersName [] = null;
 	private type_msg lastMsgType = null;
 	
 	@Override
@@ -144,10 +145,12 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 				Toast.makeText(AroundMeApp.getContext(), "long click on a map", Toast.LENGTH_SHORT).show();
 				// get all users (from controller) and create simple array
 				int size = controller.getAllUsersList().size();
-				allUsers = new String[size];
+				allUsersMail = new String[size];
+				allUsersName = new String[size];
 				int i = 0;
 				for (UserAroundMe user: controller.getAllUsersList()) {
-					allUsers[i] = user.getMail();
+					allUsersMail[i] = user.getMail();
+					allUsersName[i] = controller.getUserNameByMail(user.getMail());
 					i++;
 				}
 				// the first dialog to choose the type of message
@@ -171,19 +174,19 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 						    friends_builder.setTitle(R.string.choose_friends)
 						    // Specify the list array, the items to be selected by default (null for none),
 						    // and the listener through which to receive callbacks when items are selected
-				           .setMultiChoiceItems(allUsers, null,
+				           .setMultiChoiceItems(allUsersName, null,
 				                      new DialogInterface.OnMultiChoiceClickListener() {
 				               @Override
 				               public void onClick(DialogInterface dialog, int which,
 				                       boolean isChecked) {
 				                   if (isChecked) {
 				                       // If the user checked the item, add it to the selected items
-				                       mSelectedItems.add(allUsers[which]);
-				                       Toast.makeText(AroundMeApp.getContext(), "add index: "+which+" :"+allUsers[which], Toast.LENGTH_SHORT).show();
+				                       mSelectedItems.add(allUsersMail[which]);
+				                       Toast.makeText(AroundMeApp.getContext(), "add index: "+which+" :"+allUsersName[which], Toast.LENGTH_SHORT).show();
 				                   } else if (mSelectedItems.contains(which)) {
 				                       // Else, if the item is already in the array, remove it 
-				                       mSelectedItems.remove(allUsers[which]);
-				                       Toast.makeText(AroundMeApp.getContext(), "remove index: "+which+" :"+allUsers[which], Toast.LENGTH_SHORT).show();
+				                       mSelectedItems.remove(allUsersMail[which]);
+				                       Toast.makeText(AroundMeApp.getContext(), "remove index: "+which+" :"+allUsersName[which], Toast.LENGTH_SHORT).show();
 				                   }
 				               }
 				           })
