@@ -406,11 +406,10 @@ public class Controller {
 		}
 		else {
 			System.out.println("Conversation not exist");
-			dao.addToConversationsTable(from, to, messageId);
-			if (resetDate) {
-				conv.setUnreadMess(0);
-				dao.updateUnreadMessages(conv);
-			}
+			int unreadMsgs = 1 ;
+			if (resetUnreadMsgs) 
+				unreadMsgs = 0;
+			dao.addToConversationsTable(from, to, messageId, unreadMsgs);
 		}
 		dao.close();
 		Intent updateIntent = new Intent("updateOpenCoversationsAdapter");
