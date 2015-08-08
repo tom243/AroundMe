@@ -175,9 +175,9 @@ public class DAO implements IDataAccess{
 	}
 	
 	@Override
-	public void  addToConversationsTable(String  friendMail, String userMail, Long messageId) {		
+	public void  addToConversationsTable(String  friendMail, String userMail, Long messageId, int unreadMsgs) {		
 		//build the content values.
-		ContentValues values = putConversationsValues(friendMail, userMail, messageId,1);
+		ContentValues values = putConversationsValues(friendMail, userMail, messageId,unreadMsgs);
 		
 		//do the insert.
 		long insertId = db.insert(ConversationsEntry.TABLE_NAME, null, values);
