@@ -226,30 +226,19 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		mGoogleApiClient.connect();
 	}
 	
-	public void sendGeoMessage(String to,String content, float lat, float lon) {
-		GeoPt geoPt = new GeoPt();
+	private void sendGeoMessage(final String to,final String content, float lat, float lon) {
+		final GeoPt geoPt = new GeoPt();
 		geoPt.setLatitude(lat);
 		geoPt.setLongitude(lon);
 		controller.sendMessageToUser(content,to,geoPt,
 				new IAppCallBack<Void>() {
 					@Override
 					public void done(Void ret, Exception e) {
-						// TODO Auto-generated method stub
+						controller.buildMessage(content, to, true, geoPt);
+						//Intent updateIntent = new Intent("updateOpenCoversationsAdapter");
+					    //LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateIntent);
 					}
 				}, this);
-		Message message = new Message();
-		message.setContnet(content);
-		message.setFrom(controller.getCurrentUser().getMail());
-		message.setTo(to);
-		message.setTimestamp(new DateTime(new Date()));
-		message.setLocation(geoPt);
-		message.setReadRadius(80);
-		// add the new message to messages table in db 
-   		Long messageId = controller.addMessageToDB(message);	
-   		// update the conversations table in db with the last message
-		controller.updateConversationTable(message.getTo(), message.getFrom(), messageId,false,false);
-		Intent updateIntent = new Intent("updateOpenCoversationsAdapter");
-	    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateIntent);
 	}
 	
 	@Override

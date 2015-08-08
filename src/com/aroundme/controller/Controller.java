@@ -409,8 +409,24 @@ public class Controller {
 			dao.addToConversationsTable(from, to, messageId);
 		}
 		dao.close();
-		//Intent updateIntent = new Intent("updateOpenCoversationsAdapter");
-	    //LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateIntent);
+		Intent updateIntent = new Intent("updateOpenCoversationsAdapter");
+	    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateIntent);
+	}
+	
+	public void buildMessage(String mContent, String mTo, boolean isGeoMessage, GeoPt geoPt) {
+		Message message = new Message();
+		message.setContnet(mContent);
+		message.setFrom(getCurrentUser().getMail());
+		message.setTo(mTo);
+		message.setTimestamp(new DateTime(new Date()));
+		if (isGeoMessage) {
+			message.setLocation(geoPt);
+			message.setReadRadius(80);
+		}
+		// add the new message to messages table in db 
+   		Long messageId = addMessageToDB(message);	
+   		// update the conversations table in db with the last message
+		updateConversationTable(message.getFrom(), message.getTo(), messageId,false,false);
 	}
 
 }

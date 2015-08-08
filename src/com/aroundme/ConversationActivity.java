@@ -203,15 +203,6 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
     	if (!chatText.getText().toString().isEmpty()) {
     		String messageContent = chatText.getText().toString();
     		controller.sendMessageToUser(messageContent,myFriendMail,null,this,this);
-			Message message = new Message();
-			message.setContnet(messageContent);
-			message.setFrom(controller.getCurrentUser().getMail());
-			message.setTo(myFriendMail);
-			message.setTimestamp(new DateTime(new Date()));
-	   		Long messageId = controller.addMessageToDB(message);
-    		controller.updateConversationTable(message.getFrom(), message.getTo(), messageId,false,false);
-    		Intent updateIntent = new Intent("updateOpenCoversationsAdapter");
-		    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateIntent);
     		return true;
     	}
     	return false;
@@ -220,7 +211,11 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 	@Override
 	public void done(Void ret, Exception e) {
 		if (e==null) {
-			String text = chatText.getText().toString();
+			String messageContent = chatText.getText().toString();
+			controller.buildMessage(messageContent, myFriendMail, false, null);
+	   		//Intent updateIntent = new Intent("updateOpenCoversationsAdapter");
+		    //LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateIntent);
+		    String text = chatText.getText().toString();
 			side = false;
 			chatArrayAdapter.add(new ChatMessage(side, text));
 			chatText.setText("");
