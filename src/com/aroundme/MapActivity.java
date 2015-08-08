@@ -194,7 +194,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 					   						// send message 
 					   						editTextContent = (EditText) v.findViewById(R.id.geo_message_content);
 					   						if (editTextContent.getText().toString() != null) {
-					   							String to = "tomer.luster@gmail.com";
+					   							String to = "chenshamir1203@gmail.com";
 					   							// for... 
 					   								sendGeoMessage(to,editTextContent.getText().toString(), (float)point.latitude, (float)point.longitude);
 					   						}

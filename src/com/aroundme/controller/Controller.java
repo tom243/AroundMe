@@ -407,7 +407,7 @@ public class Controller {
 		else {
 			System.out.println("Conversation not exist");
 			dao.addToConversationsTable(from, to, messageId);
-			if (resetDate) {
+			if (resetUnreadMsgs) {
 				conv.setUnreadMess(0);
 				dao.updateUnreadMessages(conv);
 			}
