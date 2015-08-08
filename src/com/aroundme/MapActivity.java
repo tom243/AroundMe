@@ -3,6 +3,7 @@ package com.aroundme;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
@@ -65,6 +66,9 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	private EditText editTextContent;
 	private IDataAccess dao;
 	private static enum type_msg {TYPE_PIN_MSG,TYPE_GEO_MSG};
+	//private UserAroundMe[] allUsers = null;
+	private String allUsers [] = null;
+	private type_msg lastMsgType = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -138,6 +142,14 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 			@Override
 			public void onMapLongClick(final LatLng point) {
 				Toast.makeText(AroundMeApp.getContext(), "long click on a map", Toast.LENGTH_SHORT).show();
+				// get all users (from controller) and create simple array
+				int size = controller.getAllUsersList().size();
+				allUsers = new String[size];
+				int i = 0;
+				for (UserAroundMe user: controller.getAllUsersList()) {
+					allUsers[i] = user.getMail();
+					i++;
+				}
 				// the first dialog to choose the type of message
 				AlertDialog.Builder type_builder = new AlertDialog.Builder(MapActivity.this)
 					.setTitle(R.string.choose_msg_type)
@@ -145,8 +157,6 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 						public void onClick(DialogInterface dialog, int which) {
 							// The 'which' argument contains the index position
 							// of the selected item
-							Toast.makeText(AroundMeApp.getContext(), "index: "+which, Toast.LENGTH_SHORT).show();
-							final type_msg lastMsgType;
 							if (which == 0) { // pin message
 								lastMsgType = type_msg.TYPE_PIN_MSG;
 							}
@@ -154,23 +164,26 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 								lastMsgType = type_msg.TYPE_GEO_MSG;
 							}
 							// the second dialog to choose friends
-							final ArrayList mSelectedItems = new ArrayList(); 
+							final ArrayList<String> mSelectedItems = new ArrayList<String>();
+							
 						    AlertDialog.Builder friends_builder = new AlertDialog.Builder(MapActivity.this);
 						    // Set the dialog title
 						    friends_builder.setTitle(R.string.choose_friends)
 						    // Specify the list array, the items to be selected by default (null for none),
 						    // and the listener through which to receive callbacks when items are selected
-				           .setMultiChoiceItems(R.array.friends, null,
+				           .setMultiChoiceItems(allUsers, null,
 				                      new DialogInterface.OnMultiChoiceClickListener() {
 				               @Override
 				               public void onClick(DialogInterface dialog, int which,
 				                       boolean isChecked) {
 				                   if (isChecked) {
 				                       // If the user checked the item, add it to the selected items
-				                       mSelectedItems.add(which);
+				                       mSelectedItems.add(allUsers[which]);
+				                       Toast.makeText(AroundMeApp.getContext(), "add index: "+which+" :"+allUsers[which], Toast.LENGTH_SHORT).show();
 				                   } else if (mSelectedItems.contains(which)) {
 				                       // Else, if the item is already in the array, remove it 
-				                       mSelectedItems.remove(Integer.valueOf(which));
+				                       mSelectedItems.remove(allUsers[which]);
+				                       Toast.makeText(AroundMeApp.getContext(), "remove index: "+which+" :"+allUsers[which], Toast.LENGTH_SHORT).show();
 				                   }
 				               }
 				           })
@@ -193,10 +206,20 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 					   						//Toast.makeText(AroundMeApp.getContext(), id, Toast.LENGTH_SHORT).show();
 					   						// send message 
 					   						editTextContent = (EditText) v.findViewById(R.id.geo_message_content);
+					   						// checking the message isn't empty
 					   						if (editTextContent.getText().toString() != null) {
-					   							String to = "chenshamir1203@gmail.com";
-					   							// for... 
-					   								sendGeoMessage(to,editTextContent.getText().toString(), (float)point.latitude, (float)point.longitude);
+					   							// if it is GEO message
+					   							Toast.makeText(AroundMeApp.getContext(), "GEO MSG", Toast.LENGTH_SHORT).show();
+					   							if (lastMsgType == type_msg.TYPE_GEO_MSG) {
+						   							for (String friendMail: mSelectedItems) {
+						   								Toast.makeText(AroundMeApp.getContext(),"sending msg to " + friendMail, Toast.LENGTH_SHORT).show();
+						   								sendGeoMessage(friendMail,editTextContent.getText().toString(), (float)point.latitude, (float)point.longitude);
+						   							}
+					   							}
+					   							// it is PIN message
+					   							else if (lastMsgType == type_msg.TYPE_PIN_MSG) {
+					   								Toast.makeText(AroundMeApp.getContext(), "PIN MSG", Toast.LENGTH_SHORT).show();
+					   							}
 					   						}
 					   					}
 					   				})
