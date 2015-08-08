@@ -99,7 +99,7 @@ public class GCMIntentService extends IntentService
 							// insert to conversation table
 							dao = DAO.getInstance(AroundMeApp.getContext());
 							Long messageId = controller.addMessageToDB(m);
-							controller.updateConversationTable(m.getTo(), m.getFrom(), messageId,true,false);
+							controller.updateConversationTable(m.getTo(), m.getFrom(), messageId,true,false,false);
 							//Intent updateIntent = new Intent("updateOpenCoversationsAdapter");
 						    //LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateIntent);
 							//send intent with the id from the insert query

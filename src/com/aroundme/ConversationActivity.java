@@ -163,7 +163,6 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 		dao.close();
     }
     
-    
     public void getHistoryMessagesFromDB(String friendMail){
 		dao.open();
 		historyMessages = dao.getAllMessagesForFriend(controller.getCurrentUser().getMail(), friendMail);

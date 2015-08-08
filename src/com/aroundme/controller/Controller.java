@@ -393,7 +393,7 @@ public class Controller {
 		return id;
 	}
 	
-	public void updateConversationTable(String to, String from, Long messageId, boolean incUnreadMsgs, boolean resetDate){
+	public void updateConversationTable(String to, String from, Long messageId, boolean incUnreadMsgs, boolean resetDate, boolean resetUnreadMsgs){
 		dao.open();
 		ConversationItem conv = dao.isConversationExist(to,from);
 		if (conv != null) {
@@ -407,6 +407,10 @@ public class Controller {
 		else {
 			System.out.println("Conversation not exist");
 			dao.addToConversationsTable(from, to, messageId);
+			if (resetDate) {
+				conv.setUnreadMess(0);
+				dao.updateUnreadMessages(conv);
+			}
 		}
 		dao.close();
 		Intent updateIntent = new Intent("updateOpenCoversationsAdapter");
@@ -426,7 +430,7 @@ public class Controller {
 		// add the new message to messages table in db 
    		Long messageId = addMessageToDB(message);	
    		// update the conversations table in db with the last message
-		updateConversationTable(message.getFrom(), message.getTo(), messageId,false,false);
+		updateConversationTable(message.getFrom(), message.getTo(), messageId,false,false,isGeoMessage);
 	}
 
 }
