@@ -46,6 +46,7 @@ public class GeofencingReceiverIntentService extends ReceiveGeofenceTransitionBa
 		// add the message to db
 		MessageGeofence messageGeo = geoController.getmGeofenceStorage().getGeofence(strings[0]);
 		Message message = new Message();
+		message.setId(Long.parseLong(messageGeo.getId()));
 		message.setContnet(messageGeo.getContent());
 		message.setFrom(messageGeo.getFrom());
 		message.setTo(messageGeo.getTo());
@@ -62,11 +63,11 @@ public class GeofencingReceiverIntentService extends ReceiveGeofenceTransitionBa
 		// create notification
 		// ...
 		
-		// cancel geofence
-		geoController.cancelGeofence(strings[0]);
+		System.out.println("strings[0]" + strings[0]);
+		System.out.println("message.getId()" + message.getId());
 		// send broadcast to remove geofence
 		Intent intent = new Intent("removeGeofence");
-		intent.putExtra("geoId", message.getId());
+		intent.putExtra("geoId",  message.getId());
 	    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(intent);
 	}
 

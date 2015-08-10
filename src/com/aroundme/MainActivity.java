@@ -141,9 +141,13 @@ OnConnectionFailedListener {
 		if (!removeGeoList.isEmpty()) {
 			for (Long geoId : removeGeoList) {
 				Toast.makeText(this, "Remove geofence", Toast.LENGTH_SHORT).show();
+				System.out.println("main activity geo id " + geoId);
 				mGeofenceRequestIntent = getGeofenceTransitionPendingIntent(geoId);				
 				if (null != mGeofenceRequestIntent) 
 					LocationServices.GeofencingApi.removeGeofences(mGoogleApiClient,mGeofenceRequestIntent);
+				// cancel geofence
+				System.out.println("main activity geo id string " + geoId.toString());
+				geoController.cancelGeofence(geoId.toString());
 			}
 			removeGeoList.clear();
 		}
