@@ -170,13 +170,16 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 		if (!historyMessages.isEmpty()){
 			for (Message message: historyMessages){
 				if (message != null){
+					boolean locationBased = false;
+					if (message.getLocation() != null)
+						locationBased = true;
 					if (message.getFrom().equals(myFriendMail)) {
 			        	 side = true;
-			        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet()));
+			        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),locationBased));
 			        }
 					else{
 						side=false;
-						chatArrayAdapter.add(new ChatMessage(side, message.getContnet()));
+						chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),locationBased));
 					}
 				}
 			}
@@ -190,9 +193,12 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 	        dao.open();
 	        Message message = dao.getMessageFromDB(messageId);
 	        dao.close();
+	        boolean locationBased = false;
+	        if (message.getLocation() != null)
+	        	locationBased = true;
 	        if (message.getFrom().equals(myFriendMail)) {
 	        	 side = true;
-	        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet()));
+	        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),locationBased));
 	        }
 	        //  ... react to local broadcast message
 	    }
@@ -216,7 +222,7 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 		    //LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateIntent);
 		    String text = chatText.getText().toString();
 			side = false;
-			chatArrayAdapter.add(new ChatMessage(side, text));
+			chatArrayAdapter.add(new ChatMessage(side, text,false));
 			chatText.setText("");
 		}
 	}
@@ -237,6 +243,8 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 	public void visible(Exception e) {
 		if (e == null) {
 			progressBar.setVisibility(View.VISIBLE);
+			// change the send button to be not clickable 
+    		buttonSend.setClickable(false);
 		}
 	}
 
@@ -244,6 +252,8 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 	public void unvisible(Exception e) {
 		if (e == null) {
 			progressBar.setVisibility(View.INVISIBLE);
+			// change the send button to be not clickable 
+    		buttonSend.setClickable(true);
 		}
 	}
 

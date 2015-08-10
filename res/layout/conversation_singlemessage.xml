@@ -3,10 +3,17 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content" >
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/singleMessageContainer"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" >
+
+        <ImageView
+            android:id="@+id/singleMessage_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+           	android:paddingTop="5dp"
+            android:src="@drawable/geo_msg" />
 
         <TextView
             android:id="@+id/singleMessage"
@@ -14,10 +21,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="5dip"
-            android:background="@drawable/bubble_b"
-            android:paddingLeft="10dip"
-            android:text="Hello bubbles!"
             android:textColor="@android:color/primary_text_light" />
-    </LinearLayout>
+        
+    </RelativeLayout>
 
 </LinearLayout>

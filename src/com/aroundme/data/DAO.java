@@ -81,15 +81,19 @@ public class DAO implements IDataAccess{
 	
 	public Message cursorToMessage(Cursor cursor) {
 		Message message = new Message();
+		GeoPt geoPt = null;
 		message.setContnet(cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_CONTENT)));
 		message.setFrom(cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_FROM)));
 		message.setTo(cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_TO)));
 		message.setTimestamp(new DateTime(cursor.getLong(cursor.getColumnIndex(MessagesEntry.COLUMN_TIME_STAMP))));
+		/*********** TALK WITH TOMER ************/
 		Long latitude = cursor.getLong(cursor.getColumnIndex(MessagesEntry.COLUMN_LAT));
 		Long longitude = cursor.getLong(cursor.getColumnIndex(MessagesEntry.COLUMN_LONG));
-		GeoPt geoPt = new GeoPt();
-		geoPt.setLatitude((float)latitude);
-		geoPt.setLongitude((float) longitude);
+		if (latitude != 0 && longitude != 0) {
+			geoPt = new GeoPt();
+			geoPt.setLatitude((float)latitude);
+			geoPt.setLongitude((float) longitude);
+		}
 		message.setLocation(geoPt);
 		message.setReadRadius(cursor.getInt(cursor.getColumnIndex(MessagesEntry.COLUMN_RADIUS)));
 		return message;
@@ -229,7 +233,6 @@ public class DAO implements IDataAccess{
 		values.put(MessagesEntry.COLUMN_RADIUS, message.getReadRadius());
 		return values;
 	}
-	
 	
 	/**
 	 * crate content values form a conversation parameters

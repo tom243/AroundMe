@@ -69,6 +69,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	//private UserAroundMe[] allUsers = null;
 	private String allUsersMail [] = null;
 	private String allUsersName [] = null;
+	private ArrayList<String> mSelectedItems = null;
 	private type_msg lastMsgType = null;
 	
 	@Override
@@ -167,8 +168,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 								lastMsgType = type_msg.TYPE_GEO_MSG;
 							}
 							// the second dialog to choose friends
-							final ArrayList<String> mSelectedItems = new ArrayList<String>();
-							
+							mSelectedItems = new ArrayList<String>();
 						    AlertDialog.Builder friends_builder = new AlertDialog.Builder(MapActivity.this);
 						    // Set the dialog title
 						    friends_builder.setTitle(R.string.choose_friends)
@@ -183,11 +183,13 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 				                       // If the user checked the item, add it to the selected items
 				                       mSelectedItems.add(allUsersMail[which]);
 				                       Toast.makeText(AroundMeApp.getContext(), "add index: "+which+" :"+allUsersName[which], Toast.LENGTH_SHORT).show();
-				                   } else if (mSelectedItems.contains(which)) {
+				                   } else {
+				                	   if (mSelectedItems.contains(allUsersMail[which])) {
 				                       // Else, if the item is already in the array, remove it 
 				                       mSelectedItems.remove(allUsersMail[which]);
 				                       Toast.makeText(AroundMeApp.getContext(), "remove index: "+which+" :"+allUsersName[which], Toast.LENGTH_SHORT).show();
-				                   }
+				                	   }
+				                	}
 				               }
 				           })
 						   // Set the action buttons
