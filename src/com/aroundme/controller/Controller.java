@@ -28,6 +28,7 @@ import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMeCollection;
 import com.aroundme.EndpointApiCreator;
 import com.aroundme.GCMActivity;
+import com.aroundme.common.AppConsts;
 import com.aroundme.common.AroundMeApp;
 import com.aroundme.common.ConversationItem;
 import com.aroundme.common.IAppCallBack;
@@ -42,6 +43,7 @@ import com.google.api.client.util.DateTime;
 public class Controller {
 	
 	private static Controller instance;
+	private final SharedPreferences mPrefs;
 	private Aroundmeapi endpoint;
 	private User currentUser;
 	private HashMap<String, UserAroundMe> allUsers = null;
@@ -54,6 +56,7 @@ public class Controller {
 		allUsers = new HashMap<String, UserAroundMe>();
 		allUsersList = new ArrayList<UserAroundMe>();
 		dao = DAO.getInstance(AroundMeApp.getContext());
+		mPrefs = AroundMeApp.getContext().getSharedPreferences(AppConsts.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 		try {
 			EndpointApiCreator.initialize(null);
 			endpoint = EndpointApiCreator.getApi(Aroundmeapi.class);
@@ -203,9 +206,17 @@ public class Controller {
 			@Override
 			protected void onPostExecute(UserAroundMeCollection users) {
 				// update all-users hash map
-				for (UserAroundMe user : users.getItems()) 
+				SharedPreferences.Editor prefs = mPrefs.edit();
+				System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+				for (UserAroundMe user : users.getItems()) { 
 					allUsers.put(user.getMail(),user);
-				
+					prefs.putString(user.getMail(), user.getDisplayName());
+				}
+				prefs.commit();
+				for (UserAroundMe user : users.getItems()) { 
+					System.out.println(user.getMail());
+					System.out.println(mPrefs.getString(user.getMail(),"New message"));
+				}
 				allUsersList = users.getItems();		
 				if (splash!=null)
 					splash.unvisible(null);

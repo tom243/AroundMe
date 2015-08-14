@@ -20,18 +20,20 @@ import com.aroundme.common.AroundMeApp;
 import com.aroundme.common.ConversationItem;
 import com.aroundme.controller.Controller;
 import com.aroundme.controller.GeoController;
+import com.aroundme.controller.NotificationsController;
 import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 public class GCMIntentService extends IntentService
 {
-	public static final int NOTIFICATION_ID = 1;
-	private NotificationManager mNotificationManager;
+//	public static final int NOTIFICATION_ID = 1;
+//	private NotificationManager mNotificationManager;
 	private static Stack<String> msgStack;
 	private IDataAccess dao;
 	private Controller controller;
 	private GeoController geoController;
+	private NotificationsController notificationsController;
 
 	/*
 	 * TODO: Set this to a valid project number. See
@@ -48,6 +50,7 @@ public class GCMIntentService extends IntentService
 		msgStack = new Stack<String>();
 		controller = Controller.getInstance();
 		geoController = GeoController.getInstance(AroundMeApp.getContext());
+		notificationsController = new NotificationsController();
 	}
 	
 	@Override
@@ -67,10 +70,10 @@ public class GCMIntentService extends IntentService
              */
             if (GoogleCloudMessaging.
                     MESSAGE_TYPE_SEND_ERROR.equals(messageType)) {
-                sendNotification("Send error: " + extras.toString());
+            	//notifiController.sendNotification("Send error: " + extras.toString(),1);
             } else if (GoogleCloudMessaging.
                     MESSAGE_TYPE_DELETED.equals(messageType)) {
-                sendNotification("Deleted messages on server: " + extras.toString());
+            	//notifiController.sendNotification("Deleted messages on server: " + extras.toString(),1);
             // If it's a regular GCM message, do some work.
             } else if (GoogleCloudMessaging.
                     MESSAGE_TYPE_MESSAGE.equals(messageType)) {
@@ -95,7 +98,7 @@ public class GCMIntentService extends IntentService
 						    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(geoIntent);
 						}
 						else {
-							sendNotification(m.getContnet());
+							notificationsController.createNotification(m);
 							// insert to conversation table
 							dao = DAO.getInstance(AroundMeApp.getContext());
 							Long messageId = controller.addMessageToDB(m);
@@ -118,28 +121,6 @@ public class GCMIntentService extends IntentService
         // Release the wake lock provided by the WakefulBroadcastReceiver.
         Log.i("GCM-iNTENT","type: "+messageType);
         GcmBroadcastReceiver.completeWakefulIntent(intent);
-    }
-		
-	// Put the message into a notification and post it.
-    // This is just one simple example of what you might choose to do with
-    // a GCM message.
-    private void sendNotification(String msg) {
-        mNotificationManager = (NotificationManager)
-                this.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, GCMActivity.class), 0);
-
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
-        .setSmallIcon(R.drawable.ic_launcher)
-        .setContentTitle("New Message")
-        .setStyle(new NotificationCompat.BigTextStyle()
-        .bigText(msg))
-        .setContentText(msg);
-
-        mBuilder.setContentIntent(contentIntent);
-        mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
     }
 
 	private String getWebSampleUrl(String endpointUrl)

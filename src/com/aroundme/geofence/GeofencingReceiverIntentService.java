@@ -1,23 +1,17 @@
 package com.aroundme.geofence;
 
-import java.sql.Timestamp;
-import java.util.Date;
-
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
-import com.aroundme.common.AppConsts;
 import com.aroundme.common.AroundMeApp;
-import com.aroundme.common.ConversationItem;
 import com.aroundme.common.MessageGeofence;
 import com.aroundme.controller.Controller;
 import com.aroundme.controller.GeoController;
+import com.aroundme.controller.NotificationsController;
 import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
 import com.google.api.client.util.DateTime;
 
-import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
@@ -28,12 +22,14 @@ public class GeofencingReceiverIntentService extends ReceiveGeofenceTransitionBa
 	private NotificationManager notificationManager;
 	private GeoController geoController;
 	private Controller controller;
+	private NotificationsController notificationsController;
 	private IDataAccess dao;
 
 	public GeofencingReceiverIntentService() {
 		this.geoController = GeoController.getInstance(AroundMeApp.getContext());
 		this.dao = DAO.getInstance(AroundMeApp.getContext());
 		this.controller = Controller.getInstance();
+		this.notificationsController = new NotificationsController();
 	}
 	
 	@Override
@@ -58,10 +54,11 @@ public class GeofencingReceiverIntentService extends ReceiveGeofenceTransitionBa
 		message.setReadRadius((int)messageGeo.getRadius());
 		Long messageId = controller.addMessageToDB(message);
 		controller.updateConversationTable(message.getTo(), message.getFrom(), messageId,true,true,false);
-		//Intent updateIntent = new Intent("updateOpenCoversationsAdapter");
-	    //LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateIntent);
+		Intent chatIntent = new Intent("chatMessage");
+		chatIntent.putExtra("messageId", messageId);
+	    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(chatIntent);
 		// create notification
-		// ...
+		notificationsController.createNotification(message);
 		
 		System.out.println("strings[0]" + strings[0]);
 		System.out.println("message.getId()" + message.getId());
@@ -86,7 +83,7 @@ public class GeofencingReceiverIntentService extends ReceiveGeofenceTransitionBa
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		//notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 	}
 	
 /*	private void CreateNotification(String text, int taskId) {
