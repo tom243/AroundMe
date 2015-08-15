@@ -1,5 +1,6 @@
 package com.aroundme;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import com.android.volley.toolbox.ImageLoader;
@@ -166,13 +167,16 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 					boolean locationBased = false;
 					if (message.getLocation() != null)
 						locationBased = true;
+				    
 					if (message.getFrom().equals(myFriendMail)) {
 			        	 side = true;
-			        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),locationBased));
+			        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),locationBased,
+			        			 message.getTimestamp()));
 			        }
 					else{
 						side=false;
-						chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),locationBased));
+						chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),locationBased,
+								message.getTimestamp()));
 					}
 				}
 			}
@@ -191,7 +195,8 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 	        	locationBased = true;
 	        if (message.getFrom().equals(myFriendMail)) {
 	        	 side = true;
-	        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),locationBased));
+	        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),locationBased,
+	        	 		message.getTimestamp()));
 	        }
 	        //  ... react to local broadcast message
 	    }
@@ -215,7 +220,8 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 		    //LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateIntent);
 		    String text = chatText.getText().toString();
 			side = false;
-			chatArrayAdapter.add(new ChatMessage(side, text,false));
+			DateTime currDate = new DateTime(new Date());
+			chatArrayAdapter.add(new ChatMessage(side, text, false, currDate));
 			chatText.setText("");
 		}
 	}
@@ -278,5 +284,5 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 	        new Rect(0, 0, targetWidth, targetHeight), null);
 	    return targetBitmap;
 	}
-
+	
 }

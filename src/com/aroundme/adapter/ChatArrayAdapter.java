@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -71,7 +72,7 @@ public class ChatArrayAdapter extends ArrayAdapter {
 
         setAlignment(holder, !chatMessage.left , chatMessage.locationBased);
         holder.txtMessage.setText(chatMessage.message);
-        holder.txtInfo.setText(new DateTime(new Date()).toString());
+        setDateTitle(holder, chatMessage.dateTime.getValue());
         
         return convertView;
     }
@@ -135,6 +136,35 @@ public class ChatArrayAdapter extends ArrayAdapter {
             	holder.geoIcon_L.setVisibility(View.GONE);
         }
     }
+    
+    public String dateToDateString(long dateTimeInMillis) {
+		Date date = new Date(dateTimeInMillis);
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+	    return formatter.format(dateTimeInMillis);
+	}
+	
+	public String dateToTimeString(long dateTimeInMillis) {
+		Date date = new Date(dateTimeInMillis);
+		SimpleDateFormat formatter = new SimpleDateFormat("hh:mm");
+	    return formatter.format(dateTimeInMillis);
+	}
+	
+	public Date resetTime(long dateTime) {
+		Date date = new Date(dateTime);
+		date.setTime(0);
+		return date;
+	}
+    
+    public void setDateTitle(ViewHolder holder, long msgDateTime) {
+    	long currDateInMillis = new DateTime(new Date()).getValue();
+    	Date currDate = resetTime(currDateInMillis);
+    	Date msgDate = resetTime(msgDateTime);
+    	
+    	if (currDate.equals(msgDate)) 
+    		holder.txtInfo.setText(dateToTimeString(msgDateTime));
+    	else 
+    		holder.txtInfo.setText(dateToDateString(msgDateTime)+" , "+ dateToTimeString(msgDateTime));
+    }
 
     private ViewHolder createViewHolder(View v) {
         ViewHolder holder = new ViewHolder();
@@ -155,4 +185,5 @@ public class ChatArrayAdapter extends ArrayAdapter {
         public ImageView geoIcon_L;
         public ImageView geoIcon_R;
     }
+    
 }
