@@ -4,15 +4,18 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.aroundme.R;
 import com.aroundme.common.ConversationItem;
+import com.aroundme.common.CustomNetworkImageView;
 import com.aroundme.controller.ImagesController;
 import com.aroundme.controller.Controller;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +29,8 @@ public class CustomConversationsAdapter extends BaseAdapter{
 	private Controller controller;
     private Context context;
     private List<ConversationItem> conversations;
-    ImageLoader imageLoader = ImagesController.getInstance().getImageLoader();
+    private ImageLoader imageLoader = ImagesController.getInstance().getImageLoader();
+    private CustomNetworkImageView thumbNail;
 
    public CustomConversationsAdapter(Context context, List<ConversationItem> conversations) {
     	this.controller = Controller.getInstance();
@@ -59,7 +63,7 @@ public class CustomConversationsAdapter extends BaseAdapter{
         if (imageLoader == null)
             imageLoader = ImagesController.getInstance().getImageLoader();
 
-        NetworkImageView thumbNail = (NetworkImageView) convertView.findViewById(R.id.icon2);
+        thumbNail = (CustomNetworkImageView) convertView.findViewById(R.id.icon2);
         TextView txtTitle = (TextView) convertView.findViewById(R.id.friendName);
         TextView txtDate = (TextView) convertView.findViewById(R.id.date);
         TextView txtMessage = (TextView) convertView.findViewById(R.id.message);

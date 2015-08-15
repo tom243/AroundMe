@@ -1,11 +1,14 @@
 package com.aroundme.adapter;
 
 import java.util.List;
+
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
 import com.aroundme.R;
+import com.aroundme.common.CustomNetworkImageView;
 import com.aroundme.controller.ImagesController;
+
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -19,6 +22,7 @@ public class CustomUsersAdapter extends BaseAdapter {
     private Context context;
     private List<UserAroundMe> users;
     private ImageLoader imageLoader = ImagesController.getInstance().getImageLoader();
+    private CustomNetworkImageView thumbNail;
 
    public CustomUsersAdapter(Context context, List<UserAroundMe> users) {
         this.context = context;
@@ -52,7 +56,7 @@ public class CustomUsersAdapter extends BaseAdapter {
         }
         if (imageLoader == null)
             imageLoader = ImagesController.getInstance().getImageLoader();
-        NetworkImageView thumbNail = (NetworkImageView) convertView.findViewById(R.id.icon);
+        thumbNail = (CustomNetworkImageView) convertView.findViewById(R.id.icon);
         TextView txtTitle = (TextView) convertView.findViewById(R.id.userName);
         UserAroundMe row_pos = users.get(position);
         txtTitle.setText(row_pos.getDisplayName());

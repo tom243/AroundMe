@@ -151,10 +151,9 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
         initializeUnreadMessages();
     }
     
-    public void imgBitmapCallback(Bitmap bitmap) {
-    	Bitmap bm = controller.getRoundedShape(bitmap);
-    	if (bm != null){
-    		thumbNail.setLocalImageBitmap(bm);
+    private void imgBitmapCallback(Bitmap bitmap) {
+    	if (bitmap != null){
+    		thumbNail.setLocalImageBitmap(bitmap);
     	}
     }
     

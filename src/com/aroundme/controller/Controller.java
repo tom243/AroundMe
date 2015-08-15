@@ -248,6 +248,7 @@ public class Controller {
 				           }
 			        	   URL url = new URL(urlImage);
 				           Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+				           bmp = getRoundedShape(bmp);
 				           imagesArr.add(i,BitmapDescriptorFactory.fromBitmap(bmp));
 			           } else
 			        	   imagesArr.add(i,null);
@@ -458,7 +459,7 @@ public class Controller {
 	    return formatter.format(dateTimeInMillis);
 	}
 
-	public Bitmap getRoundedShape(Bitmap bitmap) {
+	private Bitmap getRoundedShape(Bitmap bitmap) {
 	    Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap
 	            .getHeight(), Config.ARGB_8888);
 	    Canvas canvas = new Canvas(output);
