@@ -34,7 +34,7 @@ public class NotificationsController {
     	if (message.getLocation() == null)
     		isGeo = "";
     	else
-    		isGeo = "GEO";
+    		isGeo = "GEO ";
     	
     	/*Drawable myDrawable = 
     			AroundMeApp.getContext().getResources().getDrawable(R.drawable.map_icon);
@@ -47,7 +47,7 @@ public class NotificationsController {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(AroundMeApp.getContext())
         	.setSmallIcon(R.drawable.logo)
-        	.setContentTitle(isGeo+"  "+mPrefs.getString(message.getFrom(), "New message"))
+        	.setContentTitle(isGeo+mPrefs.getString(message.getFrom(), "New message"))
         	.setStyle(new NotificationCompat.BigTextStyle()
         	.bigText(message.getContnet()))
         	.setAutoCancel(true)
