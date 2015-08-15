@@ -28,9 +28,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.DataSetObserver;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
@@ -88,22 +93,21 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 		if (imageUrl != null) {
 			/*thumbNail.setImageUrl(imageUrl, imageLoader);*/
 			//imageLoader.getImageListener(thumbNail, R.drawable.user_default, R.drawable.user_default);
-			   imageLoader.get(imageUrl, new ImageLoader.ImageListener() {
-			        @Override
-			        public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
-			        	Bitmap bitmap= response.getBitmap();
-			        	if (bitmap != null) {
-			        		imgBitmapCallback(bitmap);
-			        	}
-			        	
-			        }
+		   imageLoader.get(imageUrl, new ImageLoader.ImageListener() {
+		        @Override
+		        public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
+		        	Bitmap bitmap= response.getBitmap();
+		        	if (bitmap != null) {
+		        		imgBitmapCallback(bitmap);
+		        	}
+		        	
+		        }
 
-			        @Override
-			        public void onErrorResponse(VolleyError error) {
+		        @Override
+		        public void onErrorResponse(VolleyError error) {
 
-			        }
-			   });
-			   
+		        }
+		   });
 		}
 	
         buttonSend = (Button) findViewById(R.id.buttonSend);
@@ -148,7 +152,7 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
     }
     
     public void imgBitmapCallback(Bitmap bitmap) {
-    	Bitmap bm = getRoundedShape(bitmap);
+    	Bitmap bm = controller.getRoundedShape(bitmap);
     	if (bm != null){
     		thumbNail.setLocalImageBitmap(bm);
     	}
@@ -269,29 +273,6 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 	protected void onPause() {		 // on pause ??
 		initializeUnreadMessages();
 		super.onPause();
-	}
-	
-	public Bitmap getRoundedShape(Bitmap scaleBitmapImage) {
-	    int targetWidth = 50;
-	    int targetHeight = 50;
-	    Bitmap targetBitmap = Bitmap.createBitmap(targetWidth, 
-	                        targetHeight,Bitmap.Config.ARGB_8888);
-
-	    Canvas canvas = new Canvas(targetBitmap);
-	    Path path = new Path();
-	    path.addCircle(((float) targetWidth - 1) / 2,
-	        ((float) targetHeight - 1) / 2,
-	        (Math.min(((float) targetWidth), 
-	        ((float) targetHeight)) / 2),
-	        Path.Direction.CCW);
-
-	    canvas.clipPath(path);
-	    Bitmap sourceBitmap = scaleBitmapImage;
-	    canvas.drawBitmap(sourceBitmap, 
-	        new Rect(0, 0, sourceBitmap.getWidth(),
-	        sourceBitmap.getHeight()), 
-	        new Rect(0, 0, targetWidth, targetHeight), null);
-	    return targetBitmap;
 	}
 	
 }
