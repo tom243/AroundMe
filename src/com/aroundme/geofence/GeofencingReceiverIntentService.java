@@ -10,16 +10,12 @@ import com.aroundme.controller.NotificationsController;
 import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
 import com.google.api.client.util.DateTime;
-
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 public class GeofencingReceiverIntentService extends ReceiveGeofenceTransitionBaseIntentService {
 
-	private NotificationManager notificationManager;
 	private GeoController geoController;
 	private Controller controller;
 	private NotificationsController notificationsController;
@@ -35,9 +31,7 @@ public class GeofencingReceiverIntentService extends ReceiveGeofenceTransitionBa
 	@Override
 	protected void onEnteredGeofences(String[] strings) {
 		Log.d(GeofencingReceiverIntentService.class.getName(), "onEnter");
-		//int geoId = Integer.parseInt(strings[0]);
 		Log.d(GeofencingReceiverIntentService.class.getName(), "The id message is: "+strings[0]);
-		//CreateNotification("Geofence was received",messageId);
 		
 		// add the message to db
 		MessageGeofence messageGeo = geoController.getmGeofenceStorage().getGeofence(strings[0]);
@@ -70,8 +64,6 @@ public class GeofencingReceiverIntentService extends ReceiveGeofenceTransitionBa
 
 	@Override
 	protected void onExitedGeofences(String[] strings) {
-		// cancel geofence strings[0]
-		//geoController.cancelGeofence(strings[0]);
 		Log.d(GeofencingReceiverIntentService.class.getName(), "onExit");
 	}
 
@@ -83,27 +75,6 @@ public class GeofencingReceiverIntentService extends ReceiveGeofenceTransitionBa
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		//notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 	}
-	
-/*	private void CreateNotification(String text, int taskId) {
-		Intent intent = new Intent(this, MainActivity.class);
-		PendingIntent pIntent = PendingIntent.getActivity(this, taskId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		
-		MessageGeofenceStore mGeofenceStorage = 	new MessageGeofenceStore(this); 
-		String strId = Integer.toString(taskId);
-		String desc = mGeofenceStorage.getmPrefs().getString(mGeofenceStorage.getGeofenceFieldKey(
-				strId, AppConsts.KEY_DESCRIPTION),
-         		AppConsts.INVALID_STRING_VALUE);
-		
-		// build notification
-		// the addAction re-use the same intent to keep the example short
-		Notification n = new Notification.Builder(this)
-				.setContentTitle(text)
-				.setContentText(desc)
-				.setSmallIcon(R.drawable.logo_do_it_simple).setContentIntent(pIntent)
-				.setAutoCancel(true).build();
-		notificationManager.notify("GEO",taskId, n);
-	}*/
 	
 }

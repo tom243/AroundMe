@@ -1,90 +1,158 @@
 package com.aroundme.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.transition.Visibility;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.NetworkImageView;
 import com.aroundme.R;
+import com.aroundme.common.AroundMeApp;
 import com.aroundme.common.ChatMessage;
-import com.aroundme.controller.ImagesController;
-import com.google.api.client.repackaged.com.google.common.annotations.VisibleForTesting;
+import com.google.api.client.util.DateTime;
 
 public class ChatArrayAdapter extends ArrayAdapter {
 
-	private TextView chatText;
-	private ImageView geoMsgIcon;
-	private List chatMessageList = new ArrayList();
-	private RelativeLayout singleMessageContainer;
-	
-	public void add(ChatMessage object) {
-		chatMessageList.add(object);
-		super.add(object);
-	}
+    private final List<ChatMessage> chatMessages;
+    private Context context;
 
-	public ChatArrayAdapter(Context context, int textViewResourceId) {
-		super(context, textViewResourceId);
-	}
+    public ChatArrayAdapter(Context context, int textViewResourceId) {
+    	super(context, textViewResourceId);
+        this.context = AroundMeApp.getContext();
+        this.chatMessages = new ArrayList<ChatMessage>();
+    }
 
-	public int getCount() {
-		return this.chatMessageList.size();
-	}
+    @Override
+    public int getCount() {
+        if (chatMessages != null) {
+            return chatMessages.size();
+        } else {
+            return 0;
+        }
+    }
 
-	public ChatMessage getItem(int index) {
-		return (ChatMessage) this.chatMessageList.get(index);
-	}
+    @Override
+    public ChatMessage getItem(int position) {
+        if (chatMessages != null) {
+            return chatMessages.get(position);
+        } else {
+            return null;
+        }
+    }
 
-	public View getView(int position, View convertView, ViewGroup parent) {
-		View row = convertView;
-		if (row == null) {
-			LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			row = inflater.inflate(R.layout.conversation_singlemessage, parent, false);
-		}
-		singleMessageContainer = (RelativeLayout) row.findViewById(R.id.singleMessageContainer);
-		ChatMessage chatMessageObj = getItem(position);
-		singleMessageContainer.setGravity(chatMessageObj.left ? Gravity.LEFT : Gravity.RIGHT);
-		chatText = (TextView) row.findViewById(R.id.singleMessage);
-		String str = chatMessageObj.message;
-		chatText.setText(chatMessageObj.message);
-		chatText.setBackgroundResource(chatMessageObj.left ? R.drawable.bubble_a : R.drawable.bubble_b);
-		
-		geoMsgIcon = (ImageView) row.findViewById(R.id.singleMessage_icon);
-		if (chatMessageObj.left) {	// move the icon to left
-			RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)chatText.getLayoutParams(); 
-			params.addRule(RelativeLayout.RIGHT_OF, geoMsgIcon.getId()); 
-			chatText.setLayoutParams(params);
-		}
-		else {
-			RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)geoMsgIcon.getLayoutParams();
-			params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-			geoMsgIcon.setLayoutParams(params); //causes layout update
-			params = (RelativeLayout.LayoutParams)chatText.getLayoutParams(); 
-			params.addRule(RelativeLayout.LEFT_OF, geoMsgIcon.getId()); 
-			chatText.setLayoutParams(params);
-		}
-		//
-		if (chatMessageObj.locationBased) 
-			geoMsgIcon.setVisibility(View.VISIBLE);
-		else // hide the icon because it is not geo message
-			geoMsgIcon.setVisibility(View.GONE);
-		return row;
-	}
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
 
-	public Bitmap decodeToBitmap(byte[] decodedByte) {
-		return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
-	}
+    @Override
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        ViewHolder holder;
+        ChatMessage chatMessage = getItem(position);
+        LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
+        if (convertView == null) {
+            convertView = vi.inflate(R.layout.conversation_singlemessage, null);
+            holder = createViewHolder(convertView);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+
+        setAlignment(holder, !chatMessage.left , chatMessage.locationBased);
+        holder.txtMessage.setText(chatMessage.message);
+        holder.txtInfo.setText(new DateTime(new Date()).toString());
+        
+        return convertView;
+    }
+
+    public void add(ChatMessage message) {
+        chatMessages.add(message);
+        super.add(message);
+    }
+
+    public void add(List<ChatMessage> messages) {
+        chatMessages.addAll(messages);
+    }
+
+    private void setAlignment(ViewHolder holder, boolean isMe, boolean isGeo) {
+        if (isMe) {
+            holder.txtMessage.setBackgroundResource(R.drawable.bubble_b);
+
+            LinearLayout.LayoutParams layoutParams = 
+            	(LinearLayout.LayoutParams) holder.contentWithBG.getLayoutParams();
+            layoutParams.gravity = Gravity.RIGHT;
+            holder.contentWithBG.setLayoutParams(layoutParams);
+
+            RelativeLayout.LayoutParams lp = 
+            	(RelativeLayout.LayoutParams) holder.content.getLayoutParams();
+            lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
+            lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            holder.content.setLayoutParams(lp);
+          
+            layoutParams = (LinearLayout.LayoutParams) holder.txtInfo.getLayoutParams();
+            layoutParams.gravity = Gravity.RIGHT;
+            holder.txtInfo.setLayoutParams(layoutParams);
+            
+        	holder.geoIcon_L.setVisibility(View.GONE);
+            if (isGeo) 
+            	holder.geoIcon_R.setVisibility(View.VISIBLE);
+            else 
+            	holder.geoIcon_R.setVisibility(View.GONE);
+            
+        } else {
+            holder.txtMessage.setBackgroundResource(R.drawable.bubble_a);
+
+            LinearLayout.LayoutParams layoutParams = 
+            	(LinearLayout.LayoutParams) holder.contentWithBG.getLayoutParams();
+            layoutParams.gravity = Gravity.LEFT;
+            holder.contentWithBG.setLayoutParams(layoutParams);
+
+            RelativeLayout.LayoutParams lp = 
+            	(RelativeLayout.LayoutParams) holder.content.getLayoutParams();
+            lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
+            lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+            holder.content.setLayoutParams(lp);
+
+            layoutParams = (LinearLayout.LayoutParams) holder.txtInfo.getLayoutParams();
+            layoutParams.gravity = Gravity.LEFT;
+            holder.txtInfo.setLayoutParams(layoutParams);
+            
+            holder.geoIcon_R.setVisibility(View.GONE);
+            if (isGeo) 
+            	holder.geoIcon_L.setVisibility(View.VISIBLE);
+            else 
+            	holder.geoIcon_L.setVisibility(View.GONE);
+        }
+    }
+
+    private ViewHolder createViewHolder(View v) {
+        ViewHolder holder = new ViewHolder();
+        holder.txtMessage = (TextView) v.findViewById(R.id.txtMessage);
+        holder.content = (LinearLayout) v.findViewById(R.id.content);
+        holder.contentWithBG = (RelativeLayout) v.findViewById(R.id.contentWithBackground);
+        holder.txtInfo = (TextView) v.findViewById(R.id.txtInfo);
+        holder.geoIcon_L = (ImageView) v.findViewById(R.id.geoIcon_L);
+        holder.geoIcon_R = (ImageView) v.findViewById(R.id.geoIcon_R);
+        return holder;
+    }
+
+    private static class ViewHolder {
+        public TextView txtMessage;
+        public TextView txtInfo;
+        public LinearLayout content;
+        public RelativeLayout contentWithBG;
+        public ImageView geoIcon_L;
+        public ImageView geoIcon_R;
+    }
 }

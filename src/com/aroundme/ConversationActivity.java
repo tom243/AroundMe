@@ -147,7 +147,6 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
     	Bitmap bm = getRoundedShape(bitmap);
     	if (bm != null){
     		thumbNail.setImageBitmap(bm);
-    		System.out.println("$$$$$$");
     	}
     }
     

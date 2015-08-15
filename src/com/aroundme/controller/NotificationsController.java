@@ -49,7 +49,8 @@ public class NotificationsController {
         	.setSmallIcon(R.drawable.logo)
         	.setContentTitle(isGeo+mPrefs.getString(message.getFrom(), "New message"))
         	.setStyle(new NotificationCompat.BigTextStyle()
-        	.bigText(message.getContnet()))
+        					.bigText(message.getContnet())
+        			  )
         	.setAutoCancel(true)
         	.setContentText(message.getContnet());
         mBuilder.setContentIntent(contentIntent);

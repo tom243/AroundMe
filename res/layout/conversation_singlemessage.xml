@@ -1,28 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content" >
-
-    <RelativeLayout
-        android:id="@+id/singleMessageContainer"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <ImageView
-            android:id="@+id/singleMessage_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-           	android:paddingTop="5dp"
-            android:src="@drawable/geo_msg" />
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:id="@+id/content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/singleMessage"
+            android:id="@+id/txtInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="30sp"
+            android:layout_gravity="right"
+            android:textSize="12sp"
+            android:textColor="@android:color/darker_gray" />
+
+        <RelativeLayout
+            android:id="@+id/contentWithBackground"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="5dip"
-            android:textColor="@android:color/primary_text_light" />
-        
-    </RelativeLayout>
+            android:layout_gravity="right"
+            android:paddingLeft="10dp"
+            android:paddingBottom="10dp"
+            android:orientation="vertical">
 
-</LinearLayout>
+            <ImageView
+	            android:id="@+id/geoIcon_L"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:src="@drawable/geo_msg" />
+             
+            <TextView
+                android:id="@+id/txtMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:layout_toRightOf="@+id/geoIcon_L"
+                android:maxWidth="240dp" />
+            
+            <ImageView
+	            android:id="@+id/geoIcon_R"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_toRightOf="@+id/txtMessage"
+	            android:src="@drawable/geo_msg" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+</RelativeLayout>
