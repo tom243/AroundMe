@@ -129,13 +129,10 @@ public class DAO implements IDataAccess{
 		conv.setUnreadMess(cursor.getInt(cursor.getColumnIndex(ConversationsEntry.COLUMN_COUNTER_UNREAD_MESSAGES)));
 		conv.setTimeStamp(cursor.getLong(cursor.getColumnIndex(MessagesEntry.COLUMN_TIME_STAMP)));
 		conv.setContentMess(cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_CONTENT)));
-		
 		Long latitude = cursor.getLong(cursor.getColumnIndex(MessagesEntry.COLUMN_LAT));
-		
-		//long loc = cursor.getLong(cursor.getColumnIndex(MessagesEntry.COLUMN_LAT));
 		boolean isGeo = false;
 		if (latitude != 0)
-			isGeo = true;
+			isGeo = true;	
 		conv.setLastMsgIsGeo(isGeo);
 		return conv;
 	}	
