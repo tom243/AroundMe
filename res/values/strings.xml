@@ -37,6 +37,7 @@
     <color name="banana">#FFFFCC</color>
     <color name="darkGrey">#505050</color>
     <color name="ddarkGrey">#303030</color>
+    <color name="lightGrey">#d3d3d3</color>
     <color name="green">#51FFBD</color>
     <color name="darkBlue">#000067</color>
     <color name="BrightBlue">#4099FF</color>

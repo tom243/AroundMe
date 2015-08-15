@@ -2,6 +2,7 @@ package com.aroundme.controller;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -443,6 +444,18 @@ public class Controller {
    		Long messageId = addMessageToDB(message);	
    		// update the conversations table in db with the last message
 		updateConversationTable(message.getFrom(), message.getTo(), messageId,false,false,isGeoMessage);
+	}
+	
+	public String dateToDateString(long dateTimeInMillis) {
+		Date date = new Date(dateTimeInMillis);
+		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+	    return formatter.format(dateTimeInMillis);
+	}
+	
+	public String dateToTimeString(long dateTimeInMillis) {
+		Date date = new Date(dateTimeInMillis);
+		SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+	    return formatter.format(dateTimeInMillis);
 	}
 
 	public Bitmap getRoundedShape(Bitmap bitmap) {

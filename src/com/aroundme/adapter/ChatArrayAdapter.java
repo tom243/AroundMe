@@ -20,15 +20,18 @@ import java.util.List;
 import com.aroundme.R;
 import com.aroundme.common.AroundMeApp;
 import com.aroundme.common.ChatMessage;
+import com.aroundme.controller.Controller;
 import com.google.api.client.util.DateTime;
 
 public class ChatArrayAdapter extends ArrayAdapter {
 
     private final List<ChatMessage> chatMessages;
+    private Controller controller;
     private Context context;
 
     public ChatArrayAdapter(Context context, int textViewResourceId) {
     	super(context, textViewResourceId);
+    	this.controller = Controller.getInstance();
         this.context = AroundMeApp.getContext();
         this.chatMessages = new ArrayList<ChatMessage>();
     }
@@ -136,34 +139,22 @@ public class ChatArrayAdapter extends ArrayAdapter {
             	holder.geoIcon_L.setVisibility(View.GONE);
         }
     }
-    
-    public String dateToDateString(long dateTimeInMillis) {
-		Date date = new Date(dateTimeInMillis);
-		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-	    return formatter.format(dateTimeInMillis);
-	}
-	
-	public String dateToTimeString(long dateTimeInMillis) {
-		Date date = new Date(dateTimeInMillis);
-		SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
-	    return formatter.format(dateTimeInMillis);
-	}
-	
-	public Date resetTime(long dateTime) {
+   
+	private Date resetTime(long dateTime) {
 		Date date = new Date(dateTime);
 		date.setTime(0);
 		return date;
 	}
     
-    public void setDateTitle(ViewHolder holder, long msgDateTime) {
+    private void setDateTitle(ViewHolder holder, long msgDateTime) {
     	long currDateInMillis = new DateTime(new Date()).getValue();
     	Date currDate = resetTime(currDateInMillis);
     	Date msgDate = resetTime(msgDateTime);
     	
     	if (currDate.equals(msgDate)) 
-    		holder.txtInfo.setText(dateToTimeString(msgDateTime));
+    		holder.txtInfo.setText(controller.dateToTimeString(msgDateTime));
     	else 
-    		holder.txtInfo.setText(dateToDateString(msgDateTime)+" , "+ dateToTimeString(msgDateTime));
+    		holder.txtInfo.setText(controller.dateToDateString(msgDateTime)+" , "+ controller.dateToTimeString(msgDateTime));
     }
 
     private ViewHolder createViewHolder(View v) {
