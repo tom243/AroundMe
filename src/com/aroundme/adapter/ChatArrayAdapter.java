@@ -70,9 +70,9 @@ public class ChatArrayAdapter extends ArrayAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        setAlignment(holder, !chatMessage.left , chatMessage.locationBased);
-        holder.txtMessage.setText(chatMessage.message);
-        setDateTitle(holder, chatMessage.dateTime.getValue());
+        setAlignment(holder, !chatMessage.isLeft() , chatMessage.isLocationBased());
+        holder.txtMessage.setText(chatMessage.getMessage());
+        setDateTitle(holder, chatMessage.getDateTime().getValue());
         
         return convertView;
     }
