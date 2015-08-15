@@ -200,7 +200,6 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 					   				.setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
 					   					@Override
 					   					public void onClick(DialogInterface dialog, int id) {
-					   						//Toast.makeText(AroundMeApp.getContext(), id, Toast.LENGTH_SHORT).show();
 					   						// send message 
 					   						editTextContent = (EditText) v.findViewById(R.id.geo_message_content);
 					   						// checking the message isn't empty
@@ -255,8 +254,6 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 					@Override
 					public void done(Void ret, Exception e) {
 						controller.buildMessage(content, to, true, geoPt);
-						//Intent updateIntent = new Intent("updateOpenCoversationsAdapter");
-					    //LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateIntent);
 					}
 				}, this);
 	}

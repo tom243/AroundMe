@@ -12,7 +12,7 @@
     	android:layout_height="50dp"
     	android:padding="5dp">
     	
-	    <com.android.volley.toolbox.NetworkImageView
+	    <com.aroundme.common.CustomNetworkImageView
 	        android:id="@+id/profile_pic_chat_friend"
 	        android:layout_width="50dp"
 	        android:layout_height="50dp"

@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
@@ -12,6 +13,7 @@ import com.aroundme.common.AppConsts;
 import com.aroundme.common.AroundMeApp;
 import com.aroundme.common.ChatMessage;
 import com.aroundme.common.ConversationItem;
+import com.aroundme.common.CustomNetworkImageView;
 import com.aroundme.common.IAppCallBack;
 import com.aroundme.common.SplashInterface;
 import com.aroundme.controller.Controller;
@@ -58,7 +60,7 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
     private Toolbar toolbar;
     private ProgressBar progressBar;
     private ImageLoader imageLoader = ImagesController.getInstance().getImageLoader();
-    private NetworkImageView thumbNail; 
+    private CustomNetworkImageView thumbNail; 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,32 +75,37 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
         dao = DAO.getInstance(AroundMeApp.getContext());
         // set the tool bar title to the friend name
         myFriendMail = intent.getStringExtra(AppConsts.email_friend);
-        //setTitle(controller.getUserNameByMail(myFriendMail));
         setTitle("");
         TextView title = (TextView) findViewById(R.id.friend_name_title);
         title.setText(controller.getUserNameByMail(myFriendMail));
         // set the tool bar icon of friend
-        thumbNail = (NetworkImageView) findViewById(R.id.profile_pic_chat_friend);
+        thumbNail = (CustomNetworkImageView) findViewById(R.id.profile_pic_chat_friend);
 		thumbNail.setDefaultImageResId(R.drawable.user_default);
         if (imageLoader == null)
             imageLoader = ImagesController.getInstance().getImageLoader();
 		String imageUrl = null;
 		imageUrl = controller.getImageUrlByMail(myFriendMail);
-		if (imageUrl != null)
-			thumbNail.setImageUrl(imageUrl, imageLoader);
-		//imageLoader.getImageListener(imageView, R.drawable.user_default, R.drawable.user_default));
-		/*Bitmap bm_original = imageLoader.get(myFriendMail, new ImageLoader.ImageListener() {
-			@Override
-			public void onErrorResponse(VolleyError arg0) {
-				
-			}
-			@Override
-			public void onResponse(ImageLoader.ImageContainer response, boolean arg1) {
-				Bitmap bitmap = response.getBitmap();		
-				imgBitmapCallback(bitmap);
-			}
-		}).getBitmap();
-	*/
+		if (imageUrl != null) {
+			/*thumbNail.setImageUrl(imageUrl, imageLoader);*/
+			//imageLoader.getImageListener(thumbNail, R.drawable.user_default, R.drawable.user_default);
+			   imageLoader.get(imageUrl, new ImageLoader.ImageListener() {
+			        @Override
+			        public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
+			        	Bitmap bitmap= response.getBitmap();
+			        	if (bitmap != null) {
+			        		imgBitmapCallback(bitmap);
+			        	}
+			        	
+			        }
+
+			        @Override
+			        public void onErrorResponse(VolleyError error) {
+
+			        }
+			   });
+			   
+		}
+	
         buttonSend = (Button) findViewById(R.id.buttonSend);
         listView = (ListView) findViewById(R.id.listView1);
         chatArrayAdapter = new ChatArrayAdapter(AroundMeApp.getContext(), R.layout.conversation_singlemessage);
@@ -143,7 +150,7 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
     public void imgBitmapCallback(Bitmap bitmap) {
     	Bitmap bm = getRoundedShape(bitmap);
     	if (bm != null){
-    		thumbNail.setImageBitmap(bm);
+    		thumbNail.setLocalImageBitmap(bm);
     	}
     }
     
