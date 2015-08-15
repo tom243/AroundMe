@@ -32,6 +32,7 @@
 	
 	<color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+    <color name="creame">#FFFFCC</color>
     <color name="pink">#FF66CC</color>
     <color name="lightBlue">#00CCFF</color>
     <color name="banana">#FFFFCC</color>
@@ -41,7 +42,6 @@
     <color name="green">#51FFBD</color>
     <color name="darkBlue">#000067</color>
     <color name="BrightBlue">#4099FF</color>
-    <color name="White">#4099FF</color>
     <color name="tabsScrollColor">#8a140e</color> <!-- #912CEE -->
     <color name="ColorPrimary">#FF5722</color>
     <color name="ColorPrimaryDark">#E64A19</color>
