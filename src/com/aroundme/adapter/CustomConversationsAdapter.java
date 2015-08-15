@@ -3,12 +3,14 @@ package com.aroundme.adapter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.aroundme.R;
 import com.aroundme.common.ConversationItem;
 import com.aroundme.controller.ImagesController;
 import com.aroundme.controller.Controller;
+
 import android.app.Activity;
 import android.content.Context;
 import android.text.format.DateUtils;
@@ -16,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class CustomConversationsAdapter extends BaseAdapter{
@@ -61,6 +64,7 @@ public class CustomConversationsAdapter extends BaseAdapter{
         TextView txtDate = (TextView) convertView.findViewById(R.id.date);
         TextView txtMessage = (TextView) convertView.findViewById(R.id.message);
         TextView txtUnreadMessages = (TextView) convertView.findViewById(R.id.unread_messages);
+        ImageView geoIcon = (ImageView) convertView.findViewById(R.id.geoIcon);
         
         ConversationItem row_pos = conversations.get(position);
         String friendName = controller.getUserNameByMail(row_pos.getFriendMail());
@@ -89,7 +93,14 @@ public class CustomConversationsAdapter extends BaseAdapter{
           } else {
         	  dotMessage = row_pos.getContentMess();
           	}
-          txtMessage.setText(dotMessage); 
+          txtMessage.setText(dotMessage);
+          
+          
+          if (row_pos.isLastMsgIsGeo())
+        	  geoIcon.setVisibility(View.VISIBLE);
+          else
+        	  geoIcon.setVisibility(View.GONE);
+        	  
         return convertView;
 
     }

@@ -139,13 +139,13 @@ public class ChatArrayAdapter extends ArrayAdapter {
     
     public String dateToDateString(long dateTimeInMillis) {
 		Date date = new Date(dateTimeInMillis);
-		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 	    return formatter.format(dateTimeInMillis);
 	}
 	
 	public String dateToTimeString(long dateTimeInMillis) {
 		Date date = new Date(dateTimeInMillis);
-		SimpleDateFormat formatter = new SimpleDateFormat("hh:mm");
+		SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
 	    return formatter.format(dateTimeInMillis);
 	}
 	

@@ -7,6 +7,7 @@ public class ConversationItem {
 	private long timeStamp;
 	private String contentMess;
 	private String imageUrl;
+	private boolean lastMsgIsGeo;
 	
 	
 	public ConversationItem() {
@@ -14,7 +15,7 @@ public class ConversationItem {
 	}
 
 	public ConversationItem(String userMail, String friendMail, int unreadMess,
-			long timeStamp, String contentMess) {
+			long timeStamp, String contentMess, boolean lastMsgIsGeo) {
 		super();
 		this.userMail = userMail;
 		this.friendMail = friendMail;
@@ -22,6 +23,7 @@ public class ConversationItem {
 		this.timeStamp = timeStamp;
 		this.contentMess = contentMess;
 		this.imageUrl = null;
+		this.lastMsgIsGeo = lastMsgIsGeo;
 	}
 
 	public String getImageUrl() {
@@ -70,6 +72,14 @@ public class ConversationItem {
 
 	public void setContentMess(String contentMess) {
 		this.contentMess = contentMess;
+	}
+
+	public boolean isLastMsgIsGeo() {
+		return lastMsgIsGeo;
+	}
+
+	public void setLastMsgIsGeo(boolean lastMsgIsGeo) {
+		this.lastMsgIsGeo = lastMsgIsGeo;
 	}
 
 }
