@@ -207,16 +207,11 @@ public class Controller {
 			protected void onPostExecute(UserAroundMeCollection users) {
 				// update all-users hash map
 				SharedPreferences.Editor prefs = mPrefs.edit();
-				System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 				for (UserAroundMe user : users.getItems()) { 
 					allUsers.put(user.getMail(),user);
 					prefs.putString(user.getMail(), user.getDisplayName());
 				}
 				prefs.commit();
-				for (UserAroundMe user : users.getItems()) { 
-					System.out.println(user.getMail());
-					System.out.println(mPrefs.getString(user.getMail(),"New message"));
-				}
 				allUsersList = users.getItems();		
 				if (splash!=null)
 					splash.unvisible(null);
