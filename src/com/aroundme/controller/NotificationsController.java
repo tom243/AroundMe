@@ -1,16 +1,13 @@
 package com.aroundme.controller;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
-
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.aroundme.GCMActivity;
 import com.aroundme.R;
@@ -35,11 +32,7 @@ public class NotificationsController {
     		isGeo = "";
     	else
     		isGeo = "GEO ";
-    	
-    	/*Drawable myDrawable = 
-    			AroundMeApp.getContext().getResources().getDrawable(R.drawable.map_icon);
-    	Bitmap anImage = ((BitmapDrawable) myDrawable).getBitmap();
-    	*/
+    	Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         mNotificationManager = (NotificationManager)
                 AroundMeApp.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
         PendingIntent contentIntent = PendingIntent.getActivity(AroundMeApp.getContext(), 0,
@@ -52,10 +45,9 @@ public class NotificationsController {
         					.bigText(message.getContnet())
         			  )
         	.setAutoCancel(true)
+        	.setSound(alarmSound)
         	.setContentText(message.getContnet());
         mBuilder.setContentIntent(contentIntent);
         mNotificationManager.notify(message.getId().intValue(), mBuilder.build());
     }
-    
-    //.setContentTitle(isGeo+"  "+controller.getUserNameByMail(message.getFrom()))
 }
