@@ -2,16 +2,12 @@ package com.aroundme;
 
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
-import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
 import com.aroundme.common.AppConsts;
 import com.aroundme.common.AroundMeApp;
-import com.aroundme.common.ConversationItem;
 import com.aroundme.common.IAppCallBack;
 import com.aroundme.common.IAppCallBack2;
 import com.aroundme.common.SplashInterface;
@@ -36,16 +32,12 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.api.client.util.DateTime;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;

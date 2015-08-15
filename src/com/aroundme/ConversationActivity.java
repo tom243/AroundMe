@@ -1,12 +1,8 @@
 package com.aroundme;
 
 import java.util.ArrayList;
-import java.util.Date;
 
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.ImageLoader.ImageContainer;
-import com.android.volley.toolbox.ImageLoader.ImageListener;
 import com.android.volley.toolbox.NetworkImageView;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.aroundme.adapter.ChatArrayAdapter;
@@ -20,8 +16,6 @@ import com.aroundme.controller.Controller;
 import com.aroundme.controller.ImagesController;
 import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
-import com.google.api.client.googleapis.auth.clientlogin.ClientLogin.Response;
-import com.google.api.client.util.DateTime;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

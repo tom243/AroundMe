@@ -2,10 +2,8 @@ package com.aroundme;
 
 import java.util.ArrayList;
 
-import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.aroundme.adapter.ViewPagerAdapter;
 import com.aroundme.common.AroundMeApp;
-import com.aroundme.common.ChatMessage;
 import com.aroundme.common.SlidingTabLayout;
 import com.aroundme.controller.Controller;
 import com.aroundme.controller.GeoController;
