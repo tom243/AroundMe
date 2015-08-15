@@ -2,6 +2,7 @@ package com.aroundme;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
@@ -17,6 +18,7 @@ import com.aroundme.controller.Controller;
 import com.aroundme.controller.ImagesController;
 import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
+import com.google.api.client.util.DateTime;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
