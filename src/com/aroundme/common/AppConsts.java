@@ -49,7 +49,9 @@ public class AppConsts {
     public static final String INVALID_STRING_VALUE = "";
     
     // type messages
-    public static final String TYPE_PIN_MSG = "type_pin_msg";
-    public static final String TYPE_GEO_MSG = "type_geo_msg";
+    public static final String TYPE_PIN_MSG = "PIN";
+    public static final String TYPE_GEO_MSG = "GEO";
+    public static final String TYPE_SIMPLE_MSG = "SIMPLE";
+    
 	
 }

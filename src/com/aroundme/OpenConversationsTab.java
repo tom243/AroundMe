@@ -112,9 +112,9 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 		dao.open();
 		ConversationItem conv = dao.isConversationExist(controller.getCurrentUser().getMail(),friendMail);
 		if (conv != null) {
-		dao.removeFromConversationTable(conv);
-		dao.close();
-    	refreshAdapter();
+			dao.removeFromConversationTable(conv);
+			dao.close();
+			refreshAdapter();
 		}
 	}
 	

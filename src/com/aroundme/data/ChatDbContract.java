@@ -35,6 +35,7 @@ public class ChatDbContract {
 		        public static final String COLUMN_LAT = "latitude";
 		        public static final String COLUMN_LONG = "longtitude";
 		        public static final String COLUMN_RADIUS = "radius";
+		        public static final String COLUMN_TYPE = "type";
 
 		    }
  }

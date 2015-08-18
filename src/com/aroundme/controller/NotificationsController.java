@@ -11,6 +11,7 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.view.View;
 import android.widget.RemoteViews;
+
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.aroundme.GCMActivity;
 import com.aroundme.R;
@@ -28,7 +29,7 @@ public class NotificationsController {
 		mPrefs = AroundMeApp.getContext().getSharedPreferences(AppConsts.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 	}
 	
-    public void createNotification(Message message) {
+    public void createNotification(Message message, String msgType) {
     	
     	mNotificationManager = (NotificationManager)
                 AroundMeApp.getContext().getSystemService(Context.NOTIFICATION_SERVICE);

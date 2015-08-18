@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
+import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
 import com.aroundme.common.AppConsts;
 import com.aroundme.common.AroundMeApp;
@@ -14,6 +15,7 @@ import com.aroundme.common.SplashInterface;
 import com.aroundme.controller.Controller;
 import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
+import com.aroundme.data.ChatDbContract.MessagesEntry;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -28,6 +30,7 @@ import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -58,11 +61,14 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	private EditText editTextContent;
 	private IDataAccess dao;
 	private static enum type_msg {TYPE_PIN_MSG,TYPE_GEO_MSG};
+	private static enum delivery_side {SEND, RECEIVE};
 	//private UserAroundMe[] allUsers = null;
 	private String allUsersMail [] = null;
 	private String allUsersName [] = null;
 	private ArrayList<String> mSelectedItems = null;
 	private type_msg lastMsgType = null;
+	private ArrayList<Message> receivedPinMsgs;
+	private ArrayList<Message> sentPinMsgs;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +89,11 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 			mapFragment.getMapAsync(this);
 		else
 			Toast.makeText(AroundMeApp.getContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
+		// get all pin messages from dao
+		dao.open();
+		receivedPinMsgs = dao.getPinMessages(controller.getCurrentUser().getMail(), MessagesEntry.COLUMN_TO);
+		sentPinMsgs = dao.getPinMessages(controller.getCurrentUser().getMail(), MessagesEntry.COLUMN_FROM);
+		dao.close();
 	}
 	
 	protected synchronized void buildGoogleApiClient() {
@@ -115,6 +126,17 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	@Override
 	public void onMapReady(GoogleMap map) {
 		myMap = map;
+		// add the pin messages to the map
+		for (Message message : receivedPinMsgs) {
+			addPinToMap(controller.getUserNameByMail(message.getFrom()), message.getContnet(), 
+					new LatLng(message.getLocation().getLatitude(),message.getLocation().getLongitude()), 
+					delivery_side.RECEIVE);
+		}
+		for (Message message : sentPinMsgs) {
+			addPinToMap(controller.getUserNameByMail(message.getTo()), message.getContnet(), 
+					new LatLng(message.getLocation().getLatitude(),message.getLocation().getLongitude()), 
+					delivery_side.SEND);
+		}
 		OnMarkerClickListener markersListener = new OnMarkerClickListener() {
 			@Override
 			public boolean onMarkerClick(Marker arg0) {
@@ -209,12 +231,21 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 					   							if (lastMsgType == type_msg.TYPE_GEO_MSG) {
 						   							for (String friendMail: mSelectedItems) {
 						   								Toast.makeText(AroundMeApp.getContext(),"sending msg to " + friendMail, Toast.LENGTH_SHORT).show();
-						   								sendGeoMessage(friendMail,editTextContent.getText().toString(), (float)point.latitude, (float)point.longitude);
+						   								sendLocationBasedMessage(friendMail, editTextContent.getText().toString(), AppConsts.TYPE_GEO_MSG, (float)point.latitude, (float)point.longitude);
 						   							}
 					   							}
 					   							// it is PIN message
 					   							else if (lastMsgType == type_msg.TYPE_PIN_MSG) {
 					   								Toast.makeText(AroundMeApp.getContext(), "PIN MSG", Toast.LENGTH_SHORT).show();
+					   								StringBuilder sb = new StringBuilder(); 
+					   								for (String friendMail: mSelectedItems) {
+						   								Toast.makeText(AroundMeApp.getContext(),"sending msg to " + friendMail, Toast.LENGTH_SHORT).show();
+						   									sendLocationBasedMessage(friendMail, editTextContent.getText().toString(), AppConsts.TYPE_PIN_MSG, (float)point.latitude, (float)point.longitude);
+						   									sb.append(controller.getUserNameByMail(friendMail));
+						   									//sb.append(System.getProperty("line.separator"));
+						   									//sb.append("\n");
+						   							}
+					   								addPinToMap(sb.toString(), editTextContent.getText().toString(), point, delivery_side.SEND);
 					   							}
 					   						}
 					   					}
@@ -245,17 +276,30 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		mGoogleApiClient.connect();
 	}
 	
-	private void sendGeoMessage(final String to,final String content, float lat, float lon) {
+	private void sendLocationBasedMessage(final String to,final String content, final String msgType,
+			float lat, float lon) {
 		final GeoPt geoPt = new GeoPt();
 		geoPt.setLatitude(lat);
 		geoPt.setLongitude(lon);
-		controller.sendMessageToUser(content,to,geoPt,
+		controller.sendMessageToUser(content,AppConsts.TYPE_GEO_MSG ,to,geoPt,
 				new IAppCallBack<Void>() {
 					@Override
 					public void done(Void ret, Exception e) {
-						controller.buildMessage(content, to, true, geoPt);
+						controller.buildMessage(content, to, true, geoPt,msgType);
 					}
 				}, this);
+	}
+	
+	private void addPinToMap(String to, String content, LatLng latLng, delivery_side side) {
+		MarkerOptions options =	new MarkerOptions()
+			.position(latLng)
+			.snippet(content)
+			.title(to);
+		if (side == delivery_side.SEND)
+			options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+		else
+			options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+		myMap.addMarker(options);
 	}
 	
 	@Override

@@ -1,7 +1,10 @@
 package com.aroundme.geofence;
 
+import org.json.JSONException;
+
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
+import com.aroundme.common.AppConsts;
 import com.aroundme.common.AroundMeApp;
 import com.aroundme.common.MessageGeofence;
 import com.aroundme.controller.Controller;
@@ -10,6 +13,7 @@ import com.aroundme.controller.NotificationsController;
 import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
 import com.google.api.client.util.DateTime;
+
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -46,14 +50,13 @@ public class GeofencingReceiverIntentService extends ReceiveGeofenceTransitionBa
 		geoPt.setLongitude((float)messageGeo.getLongitude());
 		message.setLocation(geoPt);
 		message.setReadRadius((int)messageGeo.getRadius());
-		Long messageId = controller.addMessageToDB(message);
+		Long messageId = controller.addMessageToDB(message,AppConsts.TYPE_GEO_MSG);
 		controller.updateConversationTable(message.getTo(), message.getFrom(), messageId,true,true,false);
 		Intent chatIntent = new Intent("chatMessage");
 		chatIntent.putExtra("messageId", messageId);
 	    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(chatIntent);
 		// create notification
-		notificationsController.createNotification(message);
-		
+		notificationsController.createNotification(message, AppConsts.TYPE_GEO_MSG);
 		System.out.println("strings[0]" + strings[0]);
 		System.out.println("message.getId()" + message.getId());
 		// send broadcast to remove geofence

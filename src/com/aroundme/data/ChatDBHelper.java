@@ -43,7 +43,8 @@ public class ChatDBHelper extends SQLiteOpenHelper{
 				+ MessagesEntry.COLUMN_TIME_STAMP+ " LONG,"
 				+ MessagesEntry.COLUMN_LAT + " LONG,"
 				+ MessagesEntry.COLUMN_LONG + " LONG,"
-				+ MessagesEntry.COLUMN_RADIUS + " LONG)" ;
+				+ MessagesEntry.COLUMN_RADIUS + " LONG,"
+				+ MessagesEntry.COLUMN_TYPE + " TEXT NOT NULL)" ;
 		
 		db.execSQL(SQL_CREATE_MESSAGES_TABLE);
 		

@@ -8,6 +8,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -47,6 +50,7 @@ import com.aroundme.data.IDataAccess;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.api.client.util.DateTime;
+import com.google.gson.JsonObject;
 
 public class Controller {
 	
@@ -269,7 +273,8 @@ public class Controller {
 		}.execute();
 	}
 
-	public void sendMessageToUser(final String content,final String to,final GeoPt geoPt,final IAppCallBack<Void> callback, final SplashInterface splash) {
+	public void sendMessageToUser(final String content,final String type,final String to,final GeoPt geoPt,
+					final IAppCallBack<Void> callback, final SplashInterface splash) {
 		
 		new  AsyncTask<Void, Void, Void>(){
 			@Override
@@ -281,7 +286,6 @@ public class Controller {
 			protected Void doInBackground(Void... params) {
 				try {
 					Message message = new Message();
-					message.setContnet(content);
 					message.setFrom(currentUser.getMail());
 					message.setTo(to);
 					message.setTimestamp(new DateTime(new Date()));
@@ -289,8 +293,15 @@ public class Controller {
 						message.setLocation(geoPt);
 						message.setReadRadius(80);
 					}
+					JSONObject pnObj = new JSONObject();
+		            pnObj.put("content", content);
+	            	pnObj.put("type", type);
+	            	message.setContnet(pnObj.toString());
 					endpoint.sendMessage(message).execute();
 				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				return null;
@@ -401,9 +412,9 @@ public class Controller {
 		return netInfo != null && netInfo.isConnectedOrConnecting();
 	}
 	
-	public Long addMessageToDB(Message message){
+	public Long addMessageToDB(Message message, String msgType){
 		dao.open();
-		Long id = dao.addToMessagesTable(message);
+		Long id = dao.addToMessagesTable(message,msgType);
 		dao.close();
 		return id;
 	}
@@ -431,7 +442,7 @@ public class Controller {
 	    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateIntent);
 	}
 	
-	public void buildMessage(String mContent, String mTo, boolean isGeoMessage, GeoPt geoPt) {
+	public void buildMessage(String mContent, String mTo, boolean isGeoMessage, GeoPt geoPt, String msgType) {
 		Message message = new Message();
 		message.setContnet(mContent);
 		message.setFrom(getCurrentUser().getMail());
@@ -442,9 +453,10 @@ public class Controller {
 			message.setReadRadius(80);
 		}
 		// add the new message to messages table in db 
-   		Long messageId = addMessageToDB(message);	
+   		Long messageId = addMessageToDB(message,msgType);	
    		// update the conversations table in db with the last message
-		updateConversationTable(message.getFrom(), message.getTo(), messageId,false,false,isGeoMessage);
+   		if (!msgType.equals(AppConsts.TYPE_PIN_MSG))
+   			updateConversationTable(message.getFrom(), message.getTo(), messageId,false,false,isGeoMessage);
 	}
 	
 	public String dateToDateString(long dateTimeInMillis) {
@@ -479,6 +491,16 @@ public class Controller {
 	    canvas.drawBitmap(bitmap, rect, rect, paint);
 
 	    return output;
+	}
+	
+	public String getContentFromJson(String json) throws JSONException {
+		JSONObject jObject = new JSONObject(json);
+		return jObject.getString("content");
+	}
+	
+	public String getTypeFromJson(String json) throws JSONException {
+		JSONObject jObject = new JSONObject(json);
+		return jObject.getString("type");
 	}
 	
 }
