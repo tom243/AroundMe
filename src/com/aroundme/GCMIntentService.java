@@ -2,6 +2,8 @@ package com.aroundme;
 
 import java.util.Stack;
 
+import org.json.JSONObject;
+
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,6 +14,7 @@ import android.util.Log;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.Aroundmeapi;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
+import com.aroundme.common.AppConsts;
 import com.aroundme.common.AroundMeApp;
 import com.aroundme.controller.Controller;
 import com.aroundme.controller.GeoController;
@@ -19,11 +22,10 @@ import com.aroundme.controller.NotificationsController;
 import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.internal.jo;
 
 public class GCMIntentService extends IntentService
 {
-//	public static final int NOTIFICATION_ID = 1;
-//	private NotificationManager mNotificationManager;
 	private static Stack<String> msgStack;
 	private IDataAccess dao;
 	private Controller controller;
@@ -46,6 +48,7 @@ public class GCMIntentService extends IntentService
 		controller = Controller.getInstance();
 		geoController = GeoController.getInstance(AroundMeApp.getContext());
 		notificationsController = new NotificationsController();
+		dao = DAO.getInstance(AroundMeApp.getContext());
 	}
 	
 	@Override
@@ -85,18 +88,41 @@ public class GCMIntentService extends IntentService
                 	try {
                     	Aroundmeapi api = EndpointApiCreator.getApi(Aroundmeapi.class);
 						Message m = api.getMessage(Long.parseLong(mId)).execute();
-						if (m.getLocation() != null) { // it is a geofence message
+						// checking which message we got
+						JSONObject jObject = new JSONObject(m.getContnet());
+						String content = jObject.getString("content");
+						String type = jObject.getString("type");
+						System.out.println(type);
+						// set the content in the message
+						m.setContnet(content);
+						
+						if (type.equals("GEO")) { // it is a geofence message
 							System.out.println("GEO MESSAGE WAS RECEIVED!");
 							geoController.createGeofence(m);
 							Intent geoIntent = new Intent("geoMessage");
 							geoIntent.putExtra("geoId", m.getId());
 						    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(geoIntent);
 						}
-						else {
-							notificationsController.createNotification(m);
-							// insert to conversation table
-							dao = DAO.getInstance(AroundMeApp.getContext());
-							Long messageId = controller.addMessageToDB(m);
+						if (type.equals("PIN")) {
+							System.out.println("PIN MESSAGE WAS RECEIVED!");
+							// insert to messages table
+							Long messageId = controller.addMessageToDB(m,AppConsts.TYPE_PIN_MSG);
+							notificationsController.createNotification(m, AppConsts.TYPE_PIN_MSG);
+						}
+						if (type.equals("SIMPLE")) {
+							if (AroundMeApp.isChatOpen()) {
+								System.out.println("CHAT IS OPEN !!!!!!!!!!!!!");
+								System.out.println("message: "+m.getContnet());
+								System.out.println("friend mail:  "+AroundMeApp.getFriendWithOpenChat());
+							}
+							if (AroundMeApp.isChatOpen() && 
+									AroundMeApp.getFriendWithOpenChat().equals(m.getFrom())) {
+								System.out.println("DONT NEED TO SEND NOTIFICATION");
+							} else
+								notificationsController.createNotification(m, AppConsts.TYPE_SIMPLE_MSG);
+
+							// insert to messages & conversation table
+							Long messageId = controller.addMessageToDB(m,AppConsts.TYPE_SIMPLE_MSG);
 							controller.updateConversationTable(m.getTo(), m.getFrom(), messageId,true,false,false);
 							//Intent updateIntent = new Intent("updateOpenCoversationsAdapter");
 						    //LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateIntent);

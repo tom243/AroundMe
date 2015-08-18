@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
-import com.aroundme.adapter.CustomConversationsAdapter;
+import com.aroundme.adapter.ConversationsAdapter;
 import com.aroundme.common.AppConsts;
 import com.aroundme.common.AroundMeApp;
 import com.aroundme.common.ConversationItem;
@@ -39,7 +39,7 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 
 	private Controller controller;
 	private Context context;
-	private CustomConversationsAdapter adapter;
+	private ConversationsAdapter adapter;
 	private List<ConversationItem> conversations;
 	private IDataAccess dao;
 	private List<UserAroundMe> allUsers;
@@ -112,9 +112,9 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 		dao.open();
 		ConversationItem conv = dao.isConversationExist(controller.getCurrentUser().getMail(),friendMail);
 		if (conv != null) {
-		dao.removeFromConversationTable(conv);
-		dao.close();
-    	refreshAdapter();
+			dao.removeFromConversationTable(conv);
+			dao.close();
+			refreshAdapter();
 		}
 	}
 	
@@ -157,7 +157,7 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 			conv.setImageUrl(allUsers.get(conv.getFriendMail()).getImageUrl());
 		}
 		// create adapter
-		adapter = new CustomConversationsAdapter(getActivity(), conversations);
+		adapter = new ConversationsAdapter(getActivity(), conversations);
 	    setListAdapter(adapter);
 	    getListView().setOnItemClickListener(this); 
 		adapter.notifyDataSetChanged();

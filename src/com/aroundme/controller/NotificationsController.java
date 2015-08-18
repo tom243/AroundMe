@@ -1,8 +1,5 @@
 package com.aroundme.controller;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -13,10 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.view.View;
-import android.webkit.WebView.FindListener;
-import android.widget.ImageView;
 import android.widget.RemoteViews;
-import android.widget.TextView;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.aroundme.GCMActivity;
@@ -35,7 +29,7 @@ public class NotificationsController {
 		mPrefs = AroundMeApp.getContext().getSharedPreferences(AppConsts.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 	}
 	
-    public void createNotification(Message message) {
+    public void createNotification(Message message, String msgType) {
     	
     	mNotificationManager = (NotificationManager)
                 AroundMeApp.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
@@ -90,7 +84,13 @@ public class NotificationsController {
      
         // Locate and set the Text into customnotificationtext.xml TextViews
         notificationView.setTextViewText(R.id.title, mPrefs.getString(message.getFrom(), "New message"));
-        notificationView.setTextViewText(R.id.text, message.getContnet());
+        
+        String dotMessage;
+        if (message.getContnet().length() >= 18) {
+      	  dotMessage = message.getContnet().substring(0, 18)+ "...";
+        } else 
+      	  dotMessage = message.getContnet();
+        notificationView.setTextViewText(R.id.text, dotMessage);
         notificationView.setTextViewText(R.id.date, controller.dateToDateString(message.getTimestamp().getValue()));
         notificationView.setTextViewText(R.id.time, controller.dateToTimeString(message.getTimestamp().getValue()));
      
@@ -102,35 +102,5 @@ public class NotificationsController {
         
         return notificationView;
     }
-	
-/*	
-	// Put the message into a notification and post it.
-    public void createNotification(Message message) {
-    	String isGeo;
-    	if (message.getLocation() == null)
-    		isGeo = "";
-    	else
-    		isGeo = "GEO ";
-    	Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-    	mNotificationManager = (NotificationManager)
-                AroundMeApp.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        PendingIntent contentIntent = PendingIntent.getActivity(AroundMeApp.getContext(), 0,
-                new Intent(AroundMeApp.getContext(), GCMActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
-        
-        
-        
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(AroundMeApp.getContext())
-        	.setSmallIcon(R.drawable.logo)
-        	.setContentTitle(isGeo+mPrefs.getString(message.getFrom(), "New message"))
-        	.setStyle(new NotificationCompat.BigTextStyle()
-        					.bigText(message.getContnet())
-        			  )
-        	.setAutoCancel(true)
-        	.setSound(alarmSound)
-        	.setContentText(message.getContnet());
-        mBuilder.setContentIntent(contentIntent);
-        mNotificationManager.notify(message.getId().intValue(), mBuilder.build());
-    }*/
 	
 }

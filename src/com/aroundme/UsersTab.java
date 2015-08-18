@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
-import com.aroundme.adapter.CustomUsersAdapter;
+import com.aroundme.adapter.UsersAdapter;
 import com.aroundme.common.AppConsts;
 import com.aroundme.common.AroundMeApp;
 import com.aroundme.common.IAppCallBack;
@@ -29,7 +29,7 @@ public class UsersTab extends ListFragment implements OnItemClickListener,
 
 	private Controller controller;
 	private Context context;
-	private CustomUsersAdapter adapter;
+	private UsersAdapter adapter;
 	private List<UserAroundMe> allUsers;
 	private ProgressBar progressBar;
 
@@ -86,7 +86,7 @@ public class UsersTab extends ListFragment implements OnItemClickListener,
 	}
 	
 	public void updateUsersList() {
-	    adapter = new CustomUsersAdapter(getActivity(), allUsers);
+	    adapter = new UsersAdapter(getActivity(), allUsers);
         setListAdapter(adapter);
 	    getListView().setOnItemClickListener(this);
 	}

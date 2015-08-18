@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
+import com.aroundme.common.AppConsts;
 import com.aroundme.common.ConversationItem;
 import com.aroundme.data.ChatDbContract.ConversationsEntry;
 import com.aroundme.data.ChatDbContract.MessagesEntry;
@@ -28,7 +29,8 @@ public class DAO implements IDataAccess{
 	
 	private String[] messagesColumns = { MessagesEntry._ID, MessagesEntry.COLUMN_CONTENT,
 			MessagesEntry.COLUMN_FROM,MessagesEntry.COLUMN_TO,MessagesEntry.COLUMN_TIME_STAMP, 
-			MessagesEntry.COLUMN_LAT, MessagesEntry.COLUMN_LONG, MessagesEntry.COLUMN_RADIUS};
+			MessagesEntry.COLUMN_LAT, MessagesEntry.COLUMN_LONG, MessagesEntry.COLUMN_RADIUS,
+			MessagesEntry.COLUMN_TYPE};
 	private String[] conversationsColumns = { ConversationsEntry._ID, ConversationsEntry.COLUMN_USER_MAIL,
 			ConversationsEntry.COLUMN_FRIEND_MAIL,ConversationsEntry.COLUMN_LAST_MESSAGE_ID,
 			ConversationsEntry.COLUMN_COUNTER_UNREAD_MESSAGES}; 
@@ -63,12 +65,31 @@ public class DAO implements IDataAccess{
 	}
 	
 	public ArrayList<Message> getAllMessagesForFriend(String userMail,String friendMail) {
+		/* NOT INCLUDING PIN MSGS*/
 		// get history of conversation
 		ArrayList<Message> messages = new ArrayList<Message>();
 		Cursor cursor = db.rawQuery("SELECT * FROM " + MessagesEntry.TABLE_NAME + 
-				" WHERE (" + MessagesEntry.COLUMN_TO + "=? AND " + 
-				MessagesEntry.COLUMN_FROM+ "=?) OR (" + MessagesEntry.COLUMN_FROM + "=? AND " + 
-				MessagesEntry.COLUMN_TO + "=?)" ,new String[]{userMail,friendMail,userMail,friendMail});
+				" WHERE (" + MessagesEntry.COLUMN_TYPE + "!=?) AND ((" +	
+				MessagesEntry.COLUMN_TO + "=? AND " + 
+				MessagesEntry.COLUMN_FROM + "=?) OR (" + MessagesEntry.COLUMN_FROM + "=? AND " + 
+				MessagesEntry.COLUMN_TO + "=?))" 
+				,new String[]{AppConsts.TYPE_PIN_MSG,userMail,friendMail,userMail,friendMail});
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			Message message = cursorToMessage(cursor);
+			messages.add(message);
+			cursor.moveToNext();
+		}
+		cursor.close();
+		return messages;
+	}
+
+	public ArrayList<Message> getPinMessages(String userMail, String column) {
+		ArrayList<Message> messages = new ArrayList<Message>();
+		Cursor cursor = db.rawQuery("SELECT * FROM " + MessagesEntry.TABLE_NAME + 
+				" WHERE (" + column + "=? AND " +
+				MessagesEntry.COLUMN_TYPE + "=?)"
+				,new String[]{userMail,AppConsts.TYPE_PIN_MSG});
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			Message message = cursorToMessage(cursor);
@@ -157,11 +178,11 @@ public class DAO implements IDataAccess{
 	}
 	
 	@Override
-	public Long addToMessagesTable(Message message) {		
+	public Long addToMessagesTable(Message message, String msgType) {		
 		if (message == null)
 			return null;
 		//build the content values.
-		ContentValues values = putMessagesValues(message);
+		ContentValues values = putMessagesValues(message, msgType);
 		
 		//do the insert.
 		long insertId = db.insert(MessagesEntry.TABLE_NAME, null, values);
@@ -226,7 +247,7 @@ public class DAO implements IDataAccess{
 	 * @param message the message we want  to get the parameters from it
 	 * @return the values that we will need to crate in the table 
 	 */
-	private ContentValues putMessagesValues(Message message) {
+	private ContentValues putMessagesValues(Message message, String msgType) {
 		ContentValues values = new ContentValues();
 		values.put(MessagesEntry.COLUMN_CONTENT, message.getContnet());
 		values.put(MessagesEntry.COLUMN_FROM, message.getFrom());
@@ -237,6 +258,7 @@ public class DAO implements IDataAccess{
 			values.put(MessagesEntry.COLUMN_LONG, message.getLocation().getLongitude());
 		}
 		values.put(MessagesEntry.COLUMN_RADIUS, message.getReadRadius());
+		values.put(MessagesEntry.COLUMN_TYPE, msgType);
 		return values;
 	}
 	

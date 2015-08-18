@@ -32,13 +32,15 @@ public interface IDataAccess {
 
 	ConversationItem isConversationExist(String userMail,String friendMail);
 	
-	 Long  addToMessagesTable(Message message);
+	 Long addToMessagesTable(Message message, String msgType);
 	
 	 Message getMessageFromDB(Long id);
 	
 	 void  addToConversationsTable(String  friendMail, String userMail, Long messageId, int unreadMsgs);
 	
 	 ArrayList<Message> getAllMessagesForFriend(String userMail,String friendMail);
+	 
+	 ArrayList<Message> getPinMessages(String userMail, String column);
 	 
 	 void updateOpenConversation(ConversationItem conv, Long messageId);
 	 

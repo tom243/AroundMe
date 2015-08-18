@@ -6,7 +6,7 @@
     android:padding="5dp" >
 
      <com.aroundme.common.CustomNetworkImageView
-        android:id="@+id/icon"
+        android:id="@+id/users_item_icon"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_alignParentLeft="true"
@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_marginTop="10dp"
-        android:layout_toRightOf="@id/icon"
+        android:layout_toRightOf="@id/users_item_icon"
         android:gravity="center_vertical"
         android:textColor="#000000"
         android:textSize="20sp" />
