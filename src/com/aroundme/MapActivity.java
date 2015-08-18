@@ -126,17 +126,6 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	@Override
 	public void onMapReady(GoogleMap map) {
 		myMap = map;
-		// add the pin messages to the map
-		for (Message message : receivedPinMsgs) {
-			addPinToMap(controller.getUserNameByMail(message.getFrom()), message.getContnet(), 
-					new LatLng(message.getLocation().getLatitude(),message.getLocation().getLongitude()), 
-					delivery_side.RECEIVE);
-		}
-		for (Message message : sentPinMsgs) {
-			addPinToMap(controller.getUserNameByMail(message.getTo()), message.getContnet(), 
-					new LatLng(message.getLocation().getLatitude(),message.getLocation().getLongitude()), 
-					delivery_side.SEND);
-		}
 		OnMarkerClickListener markersListener = new OnMarkerClickListener() {
 			@Override
 			public boolean onMarkerClick(Marker arg0) {
@@ -227,8 +216,8 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 					   						// checking the message isn't empty
 					   						if (editTextContent.getText().toString() != null) {
 					   							// if it is GEO message
-					   							Toast.makeText(AroundMeApp.getContext(), "GEO MSG", Toast.LENGTH_SHORT).show();
 					   							if (lastMsgType == type_msg.TYPE_GEO_MSG) {
+					   							Toast.makeText(AroundMeApp.getContext(), "GEO MSG", Toast.LENGTH_SHORT).show();
 						   							for (String friendMail: mSelectedItems) {
 						   								Toast.makeText(AroundMeApp.getContext(),"sending msg to " + friendMail, Toast.LENGTH_SHORT).show();
 						   								sendLocationBasedMessage(friendMail, editTextContent.getText().toString(), AppConsts.TYPE_GEO_MSG, (float)point.latitude, (float)point.longitude);
@@ -358,13 +347,23 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 			// delete all previous markers
 			myMap.clear();
 			// add new markers with the pictures from G+
-			Marker marker = null; 
 			for (int i=0; i<usersAroundMe.size(); i++) {
-				marker = myMap.addMarker(new MarkerOptions()
+				myMap.addMarker(new MarkerOptions()
 	    			.position(new LatLng(usersAroundMe.get(i).getLocation().getLatitude(), usersAroundMe.get(i).getLocation().getLongitude()))
 	    			.snippet(usersAroundMe.get(i).getMail())
 	    			.title(usersAroundMe.get(i).getDisplayName())
 	    			.icon(imagesArr.get(i)));
+			}
+			// add the pin messages to the map
+			for (Message message : receivedPinMsgs) {
+				addPinToMap(controller.getUserNameByMail(message.getFrom()), message.getContnet(), 
+						new LatLng(message.getLocation().getLatitude(),message.getLocation().getLongitude()), 
+						delivery_side.RECEIVE);
+			}
+			for (Message message : sentPinMsgs) {
+				addPinToMap(controller.getUserNameByMail(message.getTo()), message.getContnet(), 
+						new LatLng(message.getLocation().getLatitude(),message.getLocation().getLongitude()), 
+						delivery_side.SEND);
 			}
 		} else {
 			// ?
