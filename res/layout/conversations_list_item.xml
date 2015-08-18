@@ -6,7 +6,7 @@
     android:padding="5dp" >
 
      <com.aroundme.common.CustomNetworkImageView
-        android:id="@+id/icon2"
+        android:id="@+id/conversations_item_icon"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_alignParentLeft="true"
@@ -19,8 +19,8 @@
         android:id="@+id/friendName"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_marginTop="10dp"
-        android:layout_toRightOf="@id/icon2"
+       
+        android:layout_toRightOf="@id/conversations_item_icon"
         android:gravity="center_vertical"
         android:textColor="#000000"
         android:textSize="20sp" />
@@ -66,7 +66,7 @@
        	    android:layout_width="30dp"
        	    android:layout_height="40dp"
        	    android:layout_below="@+id/friendName"
-       	    android:layout_toRightOf="@+id/icon2"
+       	    android:layout_toRightOf="@+id/conversations_item_icon"
        	    android:src="@drawable/geo_msg" />
        	
 </RelativeLayout>

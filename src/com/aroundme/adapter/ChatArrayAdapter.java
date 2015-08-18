@@ -56,22 +56,21 @@ public class ChatArrayAdapter extends ArrayAdapter {
 
     @Override
     public long getItemId(int position) {
-        return position;
+        return chatMessages.indexOf(getItem(position));
     }
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         ChatMessage chatMessage = getItem(position);
-        LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         if (convertView == null) {
+        	LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = vi.inflate(R.layout.conversation_singlemessage, null);
             holder = createViewHolder(convertView);
             convertView.setTag(holder);
-        } else {
+        } else 
             holder = (ViewHolder) convertView.getTag();
-        }
 
         setAlignment(holder, !chatMessage.isLeft() , chatMessage.isLocationBased());
         holder.txtMessage.setText(chatMessage.getMessage());

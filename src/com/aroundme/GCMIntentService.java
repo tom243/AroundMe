@@ -22,8 +22,6 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 public class GCMIntentService extends IntentService
 {
-//	public static final int NOTIFICATION_ID = 1;
-//	private NotificationManager mNotificationManager;
 	private static Stack<String> msgStack;
 	private IDataAccess dao;
 	private Controller controller;
