@@ -241,12 +241,16 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 	@Override
 	protected void onStart() {
 		super.onStart();
+		AroundMeApp.setChatOpen(true);
+		AroundMeApp.setFriendWithOpenChat(myFriendMail);
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("chatMessage"));
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
+		AroundMeApp.setChatOpen(false);
+		AroundMeApp.setFriendWithOpenChat("");
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 	}
 

@@ -92,15 +92,13 @@ public class ConversationsAdapter extends BaseAdapter{
 			dotMessage = row_pos.getContentMess().substring(0, 18) + "...";
 		} else 
 			dotMessage = row_pos.getContentMess();
-		holder.friendName.setText(dotMessage);
+		holder.message.setText(dotMessage);
 
-		if (row_pos.isLastMsgIsGeo()) {
+		if (row_pos.isLastMsgIsGeo())
 			holder.geoIcon.setVisibility(View.VISIBLE);
-			holder.friendName.setPadding(0, 10, 0, 0);
-		} else {
+		else 
 			holder.geoIcon.setVisibility(View.GONE);
-			holder.friendName.setPadding(0, 55, 0, 0);
-		}
+		
 		return convertView;
 
     }

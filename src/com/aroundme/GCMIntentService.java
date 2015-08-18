@@ -91,7 +91,17 @@ public class GCMIntentService extends IntentService
 						    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(geoIntent);
 						}
 						else {
-							notificationsController.createNotification(m);
+							if (AroundMeApp.isChatOpen()) {
+								System.out.println("CHAT IS OPEN !!!!!!!!!!!!!");
+								System.out.println("message: "+m.getContnet());
+								System.out.println("friend mail:  "+AroundMeApp.getFriendWithOpenChat());
+							}
+							if (AroundMeApp.isChatOpen() && 
+									AroundMeApp.getFriendWithOpenChat().equals(m.getFrom())) {
+								System.out.println("DONT NEED TO SEND NOTIFICATION");
+							} else
+								notificationsController.createNotification(m);
+
 							// insert to conversation table
 							dao = DAO.getInstance(AroundMeApp.getContext());
 							Long messageId = controller.addMessageToDB(m);
