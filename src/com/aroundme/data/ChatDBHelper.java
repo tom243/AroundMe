@@ -41,8 +41,8 @@ public class ChatDBHelper extends SQLiteOpenHelper{
 				+ MessagesEntry.COLUMN_FROM + " TEXT NOT NULL,"
 				+ MessagesEntry.COLUMN_TO + " TEXT NOT NULL,"
 				+ MessagesEntry.COLUMN_TIME_STAMP+ " LONG,"
-				+ MessagesEntry.COLUMN_LAT + " LONG,"
-				+ MessagesEntry.COLUMN_LONG + " LONG,"
+				+ MessagesEntry.COLUMN_LAT + " DOUBLE,"
+				+ MessagesEntry.COLUMN_LONG + " DOUBLE,"
 				+ MessagesEntry.COLUMN_RADIUS + " LONG,"
 				+ MessagesEntry.COLUMN_TYPE + " TEXT NOT NULL)" ;
 		

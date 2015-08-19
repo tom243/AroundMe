@@ -88,7 +88,8 @@ public class DAO implements IDataAccess{
 		ArrayList<Message> messages = new ArrayList<Message>();
 		Cursor cursor = db.rawQuery("SELECT * FROM " + MessagesEntry.TABLE_NAME + 
 				" WHERE (" + column + "=? AND " +
-				MessagesEntry.COLUMN_TYPE + "=?)"
+				MessagesEntry.COLUMN_TYPE + "=?) "
+						+ "ORDER BY " + MessagesEntry.COLUMN_LAT + " DESC"
 				,new String[]{userMail,AppConsts.TYPE_PIN_MSG});
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
@@ -108,12 +109,12 @@ public class DAO implements IDataAccess{
 		message.setTo(cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_TO)));
 		message.setTimestamp(new DateTime(cursor.getLong(cursor.getColumnIndex(MessagesEntry.COLUMN_TIME_STAMP))));
 		/*********** TALK WITH TOMER ************/
-		Long latitude = cursor.getLong(cursor.getColumnIndex(MessagesEntry.COLUMN_LAT));
-		Long longitude = cursor.getLong(cursor.getColumnIndex(MessagesEntry.COLUMN_LONG));
+		Double latitude = cursor.getDouble(cursor.getColumnIndex(MessagesEntry.COLUMN_LAT));
+		Double longitude = cursor.getDouble(cursor.getColumnIndex(MessagesEntry.COLUMN_LONG));
 		if (latitude != 0 && longitude != 0) {
 			geoPt = new GeoPt();
-			geoPt.setLatitude((float)latitude);
-			geoPt.setLongitude((float) longitude);
+			geoPt.setLatitude(latitude.floatValue());
+			geoPt.setLongitude(longitude.floatValue());
 		}
 		message.setLocation(geoPt);
 		message.setReadRadius(cursor.getInt(cursor.getColumnIndex(MessagesEntry.COLUMN_RADIUS)));

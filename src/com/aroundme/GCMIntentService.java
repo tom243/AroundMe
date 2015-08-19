@@ -96,20 +96,20 @@ public class GCMIntentService extends IntentService
 						// set the content in the message
 						m.setContnet(content);
 						
-						if (type.equals("GEO")) { // it is a geofence message
+						if (type.equals(AppConsts.TYPE_GEO_MSG)) { // it is a geofence message
 							System.out.println("GEO MESSAGE WAS RECEIVED!");
 							geoController.createGeofence(m);
 							Intent geoIntent = new Intent("geoMessage");
 							geoIntent.putExtra("geoId", m.getId());
 						    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(geoIntent);
 						}
-						if (type.equals("PIN")) {
+						if (type.equals(AppConsts.TYPE_PIN_MSG)) {
 							System.out.println("PIN MESSAGE WAS RECEIVED!");
 							// insert to messages table
 							Long messageId = controller.addMessageToDB(m,AppConsts.TYPE_PIN_MSG);
 							notificationsController.createNotification(m, AppConsts.TYPE_PIN_MSG);
 						}
-						if (type.equals("SIMPLE")) {
+						if (type.equals(AppConsts.TYPE_SIMPLE_MSG)) {
 							if (AroundMeApp.isChatOpen()) {
 								System.out.println("CHAT IS OPEN !!!!!!!!!!!!!");
 								System.out.println("message: "+m.getContnet());

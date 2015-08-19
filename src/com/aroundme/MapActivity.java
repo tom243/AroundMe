@@ -21,6 +21,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.internal.cu;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -69,6 +70,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	private type_msg lastMsgType = null;
 	private ArrayList<Message> receivedPinMsgs;
 	private ArrayList<Message> sentPinMsgs;
+	private ArrayList<Message> unionSentPinMsgs;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +91,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 			mapFragment.getMapAsync(this);
 		else
 			Toast.makeText(AroundMeApp.getContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
+		unionSentPinMsgs = new ArrayList<Message>();
 		// get all pin messages from dao
 		dao.open();
 		receivedPinMsgs = dao.getPinMessages(controller.getCurrentUser().getMail(), MessagesEntry.COLUMN_TO);
@@ -219,7 +222,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 					   							if (lastMsgType == type_msg.TYPE_GEO_MSG) {
 					   							Toast.makeText(AroundMeApp.getContext(), "GEO MSG", Toast.LENGTH_SHORT).show();
 						   							for (String friendMail: mSelectedItems) {
-						   								Toast.makeText(AroundMeApp.getContext(),"sending msg to " + friendMail, Toast.LENGTH_SHORT).show();
+						   								Toast.makeText(AroundMeApp.getContext(),"sending geo msg to " + friendMail, Toast.LENGTH_SHORT).show();
 						   								sendLocationBasedMessage(friendMail, editTextContent.getText().toString(), AppConsts.TYPE_GEO_MSG, (float)point.latitude, (float)point.longitude);
 						   							}
 					   							}
@@ -228,11 +231,9 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 					   								Toast.makeText(AroundMeApp.getContext(), "PIN MSG", Toast.LENGTH_SHORT).show();
 					   								StringBuilder sb = new StringBuilder(); 
 					   								for (String friendMail: mSelectedItems) {
-						   								Toast.makeText(AroundMeApp.getContext(),"sending msg to " + friendMail, Toast.LENGTH_SHORT).show();
-						   									sendLocationBasedMessage(friendMail, editTextContent.getText().toString(), AppConsts.TYPE_PIN_MSG, (float)point.latitude, (float)point.longitude);
-						   									sb.append(controller.getUserNameByMail(friendMail));
-						   									//sb.append(System.getProperty("line.separator"));
-						   									//sb.append("\n");
+						   								Toast.makeText(AroundMeApp.getContext(),"sending pin msg to " + friendMail, Toast.LENGTH_SHORT).show();
+					   									sendLocationBasedMessage(friendMail, editTextContent.getText().toString(), AppConsts.TYPE_PIN_MSG, (float)point.latitude, (float)point.longitude);
+					   									sb.append(controller.getUserNameByMail(friendMail)+", ");
 						   							}
 					   								addPinToMap(sb.toString(), editTextContent.getText().toString(), point, delivery_side.SEND);
 					   							}
@@ -270,7 +271,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		final GeoPt geoPt = new GeoPt();
 		geoPt.setLatitude(lat);
 		geoPt.setLongitude(lon);
-		controller.sendMessageToUser(content,AppConsts.TYPE_GEO_MSG ,to,geoPt,
+		controller.sendMessageToUser(content,msgType ,to,geoPt,
 				new IAppCallBack<Void>() {
 					@Override
 					public void done(Void ret, Exception e) {
@@ -280,14 +281,19 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	}
 	
 	private void addPinToMap(String to, String content, LatLng latLng, delivery_side side) {
+		String removeFinalCommaStr = to;
+		// remove the last comma from list of names
+		if (removeFinalCommaStr.lastIndexOf(", ") == to.length()-2)
+			removeFinalCommaStr = to.substring(0, to.length()-3);
+		
 		MarkerOptions options =	new MarkerOptions()
 			.position(latLng)
 			.snippet(content)
-			.title(to);
+			.title(removeFinalCommaStr);
 		if (side == delivery_side.SEND)
-			options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+			options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
 		else
-			options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+			options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
 		myMap.addMarker(options);
 	}
 	
@@ -354,16 +360,37 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	    			.title(usersAroundMe.get(i).getDisplayName())
 	    			.icon(imagesArr.get(i)));
 			}
-			// add the pin messages to the map
+			// add pin messages that you received from friends to the map
 			for (Message message : receivedPinMsgs) {
 				addPinToMap(controller.getUserNameByMail(message.getFrom()), message.getContnet(), 
 						new LatLng(message.getLocation().getLatitude(),message.getLocation().getLongitude()), 
 						delivery_side.RECEIVE);
 			}
+			// add pin messages that you sent for friends the the map
 			for (Message message : sentPinMsgs) {
-				addPinToMap(controller.getUserNameByMail(message.getTo()), message.getContnet(), 
-						new LatLng(message.getLocation().getLatitude(),message.getLocation().getLongitude()), 
-						delivery_side.SEND);
+				float lastLat, lastLong;
+				if (unionSentPinMsgs.size() > 0) {
+					// get lat & long from last message that saved in union pin messages 
+					lastLat = unionSentPinMsgs.get(unionSentPinMsgs.size()-1).getLocation().getLatitude();
+					lastLong = unionSentPinMsgs.get(unionSentPinMsgs.size()-1).getLocation().getLongitude();
+					if (lastLat == message.getLocation().getLatitude() && lastLong == message.getLocation().getLongitude()) {
+						// need to update the string name in the last message in union
+						unionSentPinMsgs.get(unionSentPinMsgs.size()-1).setTo(
+								unionSentPinMsgs.get(unionSentPinMsgs.size()-1).getTo()+", "+ controller.getUserNameByMail(message.getTo()));
+					}
+					else { // message has different geoPt from the last in union
+						message.setTo(controller.getUserNameByMail(message.getTo()));
+						unionSentPinMsgs.add(message);
+					}
+				} else { // first time that the array size is zero
+					message.setTo(controller.getUserNameByMail(message.getTo()));
+					unionSentPinMsgs.add(message);
+				}
+			}
+			for (Message message : unionSentPinMsgs) {
+				addPinToMap(message.getTo(), message.getContnet(), 
+					new LatLng(message.getLocation().getLatitude(),message.getLocation().getLongitude()), 
+					delivery_side.SEND);
 			}
 		} else {
 			// ?
@@ -414,5 +441,28 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	public void unvisible(Exception e) {
 		// TODO Auto-generated method stub
 	}
+	
+	/*for (int i=0; i < sentPinMsgs.size(); i++) {
+		Message currMsg = sentPinMsgs.get(i);
+		float lastLat, lastLong;
+	//	if (i+1 < sentPinMsgs.size())
+	//		nextMsg = sentPinMsgs.get(i+1);
+		if (unionSentPinMsgs.size() > 0) {
+			// get lat & long from last message that saved in union pin messages 
+			lastLat = unionSentPinMsgs.get(unionSentPinMsgs.size()-1).getLocation().getLatitude();
+			lastLong = unionSentPinMsgs.get(unionSentPinMsgs.size()-1).getLocation().getLongitude();
+			if (lastLat == currMsg.getLocation().getLatitude() && lastLong == currMsg.getLocation().getLongitude()) {
+				// need to update the string name in the last message in union
+				unionSentPinMsgs.get(unionSentPinMsgs.size()-1).setTo(
+						unionSentPinMsgs.get(unionSentPinMsgs.size()-1).getTo()+", "+currMsg.getTo());
+			}
+			else
+				unionSentPinMsgs.add(currMsg);
+		} else
+			unionSentPinMsgs.add(currMsg);
+	}*/
+	
+	
+	
 
 }
