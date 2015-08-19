@@ -22,7 +22,6 @@ import com.aroundme.controller.NotificationsController;
 import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.google.android.gms.internal.jo;
 
 public class GCMIntentService extends IntentService
 {
