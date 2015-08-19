@@ -441,28 +441,5 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	public void unvisible(Exception e) {
 		// TODO Auto-generated method stub
 	}
-	
-	/*for (int i=0; i < sentPinMsgs.size(); i++) {
-		Message currMsg = sentPinMsgs.get(i);
-		float lastLat, lastLong;
-	//	if (i+1 < sentPinMsgs.size())
-	//		nextMsg = sentPinMsgs.get(i+1);
-		if (unionSentPinMsgs.size() > 0) {
-			// get lat & long from last message that saved in union pin messages 
-			lastLat = unionSentPinMsgs.get(unionSentPinMsgs.size()-1).getLocation().getLatitude();
-			lastLong = unionSentPinMsgs.get(unionSentPinMsgs.size()-1).getLocation().getLongitude();
-			if (lastLat == currMsg.getLocation().getLatitude() && lastLong == currMsg.getLocation().getLongitude()) {
-				// need to update the string name in the last message in union
-				unionSentPinMsgs.get(unionSentPinMsgs.size()-1).setTo(
-						unionSentPinMsgs.get(unionSentPinMsgs.size()-1).getTo()+", "+currMsg.getTo());
-			}
-			else
-				unionSentPinMsgs.add(currMsg);
-		} else
-			unionSentPinMsgs.add(currMsg);
-	}*/
-	
-	
-	
 
 }

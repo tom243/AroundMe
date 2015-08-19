@@ -57,7 +57,7 @@ public class NotificationsController {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             // build a complex notification, with buttons and such
             //
-            builder = builder.setContent(getComplexNotificationView(message));
+            builder = builder.setContent(getComplexNotificationView(message, msgType));
             		//mPrefs.getString(message.getFrom(), "New message"),message.getContnet()));
         } else {
             // Build a simpler notification, without buttons
@@ -70,7 +70,7 @@ public class NotificationsController {
         mNotificationManager.notify(message.getId().intValue(), builder.build());
     }
     
-    private RemoteViews getComplexNotificationView(Message message) {
+    private RemoteViews getComplexNotificationView(Message message, String msgType) {
         // Using RemoteViews to bind custom layouts into Notification
         RemoteViews notificationView = new RemoteViews(
             AroundMeApp.getContext().getPackageName(),
@@ -83,7 +83,13 @@ public class NotificationsController {
             R.drawable.logo);
      
         // Locate and set the Text into customnotificationtext.xml TextViews
-        notificationView.setTextViewText(R.id.title, mPrefs.getString(message.getFrom(), "New message"));
+        String title;
+        String from = mPrefs.getString(message.getFrom(), "New message");
+        if (msgType.endsWith(AppConsts.TYPE_SIMPLE_MSG))
+        	title = from;
+        else 
+        	title = msgType + " MESSAGE FROM: " + from;
+        notificationView.setTextViewText(R.id.title, title);
         
         String dotMessage;
         if (message.getContnet().length() >= 18) {

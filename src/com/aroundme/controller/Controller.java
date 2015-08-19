@@ -461,7 +461,7 @@ public class Controller {
 	
 	public String dateToDateString(long dateTimeInMillis) {
 		Date date = new Date(dateTimeInMillis);
-		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy");
 	    return formatter.format(dateTimeInMillis);
 	}
 	
