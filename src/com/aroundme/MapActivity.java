@@ -145,6 +145,13 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 					intent.putExtra(AppConsts.email_friend, marker.getSnippet());
 					startActivity(intent);
 				}
+				else {
+					dao.open();
+					//dao.removeFromMessagesTable(message);
+					dao.close();
+					marker.remove();
+					
+				}
 			}
 		};
 		OnMapLongClickListener longClickListener = new OnMapLongClickListener() {
@@ -189,12 +196,10 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 				                   if (isChecked) {
 				                       // If the user checked the item, add it to the selected items
 				                       mSelectedItems.add(allUsersMail[which]);
-				                       Toast.makeText(AroundMeApp.getContext(), "add index: "+which+" :"+allUsersName[which], Toast.LENGTH_SHORT).show();
 				                   } else {
 				                	   if (mSelectedItems.contains(allUsersMail[which])) {
 				                       // Else, if the item is already in the array, remove it 
 				                       mSelectedItems.remove(allUsersMail[which]);
-				                       Toast.makeText(AroundMeApp.getContext(), "remove index: "+which+" :"+allUsersName[which], Toast.LENGTH_SHORT).show();
 				                	   }
 				                	}
 				               }
@@ -205,48 +210,57 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 				               public void onClick(DialogInterface dialog, int id) {
 				                    // User clicked OK, so save the mSelectedItems results somewhere
 				                    // or return them to the component that opened the dialog
-				                   
-				            	    // the third dialog to send the message
-					            	AlertDialog.Builder msg_builder = new AlertDialog.Builder(MapActivity.this);
-					   				// Get the layout inflater
-					   			    LayoutInflater inflater = getLayoutInflater();
-					   			    final View v = inflater.inflate(R.layout.dialog_geo_message, null);
-					   				msg_builder.setView(v)
-					   				.setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
-					   					@Override
-					   					public void onClick(DialogInterface dialog, int id) {
-					   						// send message 
-					   						editTextContent = (EditText) v.findViewById(R.id.geo_message_content);
-					   						// checking the message isn't empty
-					   						if (editTextContent.getText().toString() != null) {
-					   							// if it is GEO message
-					   							if (lastMsgType == type_msg.TYPE_GEO_MSG) {
-					   							Toast.makeText(AroundMeApp.getContext(), "GEO MSG", Toast.LENGTH_SHORT).show();
-						   							for (String friendMail: mSelectedItems) {
-						   								Toast.makeText(AroundMeApp.getContext(),"sending geo msg to " + friendMail, Toast.LENGTH_SHORT).show();
-						   								sendLocationBasedMessage(friendMail, editTextContent.getText().toString(), AppConsts.TYPE_GEO_MSG, (float)point.latitude, (float)point.longitude);
+				            	    if (!mSelectedItems.isEmpty()) {
+					            	    // the third dialog to send the message
+						            	AlertDialog.Builder msg_builder = new AlertDialog.Builder(MapActivity.this);
+						   				// Get the layout inflater
+						   			    LayoutInflater inflater = getLayoutInflater();
+						   			    final View v = inflater.inflate(R.layout.dialog_geo_message, null);
+						   				msg_builder.setView(v)
+						   				.setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
+						   					@Override
+						   					public void onClick(DialogInterface dialog, int id) {
+						   						// send message 
+						   						editTextContent = (EditText) v.findViewById(R.id.geo_message_content);
+						   						// checking the message isn't empty
+						   						String str = editTextContent.getText().toString();
+						   						System.out.println(str);
+						   						if (!editTextContent.getText().toString().equals("")) {
+						   							// if it is GEO message
+						   							if (lastMsgType == type_msg.TYPE_GEO_MSG) {
+						   								Toast.makeText(AroundMeApp.getContext(), "GEO MSG", Toast.LENGTH_SHORT).show();
+							   							for (String friendMail: mSelectedItems) {
+							   								Toast.makeText(AroundMeApp.getContext(),"sending geo msg to " + friendMail, Toast.LENGTH_SHORT).show();
+							   								sendLocationBasedMessage(friendMail, editTextContent.getText().toString(), AppConsts.TYPE_GEO_MSG, (float)point.latitude, (float)point.longitude);
+							   							}
+							   							editTextContent.setText("");
 						   							}
-					   							}
-					   							// it is PIN message
-					   							else if (lastMsgType == type_msg.TYPE_PIN_MSG) {
-					   								Toast.makeText(AroundMeApp.getContext(), "PIN MSG", Toast.LENGTH_SHORT).show();
-					   								StringBuilder sb = new StringBuilder(); 
-					   								for (String friendMail: mSelectedItems) {
-						   								Toast.makeText(AroundMeApp.getContext(),"sending pin msg to " + friendMail, Toast.LENGTH_SHORT).show();
-					   									sendLocationBasedMessage(friendMail, editTextContent.getText().toString(), AppConsts.TYPE_PIN_MSG, (float)point.latitude, (float)point.longitude);
-					   									sb.append(controller.getUserNameByMail(friendMail)+", ");
+						   							// it is PIN message
+						   							else if (lastMsgType == type_msg.TYPE_PIN_MSG) {
+						   								Toast.makeText(AroundMeApp.getContext(), "PIN MSG", Toast.LENGTH_SHORT).show();
+						   								StringBuilder sb = new StringBuilder(); 
+						   								for (String friendMail: mSelectedItems) {
+							   								Toast.makeText(AroundMeApp.getContext(),"sending pin msg to " + friendMail, Toast.LENGTH_SHORT).show();
+						   									sendLocationBasedMessage(friendMail, editTextContent.getText().toString(), AppConsts.TYPE_PIN_MSG, (float)point.latitude, (float)point.longitude);
+						   									sb.append(controller.getUserNameByMail(friendMail)+", ");
+							   							}
+						   								addPinToMap(sb.toString(), editTextContent.getText().toString(), point, delivery_side.SEND);
+						   								editTextContent.setText("");
 						   							}
-					   								addPinToMap(sb.toString(), editTextContent.getText().toString(), point, delivery_side.SEND);
-					   							}
-					   						}
-					   					}
-					   				})
-					   				.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-					   					public void onClick(DialogInterface dialog, int id) {
-					   						//LoginDialogFragment.this.getDialog().cancel();
-					   					}
-					   				});      
-					   				msg_builder.create().show();
+						   						}
+						   						else
+						   							Toast.makeText(AroundMeApp.getContext(), "Can't send empty message", Toast.LENGTH_SHORT).show();
+						   					}
+						   				})
+						   				.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+						   					public void onClick(DialogInterface dialog, int id) {
+						   						//LoginDialogFragment.this.getDialog().cancel();
+						   					}
+						   				});      
+						   				msg_builder.create().show();
+				            	    }
+				            	    else
+				            	    	Toast.makeText(AroundMeApp.getContext(), "You forgot to choose friends..", Toast.LENGTH_SHORT).show();
 				               }
 				           })
 				           .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

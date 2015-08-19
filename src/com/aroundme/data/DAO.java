@@ -243,6 +243,12 @@ public class DAO implements IDataAccess{
 				ConversationsEntry.COLUMN_FRIEND_MAIL + "=?",  new String[] {conv.getUserMail(), conv.getFriendMail()});
 	}
 	
+	@Override
+	public void removeFromMessagesTable(Message message) {
+	//	db.delete(MessagesEntry.TABLE_NAME, ConversationsEntry.COLUMN_USER_MAIL + "=? AND " + 
+	//			ConversationsEntry.COLUMN_FRIEND_MAIL + "=?",  new String[] {conv.getUserMail(), conv.getFriendMail()});
+	}
+	
 	/**
 	 * crate content values form a message parameters
 	 * @param message the message we want  to get the parameters from it
