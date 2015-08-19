@@ -140,10 +140,12 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		OnInfoWindowClickListener onInfoWindowClickListener = new OnInfoWindowClickListener() {
 			@Override
 			public void onInfoWindowClick(Marker marker) {
-				// when an info window clicked the chat with him will be opened 
-				Intent intent = new Intent(AroundMeApp.getContext(),	ConversationActivity.class);
-				intent.putExtra(AppConsts.email_friend, marker.getSnippet());
-				startActivity(intent);
+				// when an info window clicked the chat with him will be opened
+				if (marker.getSnippet().contains("@")) {
+					Intent intent = new Intent(AroundMeApp.getContext(),	ConversationActivity.class);
+					intent.putExtra(AppConsts.email_friend, marker.getSnippet());
+					startActivity(intent);
+				}
 			}
 		};
 		OnMapLongClickListener longClickListener = new OnMapLongClickListener() {
