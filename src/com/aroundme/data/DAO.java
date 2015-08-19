@@ -94,6 +94,7 @@ public class DAO implements IDataAccess{
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			Message message = cursorToMessage(cursor);
+			message.setId(cursor.getLong(Integer.valueOf(MessagesEntry._ID)));
 			messages.add(message);
 			cursor.moveToNext();
 		}
@@ -244,8 +245,8 @@ public class DAO implements IDataAccess{
 	}
 	
 	@Override
-	public void removeFromMessagesTable(Message message) {
-	//	db.delete(MessagesEntry.TABLE_NAME, ConversationsEntry.COLUMN_USER_MAIL + "=? AND " + 
+	public void removeFromMessagesTable(String messageId) {
+	db.delete(MessagesEntry.TABLE_NAME, ConversationsEntry. + "=? AND " + 
 	//			ConversationsEntry.COLUMN_FRIEND_MAIL + "=?",  new String[] {conv.getUserMail(), conv.getFriendMail()});
 	}
 	

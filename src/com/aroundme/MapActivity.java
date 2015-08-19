@@ -2,7 +2,9 @@ package com.aroundme;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
@@ -70,6 +72,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	private ArrayList<Message> receivedPinMsgs;
 	private ArrayList<Message> sentPinMsgs;
 	private ArrayList<Message> unionSentPinMsgs;
+	private Map<Marker, Long[]> markerMap = new HashMap<>();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -291,6 +294,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 					@Override
 					public void done(Void ret, Exception e) {
 						controller.buildMessage(content, to, true, geoPt,msgType);
+						
 					}
 				}, this);
 	}
@@ -309,7 +313,8 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 			options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
 		else
 			options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-		myMap.addMarker(options);
+		Marker marker = myMap.addMarker(options);
+		markerMap.put(marker, value)
 	}
 	
 	@Override
@@ -377,7 +382,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 			}
 			// add pin messages that you received from friends to the map
 			for (Message message : receivedPinMsgs) {
-				addPinToMap(controller.getUserNameByMail(message.getFrom()), message.getContnet(), 
+				addPinToMap(message.getId(),controller.getUserNameByMail(message.getFrom()), message.getContnet(), 
 						new LatLng(message.getLocation().getLatitude(),message.getLocation().getLongitude()), 
 						delivery_side.RECEIVE);
 			}
