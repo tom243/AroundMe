@@ -307,14 +307,14 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		
 		MarkerOptions options =	new MarkerOptions()
 			.position(latLng)
-			.snippet(content)
+			.snippet("\u200e" + content)
 			.title(removeFinalCommaStr);
 		if (side == delivery_side.SEND)
 			options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
 		else
 			options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
 		Marker marker = myMap.addMarker(options);
-		markerMap.put(marker, value)
+		//markerMap.put(marker, value);
 	}
 	
 	@Override
@@ -382,7 +382,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 			}
 			// add pin messages that you received from friends to the map
 			for (Message message : receivedPinMsgs) {
-				addPinToMap(message.getId(),controller.getUserNameByMail(message.getFrom()), message.getContnet(), 
+				addPinToMap(controller.getUserNameByMail(message.getFrom()), message.getContnet(), 
 						new LatLng(message.getLocation().getLatitude(),message.getLocation().getLongitude()), 
 						delivery_side.RECEIVE);
 			}
