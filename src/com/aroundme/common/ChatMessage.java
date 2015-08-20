@@ -2,12 +2,24 @@ package com.aroundme.common;
 
 import com.google.api.client.util.DateTime;
 
+/**
+ * @author Tomer and chen
+ * 
+ * the chat message
+ *
+ */
 public class ChatMessage {
 	private boolean left;
 	private String message;
 	private boolean locationBased;
 	private DateTime dateTime;
 
+	/**
+	 * @param left determine if its send or receive message
+	 * @param message the content of the message
+	 * @param locationBased determine if location based message
+	 * @param dateTime time of the message
+	 */
 	public ChatMessage(boolean left, String message, boolean locationBased, DateTime dateTime) {
 		super();
 		this.left = left;

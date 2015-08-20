@@ -21,6 +21,11 @@ import android.view.View.OnClickListener;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+/**
+ * @author Tomer and chen
+ * 
+ * sign in activity
+ */
 public class SignInActivity extends Activity implements ConnectionCallbacks,
 		OnConnectionFailedListener, OnClickListener, IAppCallBack<User>, SplashInterface {
 
@@ -67,11 +72,13 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 		regId = controller.getRegistrationId(getApplicationContext());
 	}
 
+	@Override
 	protected void onStart() {
 		super.onStart();
 		mGoogleApiClient.connect();
 	}
 	
+	@Override
 	protected void onStop() {
 		super.onStop();
 		if (mGoogleApiClient.isConnected()) {
@@ -79,6 +86,7 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 		}
 	}
 	
+	@Override
 	public void onClick(View view) {
 		if (controller.isOnline(getApplicationContext())){	
 			if (view.getId() == R.id.sign_in_button && !mGoogleApiClient.isConnecting()) {
@@ -125,6 +133,7 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 
 	}
 
+	@Override
 	protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
 		  if (requestCode == RC_SIGN_IN) {
 		    if (responseCode != RESULT_OK) {
@@ -136,7 +145,8 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 		    }
 		  }
 		}
-
+	
+	@Override
 	public void onConnectionSuspended(int cause) {
 		  mGoogleApiClient.connect();
 	}
@@ -160,6 +170,9 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 		return super.onOptionsItemSelected(item);
 	}
 
+	/**
+	 *  move to main activity
+	 */
 	public void moveToMainActivity(){
 		// Move to MainActivity
 		Intent intent = new Intent(this, MainActivity.class);
@@ -176,7 +189,6 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 					String personName = currentPerson.getDisplayName();
 					String personPhoto = currentPerson.getImage().getUrl();
 					String password =currentPerson.getId();
-					// String personGooglePlusProfile = currentPerson.getUrl();
 					this.user = new User();
 					this.user.setFullName(personName);
 					this.user.setMail(email);
@@ -195,7 +207,6 @@ public class SignInActivity extends Activity implements ConnectionCallbacks,
 		} else {
 			System.out.println("error");
 		    Toast.makeText(this, "Error while try login.", Toast.LENGTH_SHORT).show();
-			// handle ??
 		}
 	}
 

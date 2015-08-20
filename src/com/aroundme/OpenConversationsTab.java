@@ -68,7 +68,7 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 		dao = DAO.getInstance(context);
 		getConversationListFromDB();
 		if (controller.isOnline(AroundMeApp.getContext()))
-			getUsers(); // maybe async
+			getUsers(); 
 		else
 			Toast.makeText(context, "No internet connection available", Toast.LENGTH_SHORT).show();
 		
@@ -107,6 +107,9 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 		
 	}
 
+	/**
+	 * receiver for adding new conversation to the list
+	 */
 	private BroadcastReceiver newOpenConversation = new BroadcastReceiver() {
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
@@ -114,6 +117,11 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 	    }
 	};
 	
+	/**
+	 * @param friendMail friend mail
+	 * 
+	 * remove conversation from list
+	 */
 	private void removeOpenConversation(String friendMail){
 		dao.open();
 		ConversationItem conv = dao.isConversationExist(controller.getCurrentUser().getMail(),friendMail);
@@ -124,12 +132,18 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 		}
 	}
 	
+	/**
+	 *  get all conversation list from DB
+	 */
 	private void getConversationListFromDB(){
 		dao.open();
 		conversations = dao.getAllOpenConversationsList(controller.getCurrentUser().getMail());
 		dao.close();
 	}	
 		
+	/**
+	 *  get all users from the server or from cache
+	 */
 	public void getUsers() {
 	    allUsers = controller.getAllUsersList(); // not going to server
 	    if (allUsers.isEmpty())
@@ -157,6 +171,9 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 		addImageUrlToConversationItem();
 	}
 	
+	/**
+	 *  adds  the  URL image of all the users
+	 */
 	private void addImageUrlToConversationItem(){
 		HashMap<String, UserAroundMe> allUsers = controller.getAllUsers();
 		for (ConversationItem conv: conversations){
@@ -169,6 +186,9 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 		adapter.notifyDataSetChanged();
 	}
 
+	/**
+	 *  updating adapter and load new changes
+	 */
 	private void refreshAdapter(){
 		getConversationListFromDB();
 		if (controller.isOnline(AroundMeApp.getContext()))

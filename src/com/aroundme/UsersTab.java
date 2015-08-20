@@ -24,6 +24,11 @@ import android.widget.AdapterView.OnItemClickListener;
 
 import java.util.List;
 
+/**
+ * @author Tomer and chen
+ *
+ * list of all the users that using the application
+ */
 public class UsersTab extends ListFragment implements OnItemClickListener, 
 				IAppCallBack<List<UserAroundMe>>, SplashInterface{
 
@@ -33,9 +38,6 @@ public class UsersTab extends ListFragment implements OnItemClickListener,
 	private List<UserAroundMe> allUsers;
 	private ProgressBar progressBar;
 
-	/* (non-Javadoc)
-	 * @see android.support.v4.app.ListFragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
-	 */
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 		context = inflater.getContext();
@@ -70,7 +72,6 @@ public class UsersTab extends ListFragment implements OnItemClickListener,
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -85,6 +86,9 @@ public class UsersTab extends ListFragment implements OnItemClickListener,
 	    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateAdapterIntent);
 	}
 	
+	/**
+	 *  update the user list in adapter
+	 */
 	public void updateUsersList() {
 	    adapter = new UsersAdapter(getActivity(), allUsers);
         setListAdapter(adapter);

@@ -6,13 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,6 +27,12 @@ public class ChatArrayAdapter extends ArrayAdapter {
     private Controller controller;
     private Context context;
 
+    /**
+     * @param context context that received
+     * @param textViewResourceId   text view resource id
+     * 
+     * constructor of ChatArrayAdapter class
+     */
     public ChatArrayAdapter(Context context, int textViewResourceId) {
     	super(context, textViewResourceId);
     	this.controller = Controller.getInstance();
@@ -79,15 +83,32 @@ public class ChatArrayAdapter extends ArrayAdapter {
         return convertView;
     }
 
+    /**
+     * @param message message that will be added to chat
+     * 
+     * add message to the chat
+     */
     public void add(ChatMessage message) {
         chatMessages.add(message);
         super.add(message);
     }
 
+    /**
+     * @param messages list of chat messages
+     * 
+     * adds list of messsages to the chat
+     */
     public void add(List<ChatMessage> messages) {
         chatMessages.addAll(messages);
     }
 
+    /**
+     * @param holder holds a variables of the view
+     * @param isMe 	 determines if this is the current user message	
+     * @param isGeo  determines if its a GEO message
+     * 
+     * sets the current alignment
+     */
     private void setAlignment(ViewHolder holder, boolean isMe, boolean isGeo) {
         if (isMe) {
             holder.txtMessage.setBackgroundResource(R.drawable.bubble_b);
@@ -139,12 +160,24 @@ public class ChatArrayAdapter extends ArrayAdapter {
         }
     }
    
+	/**
+	 * @param dateTime contains date
+	 * @return current time
+	 * 
+	 * reset the date
+	 */
 	private Date resetTime(long dateTime) {
 		Date date = new Date(dateTime);
 		date.setTime(0);
 		return date;
 	}
     
+    /**
+     * @param holder holds a variables of the view
+     * @param msgDateTime date of the message
+     * 
+     *  set the date title
+     */
     private void setDateTitle(ViewHolder holder, long msgDateTime) {
     	long currDateInMillis = new DateTime(new Date()).getValue();
     	Date currDate = resetTime(currDateInMillis);
@@ -156,6 +189,12 @@ public class ChatArrayAdapter extends ArrayAdapter {
     		holder.txtInfo.setText(controller.dateToDateString(msgDateTime)+" , "+ controller.dateToTimeString(msgDateTime));
     }
 
+    /**
+     * @param v gets a view
+     * @return  the holder of the view
+     * 
+     *  create a view holder 
+     */
     private ViewHolder createViewHolder(View v) {
         ViewHolder holder = new ViewHolder();
         holder.txtMessage = (TextView) v.findViewById(R.id.txtMessage);
@@ -167,6 +206,9 @@ public class ChatArrayAdapter extends ArrayAdapter {
         return holder;
     }
 
+    /**
+     *  instance of holder
+     */
     private static class ViewHolder {
         public TextView txtMessage;
         public TextView txtInfo;

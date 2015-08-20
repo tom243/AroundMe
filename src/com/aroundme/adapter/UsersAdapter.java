@@ -28,7 +28,11 @@ public class UsersAdapter extends BaseAdapter {
     private List<UserAroundMe> users;
     private ImageLoader imageLoader;
 
-   public UsersAdapter(Context context, List<UserAroundMe> users) {
+   /**
+ * @param context context that received
+ * @param users list of users
+ */
+public UsersAdapter(Context context, List<UserAroundMe> users) {
         this.context = context;
         this.users = users;
         this.imageLoader = ImagesController.getInstance().getImageLoader();
@@ -77,6 +81,12 @@ public class UsersAdapter extends BaseAdapter {
         return convertView;
     }
     
+    /**
+     * @param v gets a view
+     * @return the holder of the view
+     * 
+     * create a view holder 
+     */
     private ViewHolder createViewHolder(View v) {
         ViewHolder holder = new ViewHolder();
         holder.thumbNail = (CustomNetworkImageView) v.findViewById(R.id.users_item_icon);
@@ -84,24 +94,12 @@ public class UsersAdapter extends BaseAdapter {
         return holder;
     }
 
+    /**
+     *  instance of holder
+     */
     private static class ViewHolder {
         public CustomNetworkImageView thumbNail;
         public TextView txtTitle;
     }
     
- /*	if (convertView == null) {
-        LayoutInflater mInflater = (LayoutInflater) context
-                .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-        convertView = mInflater.inflate(R.layout.users_list_item, null);
-    }
-    if (imageLoader == null)
-        imageLoader = ImagesController.getInstance().getImageLoader();
-    thumbNail = (CustomNetworkImageView) convertView.findViewById(R.id.icon);
-    TextView txtTitle = (TextView) convertView.findViewById(R.id.userName);
-    UserAroundMe row_pos = users.get(position);
-    txtTitle.setText(row_pos.getDisplayName());
-    thumbNail.setDefaultImageResId(R.drawable.user_default);
-    thumbNail.setImageUrl(row_pos.getImageUrl(), imageLoader);
-    return convertView;*/
-
 }

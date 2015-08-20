@@ -52,6 +52,12 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.api.client.util.DateTime;
 import com.google.gson.JsonObject;
 
+/**
+ * @author Tomer and chen
+ * 
+ * Main controller of the app
+ *
+ */
 public class Controller {
 	
 	private static Controller instance;
@@ -95,6 +101,15 @@ public class Controller {
 		return allUsersList;
 	}
 
+	/**
+	 * @param email email of the user
+	 * @param pass  password of the user
+	 * @param regId registration id of device
+	 * @param callback callback 
+	 * @param splash  splash
+	 * 
+	 * login for user
+	 */
 	public void login(final String email, final String pass, final String regId,final IAppCallBack<User> callback, final SplashInterface splash) {
 		
 
@@ -130,6 +145,13 @@ public class Controller {
 		}.execute();
 	}
 
+	/**
+	 * @param user user that want to register
+	 * @param callback callback
+	 * @param splash splash
+	 * 
+	 * register for user
+	 */
 	public void register(final User user,final IAppCallBack<User> callback, final SplashInterface splash) {
 		
 		new  AsyncTask<Void, Void, Void>() {
@@ -161,6 +183,13 @@ public class Controller {
 		}.execute();
 	}
 	
+	/**
+	 * @param rad radius of the users around me
+	 * @param geo user current location
+	 * @param callback callback
+	 * 
+	 * get all users around the user by specific radios
+	 */
 	public void getUsersAroundMe(final int rad,final GeoPt geo,final IAppCallBack<List<UserAroundMe>> callback) {
 		
 		new  AsyncTask<Void, Void, UserAroundMeCollection>() {
@@ -193,6 +222,12 @@ public class Controller {
 		}.execute();
 	}
 	
+	/**
+	 * @param callback callback
+	 * @param splash splash
+	 * 
+	 * get all friends from server
+	 */
 	public void getAllUsersFromServer(final IAppCallBack<List<UserAroundMe>> callback, final SplashInterface splash) {
 		
 		new  AsyncTask<Void, Void, UserAroundMeCollection>() {
@@ -234,6 +269,12 @@ public class Controller {
 		}.execute();
 	}
 
+	/**
+	 * @param users list of all the users
+	 * @param callback callback
+	 * 
+	 * get all the images for the users in map
+	 */
 	public void getImagesUsersAroundMe(final List<UserAroundMe> users,final IAppCallBack2<ArrayList<BitmapDescriptor>> callback) {
 		
 		new  AsyncTask<Void, Void,ArrayList<BitmapDescriptor>>() {
@@ -273,6 +314,16 @@ public class Controller {
 		}.execute();
 	}
 
+	/**
+	 * @param content content of the message
+	 * @param type type of the message
+	 * @param to friend email address to send to
+	 * @param geoPt location of the message
+	 * @param callback callback
+	 * @param splash splash
+	 * 
+	 * send message to user 
+	 */
 	public void sendMessageToUser(final String content,final String type,final String to,final GeoPt geoPt,
 					final IAppCallBack<Void> callback, final SplashInterface splash) {
 		
@@ -317,6 +368,12 @@ public class Controller {
 		}.execute();
 	}
 	
+	/**
+	 * @param mail mail of some friend 
+	 * @return friend name
+	 * 
+	 * get friend name by mail
+	 */
 	public String getUserNameByMail(String mail) {
 		if (!allUsers.isEmpty())
 			return allUsers.get(mail).getDisplayName();
@@ -324,6 +381,12 @@ public class Controller {
 			return null;
 	}
 
+	/**
+	 * @param mail  mail of some friend 
+	 * @return image URL of friend
+	 * 
+	 *  get the image URL of friend
+	 */
 	public String getImageUrlByMail(String mail) {
 		if (!allUsers.isEmpty())
 			return allUsers.get(mail).getImageUrl();
@@ -406,12 +469,25 @@ public class Controller {
 	 *         false
 	 */
 	
+	/**
+	 * @param context the received context
+	 * @return if connected to the Internet
+	 * 
+	 * Determine if the user is connected to the Internet
+	 */
 	public boolean isOnline(Context context) {
 		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo netInfo = cm.getActiveNetworkInfo();
 		return netInfo != null && netInfo.isConnectedOrConnecting();
 	}
 	
+	/**
+	 * @param message message to be added to DB
+	 * @param msgType message type
+	 * @return id of the message in DB
+	 * 
+	 * adds message to DB and returned the id in DB
+	 */
 	public Long addMessageToDB(Message message, String msgType){
 		dao.open();
 		Long id = dao.addToMessagesTable(message,msgType);

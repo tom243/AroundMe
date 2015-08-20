@@ -14,6 +14,14 @@ public class ConversationItem {
 		super();
 	}
 
+	/**
+	 * @param userMail user mail
+	 * @param friendMail friend mail
+	 * @param unreadMess number of unread messages
+	 * @param timeStamp  date and time of the message
+	 * @param contentMess content of the message 
+	 * @param lastMsgIsGeo determine if location based message
+	 */
 	public ConversationItem(String userMail, String friendMail, int unreadMess,
 			long timeStamp, String contentMess, boolean lastMsgIsGeo) {
 		super();

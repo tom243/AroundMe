@@ -18,10 +18,8 @@ import com.android.volley.toolbox.NetworkImageView;
 public class CustomNetworkImageView extends NetworkImageView {
 
     private Bitmap  mLocalBitmap;
-    
     private boolean mShowLocal;
-    
-    Context mContext;
+    private Context mContext;
 
     public void setLocalImageBitmap(Bitmap bitmap) {
         if (bitmap != null) {

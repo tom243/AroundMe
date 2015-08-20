@@ -26,7 +26,11 @@ public class ConversationsAdapter extends BaseAdapter{
     private List<ConversationItem> conversations;
     private ImageLoader imageLoader;
 
-   public ConversationsAdapter(Context context, List<ConversationItem> conversations) {
+   /**
+ * @param context context that received
+ * @param conversations list of conversations
+ */
+public ConversationsAdapter(Context context, List<ConversationItem> conversations) {
     	this.controller = Controller.getInstance();
         this.context = context;
         this.conversations = conversations;
@@ -108,6 +112,8 @@ public class ConversationsAdapter extends BaseAdapter{
      * @param milliSeconds Date in milliseconds
      * @param dateFormat Date format 
      * @return String representing date in specified format
+     * 
+     * get the current date
      */
     private String getDate(Long milliSeconds, String dateFormat) {
         // Create a DateFormatter object for displaying date in specified format.
@@ -118,6 +124,12 @@ public class ConversationsAdapter extends BaseAdapter{
          return formatter.format(calendar.getTime());
     }
     
+    /**
+     * @param v gets a view
+     * @return the holder of the view
+     * 
+     * create a view holder 
+     */
     private ViewHolder createViewHolder(View v) {
         ViewHolder holder = new ViewHolder();
         holder.thumbNail = (CustomNetworkImageView) v.findViewById(R.id.conversations_item_icon);
@@ -129,6 +141,9 @@ public class ConversationsAdapter extends BaseAdapter{
         return holder;
     }
 
+    /**
+     *  instance of holder
+     */
     private static class ViewHolder {
         public CustomNetworkImageView thumbNail;
         public TextView friendName;
