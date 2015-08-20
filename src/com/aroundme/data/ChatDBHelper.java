@@ -44,7 +44,8 @@ public class ChatDBHelper extends SQLiteOpenHelper{
 				+ MessagesEntry.COLUMN_LAT + " DOUBLE,"
 				+ MessagesEntry.COLUMN_LONG + " DOUBLE,"
 				+ MessagesEntry.COLUMN_RADIUS + " LONG,"
-				+ MessagesEntry.COLUMN_TYPE + " TEXT NOT NULL)" ;
+				+ MessagesEntry.COLUMN_TYPE + " TEXT NOT NULL,"
+				+ MessagesEntry.COLUMN_IS_ACTIVE + " INTEGER)" ;
 		
 		db.execSQL(SQL_CREATE_MESSAGES_TABLE);
 		

@@ -85,8 +85,8 @@ public class DAO implements IDataAccess{
 		ArrayList<Message> messages = new ArrayList<Message>();
 		Cursor cursor = db.rawQuery("SELECT * FROM " + MessagesEntry.TABLE_NAME + 
 				" WHERE (" + column + "=? AND " +
-				MessagesEntry.COLUMN_TYPE + "=?) "
-						+ "ORDER BY " + MessagesEntry.COLUMN_LAT + " DESC"
+				MessagesEntry.COLUMN_TYPE + "=? AND " +
+				MessagesEntry.COLUMN_IS_ACTIVE + "=1) ORDER BY " + MessagesEntry.COLUMN_LAT + " DESC"
 				,new String[]{userMail,AppConsts.TYPE_PIN_MSG});
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
@@ -245,9 +245,10 @@ public class DAO implements IDataAccess{
 	}
 	
 	@Override
-	public void removeFromMessagesTable(String messageId) {
-		db.delete(MessagesEntry.TABLE_NAME, MessagesEntry._ID + "=?",  
-				new String[] {messageId});
+	public void upadteMessageToNonActive(String messageId) {
+		ContentValues values = new ContentValues();
+		values.put(MessagesEntry.COLUMN_IS_ACTIVE, 0);
+		db.update(MessagesEntry.TABLE_NAME, values, MessagesEntry._ID + "=?", new String[] {messageId});
 	}
 	
 	/**
@@ -268,6 +269,8 @@ public class DAO implements IDataAccess{
 		}
 		values.put(MessagesEntry.COLUMN_RADIUS, message.getReadRadius());
 		values.put(MessagesEntry.COLUMN_TYPE, msgType);
+		
+		values.put(MessagesEntry.COLUMN_IS_ACTIVE, 1);
 		return values;
 	}
 	

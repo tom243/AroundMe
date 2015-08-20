@@ -156,7 +156,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 				}
 				else {
 					dao.open();
-					dao.removeFromMessagesTable(markerMap.get(marker).toString());
+					dao.upadteMessageToNonActive(markerMap.get(marker).toString());
 					dao.close();
 					marker.remove();
 					
@@ -478,7 +478,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	        
 	        myMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
 	            public void onMapLoaded() {
-	    	        addPinToMap(message.getId() ,message.getFrom(), message.getContnet(), new LatLng(message.getLocation().getLatitude(),
+	    	        addPinToMap(message.getId() ,controller.getUserNameByMail(message.getFrom()), message.getContnet(), new LatLng(message.getLocation().getLatitude(),
 	        				message.getLocation().getLongitude()));
 	            }
 	        });

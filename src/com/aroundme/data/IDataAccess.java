@@ -48,6 +48,6 @@ public interface IDataAccess {
 	 
 	 void removeFromConversationTable(ConversationItem conv);
 	 
-	 void removeFromMessagesTable(String messageId);
+	 void upadteMessageToNonActive(String messageId);
 	 
 }
