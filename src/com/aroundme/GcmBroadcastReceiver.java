@@ -6,6 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.WakefulBroadcastReceiver;
 
+/**
+ * @author Tomer and chen
+ * 
+ * receiver that listening for new messages to arrive  
+ */
 public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
 
 	@Override

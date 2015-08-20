@@ -11,7 +11,6 @@ import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
 import com.aroundme.common.AppConsts;
 import com.aroundme.common.AroundMeApp;
-import com.aroundme.common.ChatMessage;
 import com.aroundme.common.IAppCallBack;
 import com.aroundme.common.IAppCallBack2;
 import com.aroundme.common.SplashInterface;
@@ -47,7 +46,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.Location;
 import android.os.Bundle;
-import android.provider.ContactsContract.PinnedPositions;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -74,9 +72,6 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	private ArrayList<String> mSelectedItems = null;
 	private type_msg lastMsgType = null;
 	private ArrayList<Message> receivedPinMsgs;
-
-//	private ArrayList<Message> sentPinMsgs;
-//	private ArrayList<Message> unionSentPinMsgs;
 	
 	private Map<Marker, Long> markerMap = new HashMap<>();
 	
@@ -99,14 +94,15 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 			mapFragment.getMapAsync(this);
 		else
 			Toast.makeText(AroundMeApp.getContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
-		//unionSentPinMsgs = new ArrayList<Message>();
 		// get all pin messages from dao
 		dao.open();
 		receivedPinMsgs = dao.getPinMessages(controller.getCurrentUser().getMail(), MessagesEntry.COLUMN_TO);
-		//sentPinMsgs = dao.getPinMessages(controller.getCurrentUser().getMail(), MessagesEntry.COLUMN_FROM);
 		dao.close();
 	}
 	
+	/**
+	 * build google API client 
+	 */
 	protected synchronized void buildGoogleApiClient() {
 	    mGoogleApiClient = new GoogleApiClient.Builder(this)
 	        .addConnectionCallbacks(this)
@@ -145,12 +141,14 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 				return true;
 			}
 		};
+		
+		
 		OnInfoWindowClickListener onInfoWindowClickListener = new OnInfoWindowClickListener() {
 			@Override
 			public void onInfoWindowClick(Marker marker) {
 				// when an info window clicked the chat with him will be opened
 				if (marker.getSnippet().contains("@")) {
-					Intent intent = new Intent(AroundMeApp.getContext(),	ConversationActivity.class);
+					Intent intent = new Intent(AroundMeApp.getContext(),ConversationActivity.class);
 					intent.putExtra(AppConsts.email_friend, marker.getSnippet());
 					startActivity(intent);
 				}
@@ -163,6 +161,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 				}
 			}
 		};
+		
 		OnMapLongClickListener longClickListener = new OnMapLongClickListener() {
 			@Override
 			public void onMapLongClick(final LatLng point) {
@@ -247,13 +246,10 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 						   							// it is PIN message
 						   							else if (lastMsgType == type_msg.TYPE_PIN_MSG) {
 						   								Toast.makeText(AroundMeApp.getContext(), "PIN MSG", Toast.LENGTH_SHORT).show();
-						   								//StringBuilder sb = new StringBuilder(); 
 						   								for (String friendMail: mSelectedItems) {
 							   								Toast.makeText(AroundMeApp.getContext(),"sending pin msg to " + friendMail, Toast.LENGTH_SHORT).show();
 						   									sendLocationBasedMessage(friendMail, editTextContent.getText().toString(), AppConsts.TYPE_PIN_MSG, (float)point.latitude, (float)point.longitude);
-						   									//sb.append(controller.getUserNameByMail(friendMail)+", ");
 							   							}
-						   								//addPinToMap(sb.toString(), editTextContent.getText().toString(), point, delivery_side.SEND);
 						   								editTextContent.setText("");
 						   							}
 						   						}
@@ -263,7 +259,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 						   				})
 						   				.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 						   					public void onClick(DialogInterface dialog, int id) {
-						   						//LoginDialogFragment.this.getDialog().cancel();
+						   						
 						   					}
 						   				});      
 						   				msg_builder.create().show();
@@ -290,26 +286,38 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		mGoogleApiClient.connect();
 	}
 	
-	private void sendLocationBasedMessage(final String to,final String content, final String msgType,
-			float lat, float lon) {
+	/**
+	 * @param to friend mail
+	 * @param content  content of the message 
+	 * @param msgType  type of the message
+	 * @param lat latitude of the message
+	 * @param lon longitude of the message
+	 * 
+	 * sends location based messages to friends
+	 */
+	private void sendLocationBasedMessage(final String to,final String content, final String msgType, float lat, float lon) {
 		final GeoPt geoPt = new GeoPt();
 		geoPt.setLatitude(lat);
 		geoPt.setLongitude(lon);
 		controller.sendMessageToUser(content,msgType ,to,geoPt,
-				new IAppCallBack<Void>() {
-					@Override
-					public void done(Void ret, Exception e) {
-						controller.buildMessage(content, to, true, geoPt,msgType);
-						
-					}
-				}, this);
+			new IAppCallBack<Void>() {
+				@Override
+				public void done(Void ret, Exception e) {
+					controller.buildMessage(content, to, true, geoPt,msgType);
+					
+				}
+			}, this);
 	}
 	
+	/**
+	 * @param message Id the id of the message
+	 * @param to friend mail
+	 * @param content content of the message
+	 * @param latLng location of the message
+	 * 
+	 * add marker of location based message to the map
+	 */
 	private void addPinToMap(Long messageId, String to, String content, LatLng latLng) {
-		/*String removeFinalCommaStr = to;
-		// remove the last comma from list of names
-		if (removeFinalCommaStr.lastIndexOf(", ") == to.length()-2)
-			removeFinalCommaStr = to.substring(0, to.length()-3);*/
 		
 		MarkerOptions options =	new MarkerOptions()
 			.position(latLng)
@@ -388,34 +396,8 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 				addPinToMap(message.getId(), controller.getUserNameByMail(message.getFrom()), message.getContnet(), 
 						new LatLng(message.getLocation().getLatitude(),message.getLocation().getLongitude()));
 			}
-			// add pin messages that you sent for friends the the map
-		/*	for (Message message : sentPinMsgs) {
-				float lastLat, lastLong;
-				if (unionSentPinMsgs.size() > 0) {
-					// get lat & long from last message that saved in union pin messages 
-					lastLat = unionSentPinMsgs.get(unionSentPinMsgs.size()-1).getLocation().getLatitude();
-					lastLong = unionSentPinMsgs.get(unionSentPinMsgs.size()-1).getLocation().getLongitude();
-					if (lastLat == message.getLocation().getLatitude() && lastLong == message.getLocation().getLongitude()) {
-						// need to update the string name in the last message in union
-						unionSentPinMsgs.get(unionSentPinMsgs.size()-1).setTo(
-								unionSentPinMsgs.get(unionSentPinMsgs.size()-1).getTo()+", "+ controller.getUserNameByMail(message.getTo()));
-					}
-					else { // message has different geoPt from the last in union
-						message.setTo(controller.getUserNameByMail(message.getTo()));
-						unionSentPinMsgs.add(message);
-					}
-				} else { // first time that the array size is zero
-					message.setTo(controller.getUserNameByMail(message.getTo()));
-					unionSentPinMsgs.add(message);
-				}
-			}
-			for (Message message : unionSentPinMsgs) {
-				addPinToMap(message.getTo(), message.getContnet(), 
-					new LatLng(message.getLocation().getLatitude(),message.getLocation().getLongitude()), 
-					delivery_side.SEND);
-			}*/
 		} else {
-			// ?
+			
 		}
 	}
 	
@@ -466,10 +448,12 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		// TODO Auto-generated method stub
 	}
 	
+	/**
+	 *  receiver for getting pin message when the user is in map activity
+	 */
 	private BroadcastReceiver mPinMessageReceiver = new BroadcastReceiver() {
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
-	    	
 	    	
 	        Long messageId = intent.getLongExtra("pinId",999);
 	        dao.open();
@@ -482,9 +466,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	        				message.getLocation().getLongitude()));
 	            }
 	        });
-	        
 
-	        // hash map tomer
 	    }
 	};
 

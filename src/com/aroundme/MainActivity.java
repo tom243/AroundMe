@@ -101,7 +101,6 @@ OnConnectionFailedListener {
             return true;
         }
         if (id == R.id.action_about) {
-        	// if...
         	Intent intent = new Intent(this, AboutActivity.class);
     		startActivity(intent);
         	return true;
@@ -194,6 +193,9 @@ OnConnectionFailedListener {
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mGeoRemoveReceiver);
 	}
 
+	/**
+	 * 	receiver for geo message in order to add geofence
+	 */
 	private BroadcastReceiver mGeoMessageReceiver = new BroadcastReceiver() {
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
@@ -203,9 +205,11 @@ OnConnectionFailedListener {
 	        	mGoogleApiClient.connect();
 	        }
 	    }
-	        //  ... react to local broadcast message
 	};
 	
+	/**
+	 * receiver for geo message in order to remove geofence
+	 */
 	private BroadcastReceiver mGeoRemoveReceiver = new BroadcastReceiver() {
 	    @Override
 	    public void onReceive(Context context, Intent intent) {

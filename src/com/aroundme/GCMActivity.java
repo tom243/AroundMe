@@ -152,7 +152,6 @@ public class GCMActivity extends Activity {
         @Override
         protected void onPostExecute(String msg) {
         	Log.i(TAG,msg);
-        	//progressBar.setVisibility(View.INVISIBLE);
         	startLogin();
         }
 	}
@@ -200,10 +199,12 @@ public class GCMActivity extends Activity {
 
 	}
 	
+	/**
+	 *  move to signin activity
+	 */
 	private void startLogin() {
 		// Move to SignInActivity
 		Intent intent = new Intent(this, SignInActivity.class);
-		//intent.putExtra("regid",regid);
 		startActivity(intent);
 		/* Since this is just a wrapper to start the main activity, finish it after launching SignInActivity */
 		finish();  

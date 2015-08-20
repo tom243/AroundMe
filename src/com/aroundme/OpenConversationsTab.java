@@ -34,6 +34,12 @@ import android.widget.AdapterView.OnItemClickListener;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * @author Tomer and chen
+ * 
+ * open conversation TAB
+ *
+ */
 public class OpenConversationsTab extends ListFragment implements OnItemClickListener, 
 						IAppCallBack<List<UserAroundMe>>,SplashInterface{
 

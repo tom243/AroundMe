@@ -66,20 +66,15 @@ public class GCMIntentService extends IntentService
              * recognize.
              */
             if (GoogleCloudMessaging.
-                    MESSAGE_TYPE_SEND_ERROR.equals(messageType)) {
-            	//notifiController.sendNotification("Send error: " + extras.toString(),1);
+                MESSAGE_TYPE_SEND_ERROR.equals(messageType)) {
             } else if (GoogleCloudMessaging.
-                    MESSAGE_TYPE_DELETED.equals(messageType)) {
-            	//notifiController.sendNotification("Deleted messages on server: " + extras.toString(),1);
+                MESSAGE_TYPE_DELETED.equals(messageType)) {
             // If it's a regular GCM message, do some work.
             } else if (GoogleCloudMessaging.
-                    MESSAGE_TYPE_MESSAGE.equals(messageType)) {
+                MESSAGE_TYPE_MESSAGE.equals(messageType)) {
                 // This loop represents the service doing some work.
-            	//onMessage(this,intent);
-            	//sendNotification("Received: " + extras.toString());
                 Log.i("GCMIntentService", "Completed work @ " + SystemClock.elapsedRealtime());
                 // Post notification of received message.
-                //sendNotification("Received: " + extras.toString());
                 Log.i("GCMIntentService", "Received: " + extras.toString());
                 String mId = intent.getStringExtra("newMessage");
                 if(mId!=null)
@@ -95,29 +90,24 @@ public class GCMIntentService extends IntentService
 						// set the content in the message
 						m.setContnet(content);
 						
-						if (type.equals(AppConsts.TYPE_GEO_MSG)) { // it is a geofence message
+						if (type.equals(AppConsts.TYPE_GEO_MSG)) { 
 							System.out.println("GEO MESSAGE WAS RECEIVED!");
 							geoController.createGeofence(m);
 							Intent geoIntent = new Intent("geoMessage");
 							geoIntent.putExtra("geoId", m.getId());
 						    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(geoIntent);
 						}
-						if (type.equals(AppConsts.TYPE_PIN_MSG)) {
+						if (type.equals(AppConsts.TYPE_PIN_MSG)) { 
 							System.out.println("PIN MESSAGE WAS RECEIVED!");
 							// insert to messages table
 							Long messageId = controller.addMessageToDB(m,AppConsts.TYPE_PIN_MSG);
-							controller.updateConversationTable(m.getTo(), m.getFrom(), messageId,true, false, false);
+							controller.updateConversationTable(m.getTo(), m.getFrom(), m.getId(),true, false, false);
 							notificationsController.createNotification(m, AppConsts.TYPE_PIN_MSG);
 							Intent pinIntent = new Intent("pinMessage");
 							pinIntent.putExtra("pinId", m.getId());
 						    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(pinIntent);
 						}
 						if (type.equals(AppConsts.TYPE_SIMPLE_MSG)) {
-							if (AroundMeApp.isChatOpen()) {
-								System.out.println("CHAT IS OPEN !!!!!!!!!!!!!");
-								System.out.println("message: "+m.getContnet());
-								System.out.println("friend mail:  "+AroundMeApp.getFriendWithOpenChat());
-							}
 							if (AroundMeApp.isChatOpen() && 
 									AroundMeApp.getFriendWithOpenChat().equals(m.getFrom())) {
 								System.out.println("DONT NEED TO SEND NOTIFICATION");
@@ -126,12 +116,10 @@ public class GCMIntentService extends IntentService
 
 							// insert to messages & conversation table
 							Long messageId = controller.addMessageToDB(m,AppConsts.TYPE_SIMPLE_MSG);
-							controller.updateConversationTable(m.getTo(), m.getFrom(), messageId,true,false,false);
-							//Intent updateIntent = new Intent("updateOpenCoversationsAdapter");
-						    //LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateIntent);
+							controller.updateConversationTable(m.getTo(), m.getFrom(), m.getId(),true,false,false);
 							//send intent with the id from the insert query
 							Intent chatIntent = new Intent("chatMessage");
-							chatIntent.putExtra("messageId", messageId);
+							chatIntent.putExtra("messageId", m.getId());
 						    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(chatIntent);
 						}
 					} catch (NumberFormatException e) {

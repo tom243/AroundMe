@@ -1,12 +1,10 @@
 package com.aroundme;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.NetworkImageView;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.aroundme.adapter.ChatArrayAdapter;
 import com.aroundme.common.AppConsts;
@@ -28,14 +26,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.DataSetObserver;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.PorterDuff.Mode;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
@@ -51,6 +41,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * @author Tomer and chen
+ *
+ * Chat between user and friend
+ */
 public class ConversationActivity extends ActionBarActivity implements IAppCallBack<Void>, SplashInterface{
 
     private ChatArrayAdapter chatArrayAdapter;
@@ -91,9 +86,7 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 		String imageUrl = null;
 		imageUrl = controller.getImageUrlByMail(myFriendMail);
 		if (imageUrl != null) {
-			/*thumbNail.setImageUrl(imageUrl, imageLoader);*/
-			//imageLoader.getImageListener(thumbNail, R.drawable.user_default, R.drawable.user_default);
-		   imageLoader.get(imageUrl, new ImageLoader.ImageListener() {
+		   imageLoader.get(imageUrl, new ImageLoader.ImageListener() { // load images form cache
 		        @Override
 		        public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
 		        	Bitmap bitmap= response.getBitmap();
@@ -151,12 +144,20 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
         initializeUnreadMessages();
     }
     
+    /**
+     * @param bitmap the image of the user
+     * 
+     * callBack when asking the image form cache
+     */
     private void imgBitmapCallback(Bitmap bitmap) {
     	if (bitmap != null){
     		thumbNail.setLocalImageBitmap(bitmap);
     	}
     }
     
+    /**
+     *  initialize unread messages for conversation
+     */
     public void initializeUnreadMessages() {
 	    dao.open();
 	    ConversationItem conv = dao.isConversationExist(controller.getCurrentUser().getMail(),myFriendMail);
@@ -169,6 +170,11 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 		dao.close();
     }
     
+    /**
+     * @param friendMail the friend mail
+     * 
+     * get all messages from DB for specific friend
+     */
     public void getHistoryMessagesFromDB(String friendMail){
 		dao.open();
 		historyMessages = dao.getAllMessagesForFriend(controller.getCurrentUser().getMail(), friendMail);
@@ -195,6 +201,9 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 		}
     }
     
+    /**
+     *  receiver for getting the message from the user
+     */
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
@@ -214,6 +223,9 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 	    }
 	};
 
+	/**
+	 * receiver for getting the  pin message from the user
+	 */
 	private BroadcastReceiver mPinMessageReceiver = new BroadcastReceiver() {
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
@@ -233,6 +245,11 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 	    }
 	};
 	
+    /**
+     * @return boolean
+     * 
+     * send new message to friend and return true or false
+     */
     private boolean sendChatMessage(){
     	if (!chatText.getText().toString().isEmpty()) {
     		String messageContent = chatText.getText().toString();
@@ -242,13 +259,15 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
     	return false;
     }
     
+    
+    /**
+     * callback when the message to the user sent asynchronously to the server
+     **/
 	@Override
 	public void done(Void ret, Exception e) {
 		if (e==null) {
 			String messageContent = chatText.getText().toString();
 			controller.buildMessage(messageContent, myFriendMail, false, null, AppConsts.TYPE_SIMPLE_MSG);
-	   		//Intent updateIntent = new Intent("updateOpenCoversationsAdapter");
-		    //LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateIntent);
 		    String text = chatText.getText().toString();
 			side = false;
 			DateTime currDate = new DateTime(new Date());
@@ -294,7 +313,7 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 	}
 
 	@Override
-	protected void onPause() {		 // on pause ??
+	protected void onPause() {	
 		initializeUnreadMessages();
 		super.onPause();
 	}
