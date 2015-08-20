@@ -48,6 +48,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.Location;
 import android.os.Bundle;
+import android.provider.ContactsContract.PinnedPositions;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -78,7 +79,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 //	private ArrayList<Message> sentPinMsgs;
 //	private ArrayList<Message> unionSentPinMsgs;
 	
-	private Map<Marker, Long[]> markerMap = new HashMap<>();
+	private Map<Marker, Long> markerMap = new HashMap<>();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -156,7 +157,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 				}
 				else {
 					dao.open();
-					//dao.removeFromMessagesTable(message);
+					dao.removeFromMessagesTable(markerMap.get(marker).toString());
 					dao.close();
 					marker.remove();
 					
@@ -305,19 +306,19 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 				}, this);
 	}
 	
-	private void addPinToMap(String to, String content, LatLng latLng) {
-		String removeFinalCommaStr = to;
+	private void addPinToMap(Long messageId, String to, String content, LatLng latLng) {
+		/*String removeFinalCommaStr = to;
 		// remove the last comma from list of names
 		if (removeFinalCommaStr.lastIndexOf(", ") == to.length()-2)
-			removeFinalCommaStr = to.substring(0, to.length()-3);
+			removeFinalCommaStr = to.substring(0, to.length()-3);*/
 		
 		MarkerOptions options =	new MarkerOptions()
 			.position(latLng)
 			.snippet("\u200e" + content)
-			.title("\u200e" + removeFinalCommaStr)
+			.title("\u200e" + to)
 			.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
 		Marker marker = myMap.addMarker(options);
-		//markerMap.put(marker, value);
+		markerMap.put(marker, messageId);
 	}
 	
 	@Override
@@ -385,7 +386,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 			}
 			// add pin messages that you received from friends to the map
 			for (Message message : receivedPinMsgs) {
-				addPinToMap(controller.getUserNameByMail(message.getFrom()), message.getContnet(), 
+				addPinToMap(message.getId(), controller.getUserNameByMail(message.getFrom()), message.getContnet(), 
 						new LatLng(message.getLocation().getLatitude(),message.getLocation().getLongitude()));
 			}
 			// add pin messages that you sent for friends the the map
@@ -478,7 +479,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	        
 	        myMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
 	            public void onMapLoaded() {
-	    	        addPinToMap(message.getFrom(), message.getContnet(), new LatLng(message.getLocation().getLatitude(),
+	    	        addPinToMap(message.getId() ,message.getFrom(), message.getContnet(), new LatLng(message.getLocation().getLatitude(),
 	        				message.getLocation().getLongitude()));
 	            }
 	        });

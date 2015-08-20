@@ -102,6 +102,7 @@ public class DAO implements IDataAccess{
 	public Message cursorToMessage(Cursor cursor) {
 		Message message = new Message();
 		GeoPt geoPt = null;
+		message.setId(cursor.getLong(cursor.getColumnIndex(MessagesEntry._ID)));
 		message.setContnet(cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_CONTENT)));
 		message.setFrom(cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_FROM)));
 		message.setTo(cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_TO)));
@@ -245,9 +246,9 @@ public class DAO implements IDataAccess{
 	
 	@Override
 	public void removeFromMessagesTable(String messageId) {
-/*	db.delete(MessagesEntry.TABLE_NAME, ConversationsEntry. + "=? AND " + 
-	//			ConversationsEntry.COLUMN_FRIEND_MAIL + "=?",  new String[] {conv.getUserMail(), conv.getFriendMail()});
-*/	}
+		db.delete(MessagesEntry.TABLE_NAME, MessagesEntry._ID + "=?",  
+				new String[] {messageId});
+	}
 	
 	/**
 	 * crate content values form a message parameters
