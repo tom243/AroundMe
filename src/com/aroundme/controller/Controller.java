@@ -442,21 +442,20 @@ public class Controller {
 	    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateIntent);
 	}
 	
-	public void buildMessage(String mContent, String mTo, boolean isGeoMessage, GeoPt geoPt, String msgType) {
+	public void buildMessage(String mContent, String mTo, boolean isLocationBased, GeoPt geoPt, String msgType) {
 		Message message = new Message();
 		message.setContnet(mContent);
 		message.setFrom(getCurrentUser().getMail());
 		message.setTo(mTo);
 		message.setTimestamp(new DateTime(new Date()));
-		if (isGeoMessage) {
+		if (isLocationBased) {
 			message.setLocation(geoPt);
 			message.setReadRadius(80);
 		}
 		// add the new message to messages table in db 
    		Long messageId = addMessageToDB(message,msgType);	
    		// update the conversations table in db with the last message
-   		if (!msgType.equals(AppConsts.TYPE_PIN_MSG))
-   			updateConversationTable(message.getFrom(), message.getTo(), messageId,false,false,isGeoMessage);
+   		updateConversationTable(message.getFrom(), message.getTo(), messageId, false, false, isLocationBased);
 	}
 	
 	public String dateToDateString(long dateTimeInMillis) {

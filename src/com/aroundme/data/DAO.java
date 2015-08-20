@@ -65,15 +65,12 @@ public class DAO implements IDataAccess{
 	}
 	
 	public ArrayList<Message> getAllMessagesForFriend(String userMail,String friendMail) {
-		/* NOT INCLUDING PIN MSGS*/
 		// get history of conversation
 		ArrayList<Message> messages = new ArrayList<Message>();
 		Cursor cursor = db.rawQuery("SELECT * FROM " + MessagesEntry.TABLE_NAME + 
-				" WHERE (" + MessagesEntry.COLUMN_TYPE + "!=?) AND ((" +	
-				MessagesEntry.COLUMN_TO + "=? AND " + 
-				MessagesEntry.COLUMN_FROM + "=?) OR (" + MessagesEntry.COLUMN_FROM + "=? AND " + 
-				MessagesEntry.COLUMN_TO + "=?))" 
-				,new String[]{AppConsts.TYPE_PIN_MSG,userMail,friendMail,userMail,friendMail});
+				" WHERE (" + MessagesEntry.COLUMN_TO + "=? AND " + 
+				MessagesEntry.COLUMN_FROM+ "=?) OR (" + MessagesEntry.COLUMN_FROM + "=? AND " + 
+				MessagesEntry.COLUMN_TO + "=?)" ,new String[]{userMail,friendMail,userMail,friendMail});
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			Message message = cursorToMessage(cursor);
@@ -189,13 +186,13 @@ public class DAO implements IDataAccess{
 		//do the insert.
 		long insertId = db.insert(MessagesEntry.TABLE_NAME, null, values);
 		
-		//get the entity from the data base - extra validation, entity was insert properly.
+/*		//get the entity from the data base - extra validation, entity was insert properly.
 		Cursor cursor = db.query(MessagesEntry.TABLE_NAME, messagesColumns,
 				MessagesEntry._ID + " = " + insertId, null, null, null, null);
 		cursor.moveToFirst();
 		//create the task object from the cursor.
 		Message newMessage = cursorToMessage(cursor);
-		cursor.close();
+		cursor.close();*/
 		return insertId;
 	}
 
@@ -203,7 +200,9 @@ public class DAO implements IDataAccess{
 		Cursor cursor =  db.rawQuery("select * from " + MessagesEntry.TABLE_NAME + " where " + MessagesEntry._ID + "='" + id + "'" , null);
 		cursor.moveToFirst();
 		Message message = cursorToMessage(cursor);
+		cursor.close();
 		return message;
+		
 		
 	}
 	
@@ -257,6 +256,7 @@ public class DAO implements IDataAccess{
 	 */
 	private ContentValues putMessagesValues(Message message, String msgType) {
 		ContentValues values = new ContentValues();
+		values.put(MessagesEntry._ID, message.getId());
 		values.put(MessagesEntry.COLUMN_CONTENT, message.getContnet());
 		values.put(MessagesEntry.COLUMN_FROM, message.getFrom());
 		values.put(MessagesEntry.COLUMN_TO,message.getTo());

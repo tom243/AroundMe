@@ -61,7 +61,7 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
     private boolean side = false;
     private Controller controller;
     private IDataAccess dao;
-    private  ArrayList<Message> historyMessages;
+    private ArrayList<Message> historyMessages;
     private Toolbar toolbar;
     private ProgressBar progressBar;
     private ImageLoader imageLoader = ImagesController.getInstance().getImageLoader();
@@ -214,6 +214,25 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 	    }
 	};
 
+	private BroadcastReceiver mPinMessageReceiver = new BroadcastReceiver() {
+	    @Override
+	    public void onReceive(Context context, Intent intent) {
+	        Long messageId = intent.getLongExtra("pinId",999);
+	        dao.open();
+	        Message message = dao.getMessageFromDB(messageId);
+	        dao.close();
+	        boolean locationBased = true;
+	        if (message.getLocation() != null)
+	        	locationBased = true;
+	        if (message.getFrom().equals(myFriendMail)) {
+	        	 side = true;
+	        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),locationBased,
+	        	 		message.getTimestamp()));
+	        }
+	        //  ... react to local broadcast message
+	    }
+	};
+	
     private boolean sendChatMessage(){
     	if (!chatText.getText().toString().isEmpty()) {
     		String messageContent = chatText.getText().toString();
@@ -244,6 +263,7 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 		AroundMeApp.setChatOpen(true);
 		AroundMeApp.setFriendWithOpenChat(myFriendMail);
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("chatMessage"));
+		LocalBroadcastManager.getInstance(this).registerReceiver(mPinMessageReceiver, new IntentFilter("pinMessage"));
 	}
 
 	@Override
@@ -252,6 +272,7 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 		AroundMeApp.setChatOpen(false);
 		AroundMeApp.setFriendWithOpenChat("");
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(mPinMessageReceiver);
 	}
 
 	@Override

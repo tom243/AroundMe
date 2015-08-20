@@ -106,7 +106,11 @@ public class GCMIntentService extends IntentService
 							System.out.println("PIN MESSAGE WAS RECEIVED!");
 							// insert to messages table
 							Long messageId = controller.addMessageToDB(m,AppConsts.TYPE_PIN_MSG);
+							controller.updateConversationTable(m.getTo(), m.getFrom(), messageId,true, false, false);
 							notificationsController.createNotification(m, AppConsts.TYPE_PIN_MSG);
+							Intent pinIntent = new Intent("pinMessage");
+							pinIntent.putExtra("pinId", m.getId());
+						    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(pinIntent);
 						}
 						if (type.equals(AppConsts.TYPE_SIMPLE_MSG)) {
 							if (AroundMeApp.isChatOpen()) {
