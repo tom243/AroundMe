@@ -18,7 +18,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
 /**
- * the function purpose is to perform a requests to the data base 
+ *  perform a requests to the DB 
  *
  */
 public class DAO implements IDataAccess{
@@ -34,8 +34,8 @@ public class DAO implements IDataAccess{
 	private String[] conversationsColumns = { ConversationsEntry._ID, ConversationsEntry.COLUMN_USER_MAIL,
 			ConversationsEntry.COLUMN_FRIEND_MAIL,ConversationsEntry.COLUMN_LAST_MESSAGE_ID,
 			ConversationsEntry.COLUMN_COUNTER_UNREAD_MESSAGES}; 
-	// Database fields
-	private SQLiteDatabase db;
+
+	private SQLiteDatabase db; 	// Database fields
 	
 	DAO(Context context) {
 		this.context = context;
@@ -43,7 +43,7 @@ public class DAO implements IDataAccess{
 	}
 	
 	/**
-	 * single tone of the DAO class 
+	 * singletone of the DAO class 
 	 * @param context the context that received 
 	 * @return instance of the DAO
 	 */
@@ -64,6 +64,7 @@ public class DAO implements IDataAccess{
 		dbHelper.close();
 	}
 	
+	@Override
 	public ArrayList<Message> getAllMessagesForFriend(String userMail,String friendMail) {
 		// get history of conversation
 		ArrayList<Message> messages = new ArrayList<Message>();
@@ -81,6 +82,7 @@ public class DAO implements IDataAccess{
 		return messages;
 	}
 
+	@Override
 	public ArrayList<Message> getPinMessages(String userMail, String column) {
 		ArrayList<Message> messages = new ArrayList<Message>();
 		Cursor cursor = db.rawQuery("SELECT * FROM " + MessagesEntry.TABLE_NAME + 
@@ -99,7 +101,14 @@ public class DAO implements IDataAccess{
 		return messages;
 	}
 	
-	public Message cursorToMessage(Cursor cursor) {
+	
+	/**
+	 * @param cursor cursor for DB
+	 * @return message object
+	 * 
+	 * build message for columns
+	 */
+	private Message cursorToMessage(Cursor cursor) {
 		Message message = new Message();
 		GeoPt geoPt = null;
 		message.setId(cursor.getLong(cursor.getColumnIndex(MessagesEntry._ID)));
@@ -143,7 +152,13 @@ public class DAO implements IDataAccess{
 		return openConversations;
 	}
 		
-	public ConversationItem cursorToConversationItem(Cursor cursor) {
+	/**
+	 * @param cursor cursor cursor for DB
+	 * @return conversation item object
+	 * 
+	 * build a conversation item from columns
+	 */
+	private ConversationItem cursorToConversationItem(Cursor cursor) {
 		ConversationItem conv = new ConversationItem();
 		conv.setUserMail(cursor.getString(cursor.getColumnIndex(ConversationsEntry.COLUMN_USER_MAIL)));
 		conv.setFriendMail(cursor.getString(cursor.getColumnIndex(ConversationsEntry.COLUMN_FRIEND_MAIL)));
@@ -156,6 +171,7 @@ public class DAO implements IDataAccess{
 		return conv;
 	}	
 	
+	@Override
 	public ConversationItem isConversationExist(String userMail,String friendMail) {
 		Cursor cursor = db.rawQuery("SELECT * FROM " + ConversationsEntry.TABLE_NAME + 
 				" WHERE " + ConversationsEntry.COLUMN_USER_MAIL + "=? AND " + 
@@ -176,25 +192,18 @@ public class DAO implements IDataAccess{
 	}
 	
 	@Override
-	public Long addToMessagesTable(Message message, String msgType) {		
+	public Long addToMessagesTable(Message message, String msgType) {	
+		
 		if (message == null)
 			return null;
-		//build the content values.
-		ContentValues values = putMessagesValues(message, msgType);
 		
-		//do the insert.
-		long insertId = db.insert(MessagesEntry.TABLE_NAME, null, values);
+		ContentValues values = putMessagesValues(message, msgType); //build the content values.
+		long insertId = db.insert(MessagesEntry.TABLE_NAME, null, values); //do the insert.
 		
-/*		//get the entity from the data base - extra validation, entity was insert properly.
-		Cursor cursor = db.query(MessagesEntry.TABLE_NAME, messagesColumns,
-				MessagesEntry._ID + " = " + insertId, null, null, null, null);
-		cursor.moveToFirst();
-		//create the task object from the cursor.
-		Message newMessage = cursorToMessage(cursor);
-		cursor.close();*/
 		return insertId;
 	}
 
+	@Override
 	public Message getMessageFromDB(Long id){
 		Cursor cursor =  db.rawQuery("select * from " + MessagesEntry.TABLE_NAME + " where " + MessagesEntry._ID + "='" + id + "'" , null);
 		cursor.moveToFirst();
@@ -216,11 +225,9 @@ public class DAO implements IDataAccess{
 	
 	@Override
 	public void  addToConversationsTable(String  friendMail, String userMail, Long messageId, int unreadMsgs) {		
-		//build the content values.
-		ContentValues values = putConversationsValues(friendMail, userMail, messageId,unreadMsgs);
 		
-		//do the insert.
-		long insertId = db.insert(ConversationsEntry.TABLE_NAME, null, values);
+		ContentValues values = putConversationsValues(friendMail, userMail, messageId,unreadMsgs); //build the content values.
+		long insertId = db.insert(ConversationsEntry.TABLE_NAME, null, values); //do the insert.
 		
 		//get the entity from the data base - extra validation, entity was insert properly.
 		Cursor cursor = db.query(ConversationsEntry.TABLE_NAME, conversationsColumns,
@@ -259,9 +266,11 @@ public class DAO implements IDataAccess{
 	}
 	
 	/**
-	 * crate content values form a message parameters
+	 * 
 	 * @param message the message we want  to get the parameters from it
 	 * @return the values that we will need to crate in the table 
+	 * 
+	 * create content values form a message parameters
 	 */
 	private ContentValues putMessagesValues(Message message, String msgType) {
 		ContentValues values = new ContentValues();
@@ -282,8 +291,9 @@ public class DAO implements IDataAccess{
 	}
 	
 	/**
-	 * crate content values form a conversation parameters
 	 * @return the values that we will need to crate in the table 
+	 * 
+	 * crate content values form a conversation parameters
 	 */
 	private ContentValues putConversationsValues(String  friendMail, String userMail, Long messageId, int unreadMessages) {
 		ContentValues values = new ContentValues();

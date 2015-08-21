@@ -18,67 +18,68 @@ import com.aroundme.R;
 import com.aroundme.common.AppConsts;
 import com.aroundme.common.AroundMeApp;
 
+/**
+ * @author Tomer and chen
+ *
+ *	controller for the notifications
+ */
 public class NotificationsController {
 
 	private NotificationManager mNotificationManager;
 	private Controller controller;
 	private final SharedPreferences mPrefs;
 
+	/**
+	 *  constructor for NotificationsController
+	 */
 	public NotificationsController() {
 		controller = Controller.getInstance();
 		mPrefs = AroundMeApp.getContext().getSharedPreferences(AppConsts.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 	}
 	
+    /**
+     * @param message details of the message
+     * @param msgType type of the message
+     * 
+     * create notification for message
+     */
     public void createNotification(Message message, String msgType) {
     	
     	mNotificationManager = (NotificationManager)
                 AroundMeApp.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
        
-    	Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        // Open NotificationView.java Activity
-        PendingIntent pIntent = PendingIntent.getActivity(
+    	Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION); 
+        PendingIntent pIntent = PendingIntent.getActivity( // Open NotificationView.java Activity
             AroundMeApp.getContext(),
             message.getId().intValue(),
             new Intent(AroundMeApp.getContext(), GCMActivity.class),
             PendingIntent.FLAG_UPDATE_CURRENT);
      
         NotificationCompat.Builder builder = new NotificationCompat.Builder(AroundMeApp.getContext())
-            // Set Icon
-            .setSmallIcon(R.drawable.logo)
-             // Set Ticker Message
-            .setTicker(message.getContnet())
-            // Dismiss Notification
-            .setAutoCancel(true)
-            //
-            .setSound(alarmSound)
-            // Set PendingIntent into Notification
-            .setContentIntent(pIntent);
+           
+            .setSmallIcon(R.drawable.logo)  	// Set Icon
+            .setTicker(message.getContnet())    // Set Ticker Message
+            .setAutoCancel(true)				// Dismiss Notification
+            .setSound(alarmSound)				// set sound 
+            .setContentIntent(pIntent);			// Set PendingIntent into Notification
      
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            // build a complex notification, with buttons and such
-            //
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) { // build a complex notification, with buttons and such
             builder = builder.setContent(getComplexNotificationView(message, msgType));
-            		//mPrefs.getString(message.getFrom(), "New message"),message.getContnet()));
         } else {
-            // Build a simpler notification, without buttons
-            //
-            builder = builder.setContentTitle(mPrefs.getString(message.getFrom(), "New message"))
+            builder = builder.setContentTitle(mPrefs.getString(message.getFrom(), "New message")) // Build a simpler notification, without buttons
                 .setContentText(message.getContnet())
                 .setSmallIcon(R.drawable.logo);
         }
-        //return builder;
         mNotificationManager.notify(message.getId().intValue(), builder.build());
     }
     
-    private RemoteViews getComplexNotificationView(Message message, String msgType) {
-        // Using RemoteViews to bind custom layouts into Notification
+    private RemoteViews getComplexNotificationView(Message message, String msgType) { // Using RemoteViews to bind custom layouts into Notification
         RemoteViews notificationView = new RemoteViews(
             AroundMeApp.getContext().getPackageName(),
             R.layout.notification
         );
         
-        // Locate and set the Image into customnotificationtext.xml ImageViews
-        notificationView.setImageViewResource(
+        notificationView.setImageViewResource( // Locate and set the Image into customnotificationtext.xml ImageViews
             R.id.imagenotileft, 
             R.drawable.logo);
      
@@ -100,8 +101,8 @@ public class NotificationsController {
         notificationView.setTextViewText(R.id.date, controller.dateToDateString(message.getTimestamp().getValue()));
         notificationView.setTextViewText(R.id.time, controller.dateToTimeString(message.getTimestamp().getValue()));
      
-        // checking if it is a geo message to show or hide the geo icon
-        if (message.getLocation() != null) {
+        
+        if (message.getLocation() != null) { // checking if it is a GEO/PIN message to show or hide the GEO/PIN icon
         	notificationView.setViewVisibility(R.id.geoMessageIcon, View.VISIBLE);
         	if (msgType.equals(AppConsts.TYPE_PIN_MSG))
         		notificationView.setImageViewResource(R.id.geoMessageIcon, R.drawable.pin_icon);
