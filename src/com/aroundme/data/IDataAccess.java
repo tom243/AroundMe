@@ -67,18 +67,60 @@ public interface IDataAccess {
 	 */
 	String getTypeMsg(Long id);
 
+	/**
+	 * @param friendMail friend mail
+	 * @param userMail user mail
+	 * @param messageId message id
+	 * @param unreadMsgs unread messages
+	 * 
+	 * add conversation to conversation table
+	 */
 	void addToConversationsTable(String friendMail, String userMail, Long messageId, int unreadMsgs);
 
+	/**
+	 * @param userMail user mail
+	 * @param friendMail friend mail
+	 * @return array with all the messages for specific friend
+	 * 
+	 * get all the messages for specific friend
+	 */
 	ArrayList<Message> getAllMessagesForFriend(String userMail, String friendMail);
 
+	/**
+	 * @param userMail user mail
+	 * @return array list of pin messages
+	 * 
+	 * get all pin messages from list
+	 */
 	ArrayList<Message> getPinMessages(String userMail, String column);
 
+	/**
+	 * @param conv conversation item
+	 * @param messageId message id
+	 * 
+	 * update conversation with new data
+	 */
 	void updateOpenConversation(ConversationItem conv, Long messageId);
 
+	/**
+	 * @param conv conversation item
+	 * 
+	 * update the number of unread messages
+	 */
 	void updateUnreadMessages(ConversationItem conv);
 
+	/**
+	 * @param conv conversation item
+	 * 
+	 *  remove conversation from conversations table
+	 */
 	void removeFromConversationTable(ConversationItem conv);
 
+	/**
+	 * @param messageId message id
+	 * 
+	 * update message to non active
+	 */
 	void upadteMessageToNonActive(String messageId);
 	 
 }

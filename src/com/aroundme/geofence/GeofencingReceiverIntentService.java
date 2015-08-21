@@ -1,6 +1,5 @@
 package com.aroundme.geofence;
 
-import org.json.JSONException;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;

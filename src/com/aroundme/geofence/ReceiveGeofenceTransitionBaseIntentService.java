@@ -50,9 +50,22 @@ public abstract class ReceiveGeofenceTransitionBaseIntentService extends IntentS
 		}
 	}
 
+	/**
+	 * @param geofenceIds array of geofences id's
+	 * 
+	 * operate when person entered geofence zone
+	 */
 	protected abstract void onEnteredGeofences(String[] geofenceIds);
 
+	/**
+	 * @param geofenceIds array of geofences id's
+	 * 
+	 * operate when person exited geofence zone
+	 */
 	protected abstract void onExitedGeofences(String[] geofenceIds);
 
+	/**
+	 * @param errorCode error code 
+	 */
 	protected abstract void onError(int errorCode);
 }
