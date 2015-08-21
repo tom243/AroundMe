@@ -1,6 +1,5 @@
 package com.aroundme;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +12,6 @@ import com.aroundme.common.AppConsts;
 import com.aroundme.common.AroundMeApp;
 import com.aroundme.common.IAppCallBack;
 import com.aroundme.common.IAppCallBack2;
-import com.aroundme.common.SplashInterface;
 import com.aroundme.controller.Controller;
 import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
@@ -57,8 +55,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class MapActivity extends ActionBarActivity implements OnMapReadyCallback,IAppCallBack<List<UserAroundMe>>,
-				IAppCallBack2<ArrayList<BitmapDescriptor>>,ConnectionCallbacks, OnConnectionFailedListener,
-				SplashInterface{
+				IAppCallBack2<ArrayList<BitmapDescriptor>>,ConnectionCallbacks, OnConnectionFailedListener{
 	
 	private GoogleApiClient mGoogleApiClient;
 	private Controller controller;
@@ -147,9 +144,9 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 			@Override
 			public void onInfoWindowClick(Marker marker) {
 				// when an info window clicked the chat with him will be opened
-				if (marker.getSnippet().contains("@")) {
-					Intent intent = new Intent(AroundMeApp.getContext(),ConversationActivity.class);
-					intent.putExtra(AppConsts.email_friend, marker.getSnippet());
+				if (!markerMap.containsKey(marker)) {	
+					Intent intent = new Intent(AroundMeApp.getContext(), ConversationActivity.class);
+					intent.putExtra(AppConsts.EMAIL_FRIEND, marker.getSnippet());
 					startActivity(intent);
 				}
 				else {
@@ -306,7 +303,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 					controller.buildMessage(content, to, true, geoPt,msgType);
 					
 				}
-			}, this);
+			}, null);
 	}
 	
 	/**
@@ -350,7 +347,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		        	.tilt(40)                   // Sets the tilt of the camera to 30 degrees
 		        	.build();                   // Creates a CameraPosition from the builder
 		        myMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-		        controller.getUsersAroundMe(AppConsts.radius_around_me, geo, this);
+		        controller.getUsersAroundMe(AppConsts.RADIUS_AROUND_ME, geo, this);
 	        }
 		}
 		else
@@ -361,11 +358,10 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	public void done(final List<UserAroundMe> users, Exception e) {
 		if(e == null) {
 			usersAroundMe = users;
-			Marker marker = null; 
 			for (int i=0; i<users.size(); i++) {
-				marker = myMap.addMarker(new MarkerOptions()
+				myMap.addMarker(new MarkerOptions()
 	    			.position(new LatLng(users.get(i).getLocation().getLatitude(), users.get(i).getLocation().getLongitude()))
-	    			.snippet("\u200e" + users.get(i).getMail())
+	    			.snippet(users.get(i).getMail())
 	    			.title("\u200e" + users.get(i).getDisplayName()));
 			}
 			if (controller.isOnline(AroundMeApp.getContext()))				
@@ -387,7 +383,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 			for (int i=0; i<usersAroundMe.size(); i++) {
 				myMap.addMarker(new MarkerOptions()
 	    			.position(new LatLng(usersAroundMe.get(i).getLocation().getLatitude(), usersAroundMe.get(i).getLocation().getLongitude()))
-	    			.snippet("\u200e" + usersAroundMe.get(i).getMail())
+	    			.snippet(usersAroundMe.get(i).getMail())
 	    			.title("\u200e" + usersAroundMe.get(i).getDisplayName())
 	    			.icon(imagesArr.get(i)));
 			}
@@ -438,16 +434,6 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		}
 	}
 
-	@Override
-	public void visible(Exception e) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void unvisible(Exception e) {
-		// TODO Auto-generated method stub
-	}
-	
 	/**
 	 *  receiver for getting pin message when the user is in map activity
 	 */
