@@ -214,7 +214,6 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 	        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),eMessage.getMsgType(),
 	        	 		message.getTimestamp()));
 	        }
-	        //  ... react to local broadcast message
 	    }
 	};
 
@@ -234,7 +233,6 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 	        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),AppConsts.TYPE_PIN_MSG,
 	        	 		message.getTimestamp()));
 	        }
-	        //  ... react to local broadcast message
 	    }
 	};
 	
