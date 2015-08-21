@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.aroundme.common.ConversationItem;
+import com.aroundme.common.ExtendedMessage;
 
 import android.database.SQLException;
 
@@ -84,7 +85,7 @@ public interface IDataAccess {
 	 * 
 	 * get all the messages for specific friend
 	 */
-	ArrayList<Message> getAllMessagesForFriend(String userMail, String friendMail);
+	ArrayList<ExtendedMessage> getAllMessagesForFriend(String userMail, String friendMail);
 
 	/**
 	 * @param userMail user mail
