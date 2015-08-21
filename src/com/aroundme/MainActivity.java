@@ -125,7 +125,7 @@ OnConnectionFailedListener {
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		if (!addGeoList.isEmpty()) {
-			Toast.makeText(this, "Start geofence service", Toast.LENGTH_SHORT).show();
+			System.out.println("Start geofence service");
 			for (Long geoId : addGeoList) {
 				// Get the PendingIntent for the geofence monitoring request.
 				// Send a request to add the current geofences.
@@ -137,7 +137,7 @@ OnConnectionFailedListener {
 		}
 		if (!removeGeoList.isEmpty()) {
 			for (Long geoId : removeGeoList) {
-				Toast.makeText(this, "Remove geofence", Toast.LENGTH_SHORT).show();
+				System.out.println("Remove geofence");
 				System.out.println("main activity geo id " + geoId);
 				mGeofenceRequestIntent = getGeofenceTransitionPendingIntent(geoId);				
 				if (null != mGeofenceRequestIntent) 

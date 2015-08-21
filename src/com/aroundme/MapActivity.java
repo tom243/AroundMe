@@ -233,18 +233,16 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 						   						if (!editTextContent.getText().toString().equals("")) {
 						   							// if it is GEO message
 						   							if (lastMsgType == type_msg.TYPE_GEO_MSG) {
-						   								Toast.makeText(AroundMeApp.getContext(), "GEO MSG", Toast.LENGTH_SHORT).show();
 							   							for (String friendMail: mSelectedItems) {
-							   								Toast.makeText(AroundMeApp.getContext(),"sending geo msg to " + friendMail, Toast.LENGTH_SHORT).show();
+							   								Toast.makeText(AroundMeApp.getContext(),"sending location message to " + controller.getUserNameByMail(friendMail), Toast.LENGTH_SHORT).show();
 							   								sendLocationBasedMessage(friendMail, editTextContent.getText().toString(), AppConsts.TYPE_GEO_MSG, (float)point.latitude, (float)point.longitude);
 							   							}
 							   							editTextContent.setText("");
 						   							}
 						   							// it is PIN message
 						   							else if (lastMsgType == type_msg.TYPE_PIN_MSG) {
-						   								Toast.makeText(AroundMeApp.getContext(), "PIN MSG", Toast.LENGTH_SHORT).show();
 						   								for (String friendMail: mSelectedItems) {
-							   								Toast.makeText(AroundMeApp.getContext(),"sending pin msg to " + friendMail, Toast.LENGTH_SHORT).show();
+							   								Toast.makeText(AroundMeApp.getContext(),"sending pin message to " + controller.getUserNameByMail(friendMail), Toast.LENGTH_SHORT).show();
 						   									sendLocationBasedMessage(friendMail, editTextContent.getText().toString(), AppConsts.TYPE_PIN_MSG, (float)point.latitude, (float)point.longitude);
 							   							}
 						   								editTextContent.setText("");
@@ -262,7 +260,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 						   				msg_builder.create().show();
 				            	    }
 				            	    else
-				            	    	Toast.makeText(AroundMeApp.getContext(), "You forgot to choose friends..", Toast.LENGTH_SHORT).show();
+				            	    	Toast.makeText(AroundMeApp.getContext(), "You forgot to choose friends. Try again", Toast.LENGTH_SHORT).show();
 				               }
 				           })
 				           .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
