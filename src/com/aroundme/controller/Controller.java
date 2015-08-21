@@ -50,12 +50,11 @@ import com.aroundme.data.IDataAccess;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.api.client.util.DateTime;
-import com.google.gson.JsonObject;
 
 /**
  * @author Tomer and chen
  * 
- * Main controller of the app
+ * Main controller of the APP
  *
  */
 public class Controller {
@@ -497,6 +496,16 @@ public class Controller {
 		return id;
 	}
 	
+	/**
+	 * @param to friend mail
+	 * @param from user mail
+	 * @param messageId message id
+	 * @param incUnreadMsgs determine if need to increment unread messages
+	 * @param resetDate determine if need to reset date
+	 * @param resetUnreadMsgs  determine if need to reset unread messages
+	 * 
+	 *  update or add conversation to open conversations
+	 */
 	public void updateConversationTable(String to, String from, Long messageId, boolean incUnreadMsgs, boolean resetDate, boolean resetUnreadMsgs){
 		dao.open();
 		ConversationItem conv = dao.isConversationExist(to,from);
@@ -520,6 +529,15 @@ public class Controller {
 	    LocalBroadcastManager.getInstance(AroundMeApp.getContext()).sendBroadcast(updateIntent);
 	}
 	
+	/**
+	 * @param mContent content of the message
+	 * @param mTo friend mail
+	 * @param isLocationBased determine if its location based message 
+	 * @param geoPt the location of the message
+	 * @param msgType the type of the message
+	 * 
+	 * build a message and add it to DB
+	 */
 	public void buildMessage(String mContent, String mTo, boolean isLocationBased, GeoPt geoPt, String msgType) {
 		Message message = new Message();
 		message.setContnet(mContent);
@@ -536,12 +554,24 @@ public class Controller {
    		updateConversationTable(message.getFrom(), message.getTo(), messageId, false, false, isLocationBased);
 	}
 	
+	/**
+	 * @param dateTimeInMillis date in milliseconds
+	 * @return date as String
+	 * 
+	 *  convert date in milliseconds to date
+	 */
 	public String dateToDateString(long dateTimeInMillis) {
 		Date date = new Date(dateTimeInMillis);
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy");
 	    return formatter.format(dateTimeInMillis);
 	}
 	
+	/**
+	 * @param dateTimeInMillis time in milliseconds
+	 * @return time as String
+	 * 
+	 *  convert time in milliseconds to date
+	 */
 	public String dateToTimeString(long dateTimeInMillis) {
 		Date date = new Date(dateTimeInMillis);
 		SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
