@@ -330,7 +330,8 @@ public class Controller {
 		new  AsyncTask<Void, Void, Void>(){
 			@Override
 			protected void onPreExecute() {
-				splash.visible(null);
+				if (splash != null)
+					splash.visible(null);
 				super.onPreExecute();
 			}
 			@Override
@@ -360,7 +361,8 @@ public class Controller {
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
-				splash.unvisible(null);
+				if (splash != null)
+					splash.unvisible(null);
 				// call callback
 				if(callback!=null)
 					callback.done(null,null);
