@@ -342,7 +342,7 @@ public class Controller {
 					message.setTimestamp(new DateTime(new Date()));
 					if (geoPt != null){
 						message.setLocation(geoPt);
-						message.setReadRadius(80);
+						message.setReadRadius(AppConsts.BUILDING_RADIUS_METERS);
 					}
 					JSONObject pnObj = new JSONObject();
 		            pnObj.put("content", content);

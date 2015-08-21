@@ -157,7 +157,7 @@ public class OpenConversationsTab extends ListFragment implements OnItemClickLis
 	     // ListView Clicked item value
 	     String friendMail = conversations.get(position).getFriendMail();
 		 Intent i = new Intent(getActivity(), ConversationActivity.class);
-	     i.putExtra(AppConsts.email_friend,friendMail);
+	     i.putExtra(AppConsts.EMAIL_FRIEND,friendMail);
 	     startActivity(i);  
 	}
 

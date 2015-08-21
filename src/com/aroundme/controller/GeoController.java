@@ -63,11 +63,6 @@ public class GeoController {
 				mGeofenceList.remove(geo); 
 			}
 		}
-		
-		// cancel GEO notification
-		/*NotificationManager nofiManager = (NotificationManager) context
-				.getSystemService(Context.NOTIFICATION_SERVICE);
-		nofiManager.cancel("GEO",task.getId());*/
 	}
 	
 	public List<Geofence> getmGeofenceList() {

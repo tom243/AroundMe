@@ -66,7 +66,7 @@ public class UsersTab extends ListFragment implements OnItemClickListener,
 	     // ListView Clicked item value
 	     String friendMail = allUsers.get(position).getMail();
 		 Intent i = new Intent(getActivity(), ConversationActivity.class);
-	     i.putExtra(AppConsts.email_friend,friendMail);
+	     i.putExtra(AppConsts.EMAIL_FRIEND,friendMail);
 	     startActivity(i);
 	}
 

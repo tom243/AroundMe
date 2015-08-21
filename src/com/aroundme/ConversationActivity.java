@@ -59,7 +59,7 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
     private ArrayList<Message> historyMessages;
     private Toolbar toolbar;
     private ProgressBar progressBar;
-    private ImageLoader imageLoader = ImagesController.getInstance().getImageLoader();
+    private ImageLoader imageLoader;
     private CustomNetworkImageView thumbNail; 
 
     @Override
@@ -70,19 +70,18 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
         progressBar = (ProgressBar) findViewById(R.id.progressBar1);
-        Intent intent = getIntent();
         controller = Controller.getInstance();
         dao = DAO.getInstance(AroundMeApp.getContext());
         // set the tool bar title to the friend name
-        myFriendMail = intent.getStringExtra(AppConsts.email_friend);
+        Intent intent = getIntent();
+        myFriendMail = intent.getStringExtra(AppConsts.EMAIL_FRIEND);
         setTitle("");
         TextView title = (TextView) findViewById(R.id.friend_name_title);
         title.setText(controller.getUserNameByMail(myFriendMail));
         // set the tool bar icon of friend
         thumbNail = (CustomNetworkImageView) findViewById(R.id.profile_pic_chat_friend);
 		thumbNail.setDefaultImageResId(R.drawable.user_default);
-        if (imageLoader == null)
-            imageLoader = ImagesController.getInstance().getImageLoader();
+        imageLoader = ImagesController.getInstance().getImageLoader();
 		String imageUrl = null;
 		imageUrl = controller.getImageUrlByMail(myFriendMail);
 		if (imageUrl != null) {
