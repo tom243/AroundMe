@@ -11,20 +11,20 @@ import com.google.api.client.util.DateTime;
 public class ChatMessage {
 	private boolean left;
 	private String message;
-	private boolean locationBased;
+	private String msgType;
 	private DateTime dateTime;
 
 	/**
 	 * @param left determine if its send or receive message
 	 * @param message the content of the message
-	 * @param locationBased determine if location based message
+	 * @param msgType determine which type of message
 	 * @param dateTime time of the message
 	 */
-	public ChatMessage(boolean left, String message, boolean locationBased, DateTime dateTime) {
+	public ChatMessage(boolean left, String message, String msgType, DateTime dateTime) {
 		super();
 		this.left = left;
 		this.message = message;
-		this.locationBased = locationBased;
+		this.msgType = msgType;
 		this.dateTime = dateTime;
 	}
 
@@ -44,12 +44,12 @@ public class ChatMessage {
 		this.message = message;
 	}
 
-	public boolean isLocationBased() {
-		return locationBased;
+	public String getMsgType() {
+		return msgType;
 	}
 
-	public void setLocationBased(boolean locationBased) {
-		this.locationBased = locationBased;
+	public void setMsgType(String msgType) {
+		this.msgType = msgType;
 	}
 
 	public DateTime getDateTime() {

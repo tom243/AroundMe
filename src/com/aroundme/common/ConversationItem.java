@@ -7,7 +7,7 @@ public class ConversationItem {
 	private long timeStamp;
 	private String contentMess;
 	private String imageUrl;
-	private boolean lastMsgIsGeo;
+	private String msgType;
 	
 	
 	public ConversationItem() {
@@ -20,10 +20,10 @@ public class ConversationItem {
 	 * @param unreadMess number of unread messages
 	 * @param timeStamp  date and time of the message
 	 * @param contentMess content of the message 
-	 * @param lastMsgIsGeo determine if location based message
+	 * @param msgType determine which type of message
 	 */
 	public ConversationItem(String userMail, String friendMail, int unreadMess,
-			long timeStamp, String contentMess, boolean lastMsgIsGeo) {
+			long timeStamp, String contentMess, String msgType) {
 		super();
 		this.userMail = userMail;
 		this.friendMail = friendMail;
@@ -31,7 +31,7 @@ public class ConversationItem {
 		this.timeStamp = timeStamp;
 		this.contentMess = contentMess;
 		this.imageUrl = null;
-		this.lastMsgIsGeo = lastMsgIsGeo;
+		this.msgType = msgType;
 	}
 
 	public String getImageUrl() {
@@ -82,12 +82,12 @@ public class ConversationItem {
 		this.contentMess = contentMess;
 	}
 
-	public boolean isLastMsgIsGeo() {
-		return lastMsgIsGeo;
+	public String getMsgType() {
+		return msgType;
 	}
 
-	public void setLastMsgIsGeo(boolean lastMsgIsGeo) {
-		this.lastMsgIsGeo = lastMsgIsGeo;
+	public void setMsgType(String msgType) {
+		this.msgType = msgType;
 	}
 
 }

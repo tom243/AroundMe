@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.aroundme.R;
+import com.aroundme.common.AppConsts;
 import com.aroundme.common.AroundMeApp;
 import com.aroundme.common.ChatMessage;
 import com.aroundme.controller.Controller;
@@ -76,7 +77,7 @@ public class ChatArrayAdapter extends ArrayAdapter {
         } else 
             holder = (ViewHolder) convertView.getTag();
 
-        setAlignment(holder, !chatMessage.isLeft() , chatMessage.isLocationBased());
+        setAlignment(holder, !chatMessage.isLeft() , chatMessage.getMsgType());
         holder.txtMessage.setText(chatMessage.getMessage());
         setDateTitle(holder, chatMessage.getDateTime().getValue());
         
@@ -109,7 +110,7 @@ public class ChatArrayAdapter extends ArrayAdapter {
      * 
      * sets the current alignment
      */
-    private void setAlignment(ViewHolder holder, boolean isMe, boolean isGeo) {
+    private void setAlignment(ViewHolder holder, boolean isMe, String msgType) {
         if (isMe) {
             holder.txtMessage.setBackgroundResource(R.drawable.bubble_b);
 
@@ -129,10 +130,16 @@ public class ChatArrayAdapter extends ArrayAdapter {
             holder.txtInfo.setLayoutParams(layoutParams);
             
         	holder.geoIcon_L.setVisibility(View.GONE);
-            if (isGeo) 
-            	holder.geoIcon_R.setVisibility(View.VISIBLE);
-            else 
-            	holder.geoIcon_R.setVisibility(View.GONE);
+            if (msgType.equals(AppConsts.TYPE_GEO_MSG)) {
+    			holder.geoIcon_R.setVisibility(View.VISIBLE);
+    			holder.geoIcon_R.setImageResource(R.drawable.geo_msg);
+    		}
+    		else if (msgType.equals(AppConsts.TYPE_PIN_MSG)) {
+    			holder.geoIcon_R.setVisibility(View.VISIBLE);
+    			holder.geoIcon_R.setImageResource(R.drawable.pin_icon);
+    		}
+    		else 
+    			holder.geoIcon_R.setVisibility(View.GONE);
             
         } else {
             holder.txtMessage.setBackgroundResource(R.drawable.bubble_a);
@@ -153,10 +160,16 @@ public class ChatArrayAdapter extends ArrayAdapter {
             holder.txtInfo.setLayoutParams(layoutParams);
             
             holder.geoIcon_R.setVisibility(View.GONE);
-            if (isGeo) 
-            	holder.geoIcon_L.setVisibility(View.VISIBLE);
-            else 
-            	holder.geoIcon_L.setVisibility(View.GONE);
+            if (msgType.equals(AppConsts.TYPE_GEO_MSG)) {
+    			holder.geoIcon_L.setVisibility(View.VISIBLE);
+    			holder.geoIcon_L.setImageResource(R.drawable.geo_msg);
+    		}
+    		else if (msgType.equals(AppConsts.TYPE_PIN_MSG)) {
+    			holder.geoIcon_L.setVisibility(View.VISIBLE);
+    			holder.geoIcon_L.setImageResource(R.drawable.pin_icon);
+    		}
+    		else 
+    			holder.geoIcon_L.setVisibility(View.GONE);
         }
     }
    

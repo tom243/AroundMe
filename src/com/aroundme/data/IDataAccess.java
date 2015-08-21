@@ -35,6 +35,8 @@ public interface IDataAccess {
 	 Long addToMessagesTable(Message message, String msgType);
 	
 	 Message getMessageFromDB(Long id);
+	 
+	 String getTypeMsg(Long id);
 	
 	 void  addToConversationsTable(String  friendMail, String userMail, Long messageId, int unreadMsgs);
 	

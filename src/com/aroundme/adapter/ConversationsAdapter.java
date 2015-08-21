@@ -3,12 +3,15 @@ package com.aroundme.adapter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+
 import com.android.volley.toolbox.ImageLoader;
 import com.aroundme.R;
+import com.aroundme.common.AppConsts;
 import com.aroundme.common.ConversationItem;
 import com.aroundme.common.CustomNetworkImageView;
 import com.aroundme.controller.ImagesController;
 import com.aroundme.controller.Controller;
+
 import android.app.Activity;
 import android.content.Context;
 import android.text.format.DateUtils;
@@ -98,8 +101,14 @@ public ConversationsAdapter(Context context, List<ConversationItem> conversation
 			dotMessage = row_pos.getContentMess();
 		holder.message.setText(dotMessage);
 
-		if (row_pos.isLastMsgIsGeo())
+		if (row_pos.getMsgType().equals(AppConsts.TYPE_GEO_MSG)) {
 			holder.geoIcon.setVisibility(View.VISIBLE);
+			holder.geoIcon.setImageResource(R.drawable.geo_msg);
+		}
+		else if (row_pos.getMsgType().equals(AppConsts.TYPE_PIN_MSG)) {
+			holder.geoIcon.setVisibility(View.VISIBLE);
+			holder.geoIcon.setImageResource(R.drawable.pin_icon);
+		}
 		else 
 			holder.geoIcon.setVisibility(View.GONE);
 		

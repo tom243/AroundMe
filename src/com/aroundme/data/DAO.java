@@ -127,7 +127,7 @@ public class DAO implements IDataAccess{
 				ConversationsEntry.COLUMN_FRIEND_MAIL + "," + 
 				ConversationsEntry.COLUMN_COUNTER_UNREAD_MESSAGES + "," +
 				MessagesEntry.COLUMN_TIME_STAMP + "," + MessagesEntry.COLUMN_CONTENT + "," +  
-				MessagesEntry.COLUMN_LAT +
+				MessagesEntry.COLUMN_LAT + "," + MessagesEntry.COLUMN_TYPE +
 				" FROM "+ ConversationsEntry.TABLE_NAME +  
 				" INNER JOIN " + MessagesEntry.TABLE_NAME +  
 				" ON " + ConversationsEntry.COLUMN_LAST_MESSAGE_ID + "=" + MessagesEntry.TABLE_NAME +  
@@ -151,10 +151,8 @@ public class DAO implements IDataAccess{
 		conv.setTimeStamp(cursor.getLong(cursor.getColumnIndex(MessagesEntry.COLUMN_TIME_STAMP)));
 		conv.setContentMess(cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_CONTENT)));
 		Long latitude = cursor.getLong(cursor.getColumnIndex(MessagesEntry.COLUMN_LAT));
-		boolean isGeo = false;
-		if (latitude != 0)
-			isGeo = true;	
-		conv.setLastMsgIsGeo(isGeo);
+		String lastMsgType = cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_TYPE));
+		conv.setMsgType(lastMsgType);
 		return conv;
 	}	
 	
@@ -201,10 +199,19 @@ public class DAO implements IDataAccess{
 		Cursor cursor =  db.rawQuery("select * from " + MessagesEntry.TABLE_NAME + " where " + MessagesEntry._ID + "='" + id + "'" , null);
 		cursor.moveToFirst();
 		Message message = cursorToMessage(cursor);
+		
 		cursor.close();
 		return message;
-		
-		
+	}
+	
+	@Override
+	public String getTypeMsg(Long id){
+		Cursor cursor =  db.rawQuery("select " + MessagesEntry.COLUMN_TYPE + " from " + 
+				MessagesEntry.TABLE_NAME + " where " + MessagesEntry._ID + "='" + id + "'" , null);
+		cursor.moveToFirst();
+		String msgType = cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_TYPE));
+		cursor.close();
+		return msgType;
 	}
 	
 	@Override

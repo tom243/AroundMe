@@ -76,7 +76,7 @@ public class NotificationsController {
             AroundMeApp.getContext().getPackageName(),
             R.layout.notification
         );
-     
+        
         // Locate and set the Image into customnotificationtext.xml ImageViews
         notificationView.setImageViewResource(
             R.id.imagenotileft, 
@@ -101,9 +101,13 @@ public class NotificationsController {
         notificationView.setTextViewText(R.id.time, controller.dateToTimeString(message.getTimestamp().getValue()));
      
         // checking if it is a geo message to show or hide the geo icon
-        if (message.getLocation() != null)
+        if (message.getLocation() != null) {
         	notificationView.setViewVisibility(R.id.geoMessageIcon, View.VISIBLE);
-        else
+        	if (msgType.equals(AppConsts.TYPE_PIN_MSG))
+        		notificationView.setImageViewResource(R.id.geoMessageIcon, R.drawable.pin_icon);
+        	else
+        		notificationView.setImageViewResource(R.id.geoMessageIcon, R.drawable.geo_msg);
+        } else
         	notificationView.setViewVisibility(R.id.geoMessageIcon, View.GONE);
         
         return notificationView;

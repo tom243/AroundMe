@@ -177,27 +177,24 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
     public void getHistoryMessagesFromDB(String friendMail){
 		dao.open();
 		historyMessages = dao.getAllMessagesForFriend(controller.getCurrentUser().getMail(), friendMail);
-		dao.close();
 		if (!historyMessages.isEmpty()){
 			for (Message message: historyMessages){
 				if (message != null){
-					boolean locationBased = false;
-					if (message.getLocation() != null)
-						locationBased = true;
-				    
+					String msgType = dao.getTypeMsg(message.getId());
 					if (message.getFrom().equals(myFriendMail)) {
 			        	 side = true;
-			        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),locationBased,
+			        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),msgType,
 			        			 message.getTimestamp()));
 			        }
 					else{
 						side=false;
-						chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),locationBased,
+						chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),msgType,
 								message.getTimestamp()));
 					}
 				}
 			}
 		}
+		dao.close();
     }
     
     /**
@@ -209,13 +206,11 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 	        Long messageId = intent.getLongExtra("messageId",999);
 	        dao.open();
 	        Message message = dao.getMessageFromDB(messageId);
+	        String msgType = dao.getTypeMsg(messageId);
 	        dao.close();
-	        boolean locationBased = false;
-	        if (message.getLocation() != null)
-	        	locationBased = true;
 	        if (message.getFrom().equals(myFriendMail)) {
 	        	 side = true;
-	        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),locationBased,
+	        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),msgType,
 	        	 		message.getTimestamp()));
 	        }
 	        //  ... react to local broadcast message
@@ -232,12 +227,10 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 	        dao.open();
 	        Message message = dao.getMessageFromDB(messageId);
 	        dao.close();
-	        boolean locationBased = true;
-	        if (message.getLocation() != null)
-	        	locationBased = true;
+	        
 	        if (message.getFrom().equals(myFriendMail)) {
 	        	 side = true;
-	        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),locationBased,
+	        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),AppConsts.TYPE_PIN_MSG,
 	        	 		message.getTimestamp()));
 	        }
 	        //  ... react to local broadcast message
@@ -270,7 +263,7 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 		    String text = chatText.getText().toString();
 			side = false;
 			DateTime currDate = new DateTime(new Date());
-			chatArrayAdapter.add(new ChatMessage(side, text, false, currDate));
+			chatArrayAdapter.add(new ChatMessage(side, text, AppConsts.TYPE_SIMPLE_MSG, currDate));
 			chatText.setText("");
 		}
 	}
