@@ -329,9 +329,9 @@ public class Controller {
 		new  AsyncTask<Void, Void, Void>(){
 			@Override
 			protected void onPreExecute() {
+				super.onPreExecute();
 				if (splash != null)
 					splash.visible(null);
-				super.onPreExecute();
 			}
 			@Override
 			protected Void doInBackground(Void... params) {
