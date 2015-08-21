@@ -13,14 +13,20 @@ import com.aroundme.common.MessageGeofence;
 import com.aroundme.geofence.MessageGeofenceStore;
 import com.google.android.gms.location.Geofence;
 
+/**
+ * @author Tomer and chen
+ *
+ */
 public class GeoController {
 
 	private static GeoController instance;
 	private Context context;
 	private List<Geofence> mGeofenceList;
-	// Persistent storage for geofences.
-	private MessageGeofenceStore mGeofenceStorage;
+	private MessageGeofenceStore mGeofenceStorage; 	// Persistent storage for geofences.
 	
+	/**
+	 * @param context context that received 
+	 */
 	public GeoController(Context context) {
 		this.context = context;
 		// Instantiate a new geofence storage area.
@@ -29,6 +35,11 @@ public class GeoController {
 		mGeofenceList = new ArrayList<Geofence>();
 	}
 	
+	/**
+	 * @param context context that received 
+	 * @return instance of the GEO controller
+	 * 
+	 */
 	public static GeoController getInstance(Context context) {
 		if(instance ==  null) {
 			instance = new GeoController(context);
@@ -36,6 +47,11 @@ public class GeoController {
 		return instance;
 	}
 
+	/**
+	 * @param message contains all details about the message
+	 * 
+	 * create a geofence  and add it to the list of geofences
+	 */
 	public void createGeofence(Message message) {
 		MessageGeofence newGeoFence;
 		float rad = AppConsts.BUILDING_RADIUS_METERS; 
@@ -51,9 +67,14 @@ public class GeoController {
 				message.getContnet(),message.getFrom(),message.getTo(),message.getTimestamp().getValue());
 		// Store these flat versions in SharedPreferences and add them to the geofence list.
 		mGeofenceStorage.setGeofence(newGeoFence);
-		mGeofenceList.add(newGeoFence.toGeofence()); // **** toGeofence function is ok ?
+		mGeofenceList.add(newGeoFence.toGeofence()); 
 	}
 	
+	/**
+	 * @param id id of the geofence
+	 * 
+	 * cancel a geofence by delete it from the list of geofences
+	 */
 	public void cancelGeofence(String id) {
 		Log.i("CONTROLLER","cancel GEO: "+id);
 		MessageGeofence geofence = mGeofenceStorage.getGeofence(id);
@@ -80,6 +101,5 @@ public class GeoController {
 	public void setmGeofenceStorage(MessageGeofenceStore mGeofenceStorage) {
 		this.mGeofenceStorage = mGeofenceStorage;
 	}
-	
 	
 }

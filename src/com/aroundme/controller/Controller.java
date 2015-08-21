@@ -578,6 +578,12 @@ public class Controller {
 	    return formatter.format(dateTimeInMillis);
 	}
 
+	/**
+	 * @param bitmap picture of users
+	 * @return rounded shape image
+	 * 
+	 * return rounded shape image
+	 */
 	private Bitmap getRoundedShape(Bitmap bitmap) {
 	    Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap
 	            .getHeight(), Config.ARGB_8888);
@@ -600,11 +606,25 @@ public class Controller {
 	    return output;
 	}
 	
+	/**
+	 * @param json contains the content and the type of the message
+	 * @return content of the message
+	 * @throws JSONException
+	 * 
+	 * get the content of the message from JSON
+	 */
 	public String getContentFromJson(String json) throws JSONException {
 		JSONObject jObject = new JSONObject(json);
 		return jObject.getString("content");
 	}
 	
+	/**
+	 * @param json contains the content and the type of the message
+	 * @return type of the message
+	 * @throws JSONException
+	 * 
+	 * get the type of the message from JSON
+	 */
 	public String getTypeFromJson(String json) throws JSONException {
 		JSONObject jObject = new JSONObject(json);
 		return jObject.getString("type");
