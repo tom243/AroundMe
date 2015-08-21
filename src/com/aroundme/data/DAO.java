@@ -7,6 +7,7 @@ import com.appspot.enhanced_cable_88320.aroundmeapi.model.GeoPt;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.aroundme.common.AppConsts;
 import com.aroundme.common.ConversationItem;
+import com.aroundme.common.ExtendedMessage;
 import com.aroundme.data.ChatDbContract.ConversationsEntry;
 import com.aroundme.data.ChatDbContract.MessagesEntry;
 import com.google.api.client.util.DateTime;
@@ -65,17 +66,17 @@ public class DAO implements IDataAccess{
 	}
 	
 	@Override
-	public ArrayList<Message> getAllMessagesForFriend(String userMail,String friendMail) {
+	public ArrayList<ExtendedMessage> getAllMessagesForFriend(String userMail,String friendMail) {
 		// get history of conversation
-		ArrayList<Message> messages = new ArrayList<Message>();
+		ArrayList<ExtendedMessage> messages = new ArrayList<ExtendedMessage>();
 		Cursor cursor = db.rawQuery("SELECT * FROM " + MessagesEntry.TABLE_NAME + 
 				" WHERE (" + MessagesEntry.COLUMN_TO + "=? AND " + 
 				MessagesEntry.COLUMN_FROM+ "=?) OR (" + MessagesEntry.COLUMN_FROM + "=? AND " + 
 				MessagesEntry.COLUMN_TO + "=?) ORDER BY " + MessagesEntry.COLUMN_TIME_STAMP ,new String[]{userMail,friendMail,userMail,friendMail});
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			Message message = cursorToMessage(cursor);
-			messages.add(message);
+			ExtendedMessage eMessage = cursorToExtendedMessage(cursor);
+			messages.add(eMessage);
 			cursor.moveToNext();
 		}
 		cursor.close();
@@ -129,6 +130,14 @@ public class DAO implements IDataAccess{
 		return message;
 	}
 
+	private ExtendedMessage cursorToExtendedMessage(Cursor cursor) {
+		ExtendedMessage eMessage = new ExtendedMessage();
+		Message message = cursorToMessage(cursor);
+		eMessage.setMessage(message);
+		eMessage.setMsgType(cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_TYPE)));
+		return eMessage;
+	}
+	
 	@Override
 	public ArrayList<ConversationItem> getAllOpenConversationsList(String currentUserMail) {
 		ArrayList<ConversationItem> openConversations = new ArrayList<ConversationItem>();

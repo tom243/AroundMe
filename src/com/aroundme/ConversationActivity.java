@@ -12,6 +12,7 @@ import com.aroundme.common.AroundMeApp;
 import com.aroundme.common.ChatMessage;
 import com.aroundme.common.ConversationItem;
 import com.aroundme.common.CustomNetworkImageView;
+import com.aroundme.common.ExtendedMessage;
 import com.aroundme.common.IAppCallBack;
 import com.aroundme.common.SplashInterface;
 import com.aroundme.controller.Controller;
@@ -56,7 +57,7 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
     private boolean side = false;
     private Controller controller;
     private IDataAccess dao;
-    private ArrayList<Message> historyMessages;
+    private ArrayList<ExtendedMessage> historyMessages;
     private Toolbar toolbar;
     private ProgressBar progressBar;
     private ImageLoader imageLoader;
@@ -178,17 +179,17 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 		dao.open();
 		historyMessages = dao.getAllMessagesForFriend(controller.getCurrentUser().getMail(), friendMail);
 		if (!historyMessages.isEmpty()){
-			for (Message message: historyMessages){
+			for (ExtendedMessage eMessage: historyMessages){
+				Message message = eMessage.getMessage();
 				if (message != null){
-					String msgType = dao.getTypeMsg(message.getId());
 					if (message.getFrom().equals(myFriendMail)) {
 			        	 side = true;
-			        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),msgType,
+			        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),eMessage.getMsgType(),
 			        			 message.getTimestamp()));
 			        }
 					else{
 						side=false;
-						chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),msgType,
+						chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),eMessage.getMsgType(),
 								message.getTimestamp()));
 					}
 				}
