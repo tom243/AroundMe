@@ -58,15 +58,7 @@ public interface IDataAccess {
 	 * 
 	 * get message form DB by id
 	 */
-	Message getMessageFromDB(Long id);
-
-	/**
-	 * @param id id of the message
-	 * @return message type
-	 * 
-	 * get message type by id
-	 */
-	String getTypeMsg(Long id);
+	ExtendedMessage getMessageFromDB(Long id);
 
 	/**
 	 * @param friendMail friend mail
@@ -93,7 +85,7 @@ public interface IDataAccess {
 	 * 
 	 * get all pin messages from list
 	 */
-	ArrayList<Message> getPinMessages(String userMail, String column);
+	ArrayList<Message> getPinMessages(String userMail);
 
 	/**
 	 * @param conv conversation item

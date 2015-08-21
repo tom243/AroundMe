@@ -10,6 +10,7 @@ import com.appspot.enhanced_cable_88320.aroundmeapi.model.Message;
 import com.appspot.enhanced_cable_88320.aroundmeapi.model.UserAroundMe;
 import com.aroundme.common.AppConsts;
 import com.aroundme.common.AroundMeApp;
+import com.aroundme.common.ExtendedMessage;
 import com.aroundme.common.IAppCallBack;
 import com.aroundme.common.IAppCallBack2;
 import com.aroundme.controller.Controller;
@@ -93,7 +94,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 			Toast.makeText(AroundMeApp.getContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
 		// get all pin messages from dao
 		dao.open();
-		receivedPinMsgs = dao.getPinMessages(controller.getCurrentUser().getMail(), MessagesEntry.COLUMN_TO);
+		receivedPinMsgs = dao.getPinMessages(controller.getCurrentUser().getMail());
 		dao.close();
 	}
 	
@@ -162,7 +163,6 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		OnMapLongClickListener longClickListener = new OnMapLongClickListener() {
 			@Override
 			public void onMapLongClick(final LatLng point) {
-				Toast.makeText(AroundMeApp.getContext(), "long click on a map", Toast.LENGTH_SHORT).show();
 				// get all users (from controller) and create simple array
 				int size = controller.getAllUsersList().size();
 				allUsersMail = new String[size];
@@ -317,7 +317,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		MarkerOptions options =	new MarkerOptions()
 			.position(latLng)
 			.snippet("\u200e" + content)
-			.title("\u200e" + to)
+			.title("\u200e" + "From: " + to)
 			.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
 		Marker marker = myMap.addMarker(options);
 		markerMap.put(marker, messageId);
@@ -441,9 +441,9 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	    	
 	        Long messageId = intent.getLongExtra("pinId",999);
 	        dao.open();
-	        final Message message = dao.getMessageFromDB(messageId);
+	        final ExtendedMessage eMessage = dao.getMessageFromDB(messageId);
 	        dao.close();
-	        
+	        final Message message = eMessage.getMessage();
 	        myMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
 	            public void onMapLoaded() {
 	    	        addPinToMap(message.getId() ,controller.getUserNameByMail(message.getFrom()), message.getContnet(), new LatLng(message.getLocation().getLatitude(),

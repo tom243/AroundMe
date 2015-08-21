@@ -206,12 +206,12 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 	    public void onReceive(Context context, Intent intent) {
 	        Long messageId = intent.getLongExtra("messageId",999);
 	        dao.open();
-	        Message message = dao.getMessageFromDB(messageId);
-	        String msgType = dao.getTypeMsg(messageId);
+	        ExtendedMessage eMessage = dao.getMessageFromDB(messageId);
 	        dao.close();
+	        Message message = eMessage.getMessage(); 
 	        if (message.getFrom().equals(myFriendMail)) {
 	        	 side = true;
-	        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),msgType,
+	        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),eMessage.getMsgType(),
 	        	 		message.getTimestamp()));
 	        }
 	        //  ... react to local broadcast message
@@ -226,9 +226,9 @@ public class ConversationActivity extends ActionBarActivity implements IAppCallB
 	    public void onReceive(Context context, Intent intent) {
 	        Long messageId = intent.getLongExtra("pinId",999);
 	        dao.open();
-	        Message message = dao.getMessageFromDB(messageId);
+	        ExtendedMessage eMessage = dao.getMessageFromDB(messageId);
 	        dao.close();
-	        
+	        Message message = eMessage.getMessage();
 	        if (message.getFrom().equals(myFriendMail)) {
 	        	 side = true;
 	        	 chatArrayAdapter.add(new ChatMessage(side, message.getContnet(),AppConsts.TYPE_PIN_MSG,

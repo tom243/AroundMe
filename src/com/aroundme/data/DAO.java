@@ -84,17 +84,16 @@ public class DAO implements IDataAccess{
 	}
 
 	@Override
-	public ArrayList<Message> getPinMessages(String userMail, String column) {
+	public ArrayList<Message> getPinMessages(String userMail) {
 		ArrayList<Message> messages = new ArrayList<Message>();
 		Cursor cursor = db.rawQuery("SELECT * FROM " + MessagesEntry.TABLE_NAME + 
-				" WHERE (" + column + "=? AND " +
+				" WHERE (" + MessagesEntry.COLUMN_TO + "=? AND " +
 				MessagesEntry.COLUMN_TYPE + "=? AND " +
 				MessagesEntry.COLUMN_IS_ACTIVE + "=1) ORDER BY " + MessagesEntry.COLUMN_LAT + " DESC"
 				,new String[]{userMail,AppConsts.TYPE_PIN_MSG});
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			Message message = cursorToMessage(cursor);
-			//message.setId(cursor.getLong(Integer.valueOf(MessagesEntry._ID)));
 			messages.add(message);
 			cursor.moveToNext();
 		}
@@ -130,6 +129,12 @@ public class DAO implements IDataAccess{
 		return message;
 	}
 
+	/**
+	 * @param cursor cursor for DB
+	 * @return extended message object
+	 * 
+	 * build extended message for columns
+	 */
 	private ExtendedMessage cursorToExtendedMessage(Cursor cursor) {
 		ExtendedMessage eMessage = new ExtendedMessage();
 		Message message = cursorToMessage(cursor);
@@ -213,23 +218,13 @@ public class DAO implements IDataAccess{
 	}
 
 	@Override
-	public Message getMessageFromDB(Long id){
+	public ExtendedMessage getMessageFromDB(Long id){
 		Cursor cursor =  db.rawQuery("select * from " + MessagesEntry.TABLE_NAME + " where " + MessagesEntry._ID + "='" + id + "'" , null);
 		cursor.moveToFirst();
-		Message message = cursorToMessage(cursor);
+		ExtendedMessage eMessage = cursorToExtendedMessage(cursor);
 		
 		cursor.close();
-		return message;
-	}
-	
-	@Override
-	public String getTypeMsg(Long id){
-		Cursor cursor =  db.rawQuery("select " + MessagesEntry.COLUMN_TYPE + " from " + 
-				MessagesEntry.TABLE_NAME + " where " + MessagesEntry._ID + "='" + id + "'" , null);
-		cursor.moveToFirst();
-		String msgType = cursor.getString(cursor.getColumnIndex(MessagesEntry.COLUMN_TYPE));
-		cursor.close();
-		return msgType;
+		return eMessage;
 	}
 	
 	@Override
