@@ -334,8 +334,8 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		                new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), 13));
 		        CameraPosition cameraPosition = new CameraPosition.Builder()
 		        	.target(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))      // Sets the center of the map to location user
-		        	.zoom(17)                   // Sets the zoom
-		        	.bearing(90)                // Sets the orientation of the camera to east
+		        	.zoom(11)                   // Sets the zoom
+		        	.bearing(0)                // Sets the orientation of the camera to east
 		        	.tilt(30)                   // Sets the tilt of the camera to 30 degrees
 		        	.build();                   // Creates a CameraPosition from the builder
 		        myMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
