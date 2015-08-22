@@ -466,7 +466,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	 * @return AlertDialog with an option to delete the chosen marker from the map   
 	 */
 	private AlertDialog removePinMsgDialog (final Marker marker) {
-		AlertDialog.Builder removeMarkerbuilder = new AlertDialog.Builder(AroundMeApp.getContext());
+		AlertDialog.Builder removeMarkerbuilder = new AlertDialog.Builder(MapActivity.this);
         removeMarkerbuilder.setMessage(R.string.remove_pin_msg_question)
                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
