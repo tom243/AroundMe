@@ -16,7 +16,6 @@ import com.aroundme.common.IAppCallBack2;
 import com.aroundme.controller.Controller;
 import com.aroundme.data.DAO;
 import com.aroundme.data.IDataAccess;
-import com.aroundme.data.ChatDbContract.MessagesEntry;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -140,22 +139,18 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 			}
 		};
 		
-		
 		OnInfoWindowClickListener onInfoWindowClickListener = new OnInfoWindowClickListener() {
 			@Override
-			public void onInfoWindowClick(Marker marker) {
-				// when an info window clicked the chat with him will be opened
+			public void onInfoWindowClick(final Marker marker) {
+				// click on info window of a marker that represents friend will open chat with him  
 				if (!markerMap.containsKey(marker)) {	
 					Intent intent = new Intent(AroundMeApp.getContext(), ConversationActivity.class);
 					intent.putExtra(AppConsts.EMAIL_FRIEND, marker.getSnippet());
 					startActivity(intent);
 				}
+				// click on info window of a marker that represents pin message will open a dialog with option to delete it from map 
 				else {
-					dao.open();
-					dao.upadteMessageToNonActive(markerMap.get(marker).toString());
-					dao.close();
-					marker.remove();
-					
+					removePinMsgDialog(marker).show();
 				}
 			}
 		};
@@ -174,7 +169,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 					i++;
 				}
 				// the first dialog to choose the type of message
-				AlertDialog.Builder type_builder = new AlertDialog.Builder(MapActivity.this)
+				AlertDialog.Builder typeBuilder = new AlertDialog.Builder(MapActivity.this)
 					.setTitle(R.string.choose_msg_type)
 					.setItems(R.array.messages, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
@@ -188,9 +183,9 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 							}
 							// the second dialog to choose friends
 							mSelectedItems = new ArrayList<String>();
-						    AlertDialog.Builder friends_builder = new AlertDialog.Builder(MapActivity.this);
+						    AlertDialog.Builder friendsBuilder = new AlertDialog.Builder(MapActivity.this);
 						    // Set the dialog title
-						    friends_builder.setTitle(R.string.choose_friends)
+						    friendsBuilder.setTitle(R.string.choose_friends)
 						    // Specify the list array, the items to be selected by default (null for none),
 						    // and the listener through which to receive callbacks when items are selected
 				           .setMultiChoiceItems(allUsersName, null,
@@ -217,11 +212,11 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 				                    // or return them to the component that opened the dialog
 				            	    if (!mSelectedItems.isEmpty()) {
 					            	    // the third dialog to send the message
-						            	AlertDialog.Builder msg_builder = new AlertDialog.Builder(MapActivity.this);
+						            	AlertDialog.Builder msgBuilder = new AlertDialog.Builder(MapActivity.this);
 						   				// Get the layout inflater
 						   			    LayoutInflater inflater = getLayoutInflater();
 						   			    final View v = inflater.inflate(R.layout.dialog_geo_message, null);
-						   				msg_builder.setView(v)
+						   				msgBuilder.setView(v)
 						   				.setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
 						   					@Override
 						   					public void onClick(DialogInterface dialog, int id) {
@@ -257,7 +252,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 						   						
 						   					}
 						   				});      
-						   				msg_builder.create().show();
+						   				msgBuilder.create().show();
 				            	    }
 				            	    else
 				            	    	Toast.makeText(AroundMeApp.getContext(), "You forgot to choose friends. Try again", Toast.LENGTH_SHORT).show();
@@ -266,13 +261,12 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 				           .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 				               @Override
 				               public void onClick(DialogInterface dialog, int id) {
-				                   // are you sure dialog  ??
 				               }
 				           });
-						   friends_builder.create().show();
+						   friendsBuilder.create().show();
 						}
 					});
-				type_builder.create().show();
+				typeBuilder.create().show();
 			}
 		};
 		myMap.setOnMarkerClickListener(markersListener);
@@ -342,7 +336,7 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 		        	.target(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))      // Sets the center of the map to location user
 		        	.zoom(17)                   // Sets the zoom
 		        	.bearing(90)                // Sets the orientation of the camera to east
-		        	.tilt(40)                   // Sets the tilt of the camera to 30 degrees
+		        	.tilt(30)                   // Sets the tilt of the camera to 30 degrees
 		        	.build();                   // Creates a CameraPosition from the builder
 		        myMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 		        controller.getUsersAroundMe(AppConsts.RADIUS_AROUND_ME, geo, this);
@@ -450,8 +444,41 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 	        				message.getLocation().getLongitude()));
 	            }
 	        });
-
 	    }
 	};
-
+	
+	/**
+	 * @param marker marker to remove which represents pin message on the map
+	 * 
+	 * remove marker, which it is pin message from friend, from the map 
+	 * and update the storage that the message was deleted.
+	 */
+	private void removePinMessage(Marker marker) {
+		dao.open();
+		dao.upadteMessageToNonActive(markerMap.get(marker).toString());
+		dao.close();
+		marker.remove();
+	}
+	
+	/**
+	 * @param marker marker to remove which represents pin message on the map
+	 * 
+	 * @return AlertDialog with an option to delete the chosen marker from the map   
+	 */
+	private AlertDialog removePinMsgDialog (final Marker marker) {
+		AlertDialog.Builder removeMarkerbuilder = new AlertDialog.Builder(AroundMeApp.getContext());
+        removeMarkerbuilder.setMessage(R.string.remove_pin_msg_question)
+               .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                   public void onClick(DialogInterface dialog, int id) {
+                	   removePinMessage(marker);
+                   }
+               })
+               .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                   public void onClick(DialogInterface dialog, int id) {
+                       // User cancelled the dialog
+                   }
+               });
+        // Create the AlertDialog object and return it
+        return removeMarkerbuilder.create();
+	}
 }
