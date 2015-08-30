@@ -3,3 +3,11 @@ AIzaSyBwbwVKtCayXL78KXHIdXiWLyurzrRiFp0
 
 Chen API key
 AIzaSyBBcLhfWy-vnmXyQGw1U6wgM5HV8Q6skPQ
+
+
+release key
+
+AIzaSyDKZp850GFJmr79MU1onresv8bRvT-Nu4U
+
+alias- aroundme
+pass- 123456
