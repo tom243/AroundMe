@@ -7,7 +7,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@drawable/signin_bg"
-    tools:context="com.aroundme.SignInActivity" >
+    tools:context="com.tc.aroundme.SignInActivity" >
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_button"

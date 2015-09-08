@@ -5,7 +5,7 @@
     android:layout_height="48dp"
     android:padding="5dp" >
 
-     <com.aroundme.common.CustomNetworkImageView
+     <com.tc.aroundme.common.CustomNetworkImageView
         android:id="@+id/users_item_icon"
         android:layout_width="50dp"
         android:layout_height="50dp"
